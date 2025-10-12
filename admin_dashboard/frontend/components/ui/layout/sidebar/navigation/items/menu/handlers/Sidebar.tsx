@@ -17,6 +17,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     { name: 'Jobs', path: '/dashboard/jobs/list', icon: '💼' },
     { name: 'Internships', path: '/dashboard/internships/list', icon: '🎓' },
     { name: 'Scholarships', path: '/dashboard/scholarships/list', icon: '🏆' },
+    { name: 'Learning', path: '/dashboard/learning', icon: '📚', disabled: true },
+    { name: 'Career Tools', path: '/dashboard/career-tools', icon: '🛠️', disabled: true },
+    { name: 'Analytics', path: '/dashboard/analytics', icon: '📊', disabled: true },
   ]
 
   return (
