@@ -1,26 +1,20 @@
 #!/usr/bin/env python3
 """
-CareerGuide Admin Backend API Test Suite
-Tests all CRUD operations for Jobs, Internships, and Scholarships
+Comprehensive Backend Testing for DSA Corner Module
+Tests all DSA Topics, Questions, and Sheets endpoints with AI generation
 """
 
-import requests
+import asyncio
+import aiohttp
 import json
-import uuid
+import sys
+from typing import Dict, List, Any, Optional
 from datetime import datetime
-import os
-from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv('/app/user_app/frontend/.env')
+# Backend URL from environment
+BACKEND_URL = "https://jobadmin-portal.preview.emergentagent.com/api"
 
-# Get backend URL from environment
-BACKEND_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://jobadmin-portal.preview.emergentagent.com')
-BASE_URL = f"{BACKEND_URL}/api"
-
-print(f"Testing backend at: {BASE_URL}")
-
-class CareerGuideAPITester:
+class DSABackendTester:
     def __init__(self):
         self.session = requests.Session()
         self.created_jobs = []
