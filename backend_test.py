@@ -586,9 +586,10 @@ class CareerGuideAPITester:
             print(f"GET /user/articles - Status: {response.status_code}")
             if response.status_code == 200:
                 articles = response.json()
-                print(f"Public articles: {len(articles.get('articles', []))}")
+                article_list = articles.get('data', []) if 'data' in articles else articles.get('articles', [])
+                print(f"Public articles: {len(article_list)}")
                 # Check if only published articles are returned
-                for article in articles.get('articles', []):
+                for article in article_list:
                     if not article.get('is_published', True):
                         print(f"WARNING: Unpublished article found in public API: {article.get('id')}")
             else:
