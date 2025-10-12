@@ -284,7 +284,11 @@ class CareerGuideAPITester:
             if response.status_code in [200, 201]:
                 scholarship_response = response.json()
                 print(f"Created scholarship: {scholarship_response}")
-                if 'id' in scholarship_response:
+                if '_id' in scholarship_response:
+                    scholarship_id = scholarship_response['_id']
+                    self.created_scholarships.append(scholarship_id)
+                    print(f"Scholarship created with ID: {scholarship_id}")
+                elif 'id' in scholarship_response:
                     scholarship_id = scholarship_response['id']
                     self.created_scholarships.append(scholarship_id)
                     print(f"Scholarship created with ID: {scholarship_id}")
