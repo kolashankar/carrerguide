@@ -260,10 +260,12 @@ class CareerGuideAPITester:
             "provider": "Tech Foundation",
             "country": "United States",
             "education_level": "undergraduate",
-            "amount": "$10,000",
+            "amount": 10000.0,
             "description": "Scholarship for outstanding engineering students.",
             "eligibility_criteria": ["GPA > 3.5", "Engineering major", "US citizen"],
-            "application_deadline": "2024-12-15T23:59:59",
+            "application_process": "Submit online application with transcripts and essays",
+            "scholarship_type": "merit-based",
+            "deadline": "2024-12-15T23:59:59",
             "is_active": True
         }
         
