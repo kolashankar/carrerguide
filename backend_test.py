@@ -18,577 +18,610 @@ from datetime import datetime
 # Backend URL from environment
 BACKEND_URL = "https://roadmap-toolkit.preview.emergentagent.com/api"
 
-class DSABackendTester:
+class BackendTester:
     def __init__(self):
-        self.session = requests.Session()
-        self.base_url = BACKEND_URL
+        self.session = None
+        self.admin_token = None
+        self.user_token = None
         self.test_results = {
-            "topics": {"passed": 0, "failed": 0, "errors": []},
-            "questions": {"passed": 0, "failed": 0, "errors": []},
-            "sheets": {"passed": 0, "failed": 0, "errors": []},
-            "integration": {"passed": 0, "failed": 0, "errors": []},
-            "ai_generation": {"passed": 0, "failed": 0, "errors": []}
+            "dsa_companies": [],
+            "roadmaps": [],
+            "authentication": [],
+            "career_tools": []
         }
         self.created_resources = {
-            "topics": [],
-            "questions": [],
-            "sheets": []
+            "companies": [],
+            "roadmaps": [],
+            "admin_users": [],
+            "app_users": []
         }
 
-    def make_request(self, method: str, endpoint: str, data: Dict = None, params: Dict = None) -> Dict:
-        """Make HTTP request and return response"""
-        url = f"{self.base_url}{endpoint}"
+    async def setup_session(self):
+        """Setup HTTP session"""
+        self.session = aiohttp.ClientSession()
+
+    async def cleanup_session(self):
+        """Cleanup HTTP session"""
+        if self.session:
+            await self.session.close()
+
+    async def make_request(self, method: str, endpoint: str, data: Dict = None, 
+                          headers: Dict = None, params: Dict = None) -> Dict:
+        """Make HTTP request to backend"""
+        url = f"{BACKEND_URL}{endpoint}"
         
+        default_headers = {"Content-Type": "application/json"}
+        if headers:
+            default_headers.update(headers)
+            
         try:
-            if method.upper() == "GET":
-                response = self.session.get(url, params=params)
-                response_data = response.json()
+            async with self.session.request(
+                method, url, 
+                json=data if data else None,
+                headers=default_headers,
+                params=params
+            ) as response:
+                response_text = await response.text()
+                try:
+                    response_data = json.loads(response_text) if response_text else {}
+                except json.JSONDecodeError:
+                    response_data = {"raw_response": response_text}
+                
                 return {
-                    "status": response.status_code,
+                    "status_code": response.status,
                     "data": response_data,
-                    "success": response.status_code < 400
-                }
-            elif method.upper() == "POST":
-                response = self.session.post(url, json=data, params=params)
-                response_data = response.json()
-                return {
-                    "status": response.status_code,
-                    "data": response_data,
-                    "success": response.status_code < 400
-                }
-            elif method.upper() == "PUT":
-                response = self.session.put(url, json=data)
-                response_data = response.json()
-                return {
-                    "status": response.status_code,
-                    "data": response_data,
-                    "success": response.status_code < 400
-                }
-            elif method.upper() == "DELETE":
-                response = self.session.delete(url)
-                response_data = response.json()
-                return {
-                    "status": response.status_code,
-                    "data": response_data,
-                    "success": response.status_code < 400
+                    "success": 200 <= response.status < 300
                 }
         except Exception as e:
             return {
-                "status": 500,
+                "status_code": 0,
                 "data": {"error": str(e)},
                 "success": False
             }
 
-    def log_test_result(self, category: str, test_name: str, success: bool, error_msg: str = None):
+    def log_test_result(self, module: str, test_name: str, success: bool, 
+                       details: str, response_data: Dict = None):
         """Log test result"""
+        result = {
+            "test": test_name,
+            "success": success,
+            "details": details,
+            "timestamp": datetime.now().isoformat(),
+            "response_data": response_data
+        }
+        self.test_results[module].append(result)
+        
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} [{module.upper()}] {test_name}: {details}")
+
+    # =============================================================================
+    # AUTHENTICATION SYSTEM TESTS
+    # =============================================================================
+
+    async def test_authentication_system(self):
+        """Test complete authentication system"""
+        print("\n🔐 TESTING AUTHENTICATION SYSTEM...")
+        
+        # Test 1: Admin Registration
+        admin_data = {
+            "email": f"admin_{uuid.uuid4().hex[:8]}@test.com",
+            "username": f"admin_{uuid.uuid4().hex[:8]}",
+            "password": "SecurePass123!",
+            "full_name": "Test Admin User"
+        }
+        
+        response = await self.make_request("POST", "/auth/admin/register", admin_data)
+        success = response["success"] and response["data"].get("success", False)
+        self.log_test_result("authentication", "Admin Registration", success,
+                           f"Status: {response['status_code']}, Response: {response['data']}")
+        
         if success:
-            self.test_results[category]["passed"] += 1
-            print(f"✅ {test_name}")
-        else:
-            self.test_results[category]["failed"] += 1
-            self.test_results[category]["errors"].append(f"{test_name}: {error_msg}")
-            print(f"❌ {test_name}: {error_msg}")
+            self.created_resources["admin_users"].append(admin_data["email"])
+
+        # Test 2: Admin Login
+        login_data = {"email": admin_data["email"], "password": admin_data["password"]}
+        response = await self.make_request("POST", "/auth/admin/login", login_data)
+        success = response["success"] and "token" in response["data"]
+        
+        if success:
+            self.admin_token = response["data"]["token"]
+            
+        self.log_test_result("authentication", "Admin Login", success,
+                           f"Status: {response['status_code']}, Token received: {'Yes' if success else 'No'}")
+
+        # Test 3: User Registration
+        user_data = {
+            "email": f"user_{uuid.uuid4().hex[:8]}@test.com",
+            "password": "UserPass123!",
+            "full_name": "Test App User"
+        }
+        
+        response = await self.make_request("POST", "/auth/user/register", user_data)
+        success = response["success"] and response["data"].get("success", False)
+        self.log_test_result("authentication", "User Registration", success,
+                           f"Status: {response['status_code']}, Response: {response['data']}")
+        
+        if success:
+            self.created_resources["app_users"].append(user_data["email"])
+
+        # Test 4: User Login
+        login_data = {"email": user_data["email"], "password": user_data["password"]}
+        response = await self.make_request("POST", "/auth/user/login", login_data)
+        success = response["success"] and "token" in response["data"]
+        
+        if success:
+            self.user_token = response["data"]["token"]
+            
+        self.log_test_result("authentication", "User Login", success,
+                           f"Status: {response['status_code']}, Token received: {'Yes' if success else 'No'}")
+
+        # Test 5: Get Current User (with token)
+        if self.user_token:
+            headers = {"Authorization": f"Bearer {self.user_token}"}
+            response = await self.make_request("GET", "/auth/me", headers=headers)
+            success = response["success"] and "user" in response["data"]
+            self.log_test_result("authentication", "Get Current User", success,
+                               f"Status: {response['status_code']}, User data received: {'Yes' if success else 'No'}")
+
+        # Test 6: Update Profile (auth required)
+        if self.user_token:
+            headers = {"Authorization": f"Bearer {self.user_token}"}
+            update_data = {"full_name": "Updated Test User", "bio": "Updated bio"}
+            response = await self.make_request("PUT", "/auth/profile", update_data, headers=headers)
+            success = response["success"]
+            self.log_test_result("authentication", "Update Profile", success,
+                               f"Status: {response['status_code']}, Profile updated: {'Yes' if success else 'No'}")
+
+        # Test 7: Change Password (auth required)
+        if self.user_token:
+            headers = {"Authorization": f"Bearer {self.user_token}"}
+            password_data = {
+                "old_password": user_data["password"],
+                "new_password": "NewUserPass123!"
+            }
+            response = await self.make_request("POST", "/auth/change-password", password_data, headers=headers)
+            success = response["success"]
+            self.log_test_result("authentication", "Change Password", success,
+                               f"Status: {response['status_code']}, Password changed: {'Yes' if success else 'No'}")
 
     # =============================================================================
-    # DSA TOPICS TESTING
+    # DSA COMPANIES MODULE TESTS
     # =============================================================================
 
-    def test_dsa_topics_crud(self):
-        """Test all DSA Topics CRUD operations"""
-        print("\n🔍 TESTING DSA TOPICS CRUD OPERATIONS")
-        print("=" * 50)
+    async def test_dsa_companies_module(self):
+        """Test DSA Companies CRUD operations and statistics"""
+        print("\n🏢 TESTING DSA COMPANIES MODULE...")
+        
+        # Test 1: Create Company
+        company_data = {
+            "name": "Google Inc",
+            "logo": "https://example.com/google-logo.png",
+            "industry": "Technology",
+            "website": "https://google.com",
+            "description": "Leading technology company specializing in internet services and products"
+        }
+        
+        response = await self.make_request("POST", "/admin/dsa/companies", company_data)
+        success = response["success"] and response["data"].get("success", False)
+        company_id = response["data"].get("company", {}).get("id") if success else None
+        
+        if company_id:
+            self.created_resources["companies"].append(company_id)
+            
+        self.log_test_result("dsa_companies", "Create Company", success,
+                           f"Status: {response['status_code']}, Company ID: {company_id}")
 
-        # Test 1: Create Topics
-        topics_data = [
-            {
-                "name": "Arrays",
-                "description": "Linear data structure storing elements in contiguous memory locations",
-                "icon": "📊",
-                "color": "#FF6B6B",
-                "is_active": True
-            },
-            {
-                "name": "Trees",
-                "description": "Hierarchical data structure with nodes connected by edges",
-                "icon": "🌳",
-                "color": "#4ECDC4",
-                "is_active": True
-            },
-            {
-                "name": "Graphs",
-                "description": "Non-linear data structure consisting of vertices and edges",
-                "icon": "🕸️",
-                "color": "#45B7D1",
-                "is_active": True
-            },
-            {
-                "name": "Dynamic Programming",
-                "description": "Algorithmic paradigm solving complex problems by breaking them down",
-                "icon": "⚡",
-                "color": "#96CEB4",
+        # Test 2: Get All Companies (with filters)
+        params = {"search": "Google", "industry": "Technology", "limit": 10}
+        response = await self.make_request("GET", "/admin/dsa/companies", params=params)
+        success = response["success"] and "companies" in response["data"]
+        companies_count = len(response["data"].get("companies", [])) if success else 0
+        
+        self.log_test_result("dsa_companies", "List Companies with Filters", success,
+                           f"Status: {response['status_code']}, Companies found: {companies_count}")
+
+        # Test 3: Get Company Statistics
+        response = await self.make_request("GET", "/admin/dsa/companies/stats")
+        success = response["success"] and "total_companies" in response["data"]
+        
+        self.log_test_result("dsa_companies", "Get Company Statistics", success,
+                           f"Status: {response['status_code']}, Stats available: {'Yes' if success else 'No'}")
+
+        # Test 4: Get Top Companies
+        params = {"limit": 10, "by": "problems"}
+        response = await self.make_request("GET", "/admin/dsa/companies/top", params=params)
+        success = response["success"] and "companies" in response["data"]
+        
+        self.log_test_result("dsa_companies", "Get Top Companies", success,
+                           f"Status: {response['status_code']}, Top companies retrieved: {'Yes' if success else 'No'}")
+
+        # Test 5: Get Single Company
+        if company_id:
+            response = await self.make_request("GET", f"/admin/dsa/companies/{company_id}")
+            success = response["success"] and "company" in response["data"]
+            
+            self.log_test_result("dsa_companies", "Get Single Company", success,
+                               f"Status: {response['status_code']}, Company retrieved: {'Yes' if success else 'No'}")
+
+        # Test 6: Update Company
+        if company_id:
+            update_data = {
+                "description": "Updated: Leading technology company with innovative solutions",
+                "industry": "Technology & AI"
+            }
+            response = await self.make_request("PUT", f"/admin/dsa/companies/{company_id}", update_data)
+            success = response["success"]
+            
+            self.log_test_result("dsa_companies", "Update Company", success,
+                               f"Status: {response['status_code']}, Company updated: {'Yes' if success else 'No'}")
+
+        # Test 7: Delete Company
+        if company_id:
+            response = await self.make_request("DELETE", f"/admin/dsa/companies/{company_id}")
+            success = response["success"]
+            
+            self.log_test_result("dsa_companies", "Delete Company", success,
+                               f"Status: {response['status_code']}, Company deleted: {'Yes' if success else 'No'}")
+
+    # =============================================================================
+    # ROADMAPS MODULE TESTS
+    # =============================================================================
+
+    async def test_roadmaps_module(self):
+        """Test Roadmaps CRUD operations, AI generation, and node management"""
+        print("\n🗺️ TESTING ROADMAPS MODULE...")
+        
+        # Test 1: Create Roadmap Manually
+        roadmap_data = {
+            "title": "Full Stack Developer Roadmap 2025",
+            "description": "Complete roadmap for becoming a full stack developer",
+            "category": "tech_roadmap",
+            "subcategory": "full_stack",
+            "difficulty_level": "beginner",
+            "estimated_duration": "6 months",
+            "nodes": [
+                {
+                    "id": str(uuid.uuid4()),
+                    "title": "HTML Basics",
+                    "description": "Learn HTML fundamentals",
+                    "node_type": "content",
+                    "position_x": 100,
+                    "position_y": 100,
+                    "is_completed": False,
+                    "dependencies": []
+                }
+            ]
+        }
+        
+        response = await self.make_request("POST", "/admin/roadmaps", roadmap_data)
+        success = response["success"] and response["data"].get("success", False)
+        roadmap_id = response["data"].get("roadmap", {}).get("id") if success else None
+        
+        if roadmap_id:
+            self.created_resources["roadmaps"].append(roadmap_id)
+            
+        self.log_test_result("roadmaps", "Create Roadmap Manually", success,
+                           f"Status: {response['status_code']}, Roadmap ID: {roadmap_id}")
+
+        # Test 2: AI Generate Roadmap (15-25 nodes)
+        ai_data = {
+            "title": "Full Stack Developer 2025",
+            "category": "tech_roadmap",
+            "subcategory": "full_stack",
+            "difficulty_level": "beginner"
+        }
+        
+        response = await self.make_request("POST", "/admin/roadmaps/generate-ai", ai_data)
+        success = response["success"] and response["data"].get("success", False)
+        ai_roadmap_id = response["data"].get("roadmap", {}).get("id") if success else None
+        nodes_count = len(response["data"].get("roadmap", {}).get("nodes", [])) if success else 0
+        
+        if ai_roadmap_id:
+            self.created_resources["roadmaps"].append(ai_roadmap_id)
+            
+        # Verify 15-25 nodes were created
+        nodes_valid = 15 <= nodes_count <= 25 if success else False
+        
+        self.log_test_result("roadmaps", "AI Generate Roadmap", success and nodes_valid,
+                           f"Status: {response['status_code']}, Nodes created: {nodes_count}, Valid range (15-25): {'Yes' if nodes_valid else 'No'}")
+
+        # Test 3: Get All Roadmaps (with filters)
+        params = {"search": "Full Stack", "category": "tech_roadmap", "limit": 10}
+        response = await self.make_request("GET", "/admin/roadmaps", params=params)
+        success = response["success"] and "roadmaps" in response["data"]
+        roadmaps_count = len(response["data"].get("roadmaps", [])) if success else 0
+        
+        self.log_test_result("roadmaps", "List Roadmaps with Filters", success,
+                           f"Status: {response['status_code']}, Roadmaps found: {roadmaps_count}")
+
+        # Test 4: Get Roadmap Statistics
+        response = await self.make_request("GET", "/admin/roadmaps/stats")
+        success = response["success"] and "total_roadmaps" in response["data"]
+        
+        self.log_test_result("roadmaps", "Get Roadmap Statistics", success,
+                           f"Status: {response['status_code']}, Stats available: {'Yes' if success else 'No'}")
+
+        # Test 5: Get Single Roadmap
+        if roadmap_id:
+            response = await self.make_request("GET", f"/admin/roadmaps/{roadmap_id}")
+            success = response["success"] and "roadmap" in response["data"]
+            
+            self.log_test_result("roadmaps", "Get Single Roadmap", success,
+                               f"Status: {response['status_code']}, Roadmap retrieved: {'Yes' if success else 'No'}")
+
+        # Test 6: Update Roadmap
+        if roadmap_id:
+            update_data = {
+                "description": "Updated: Complete roadmap for becoming a full stack developer in 2025",
+                "estimated_duration": "8 months"
+            }
+            response = await self.make_request("PUT", f"/admin/roadmaps/{roadmap_id}", update_data)
+            success = response["success"]
+            
+            self.log_test_result("roadmaps", "Update Roadmap", success,
+                               f"Status: {response['status_code']}, Roadmap updated: {'Yes' if success else 'No'}")
+
+        # Test 7: Toggle Publish Status
+        if roadmap_id:
+            response = await self.make_request("POST", f"/admin/roadmaps/{roadmap_id}/toggle-publish")
+            success = response["success"]
+            
+            self.log_test_result("roadmaps", "Toggle Publish Status", success,
+                               f"Status: {response['status_code']}, Publish toggled: {'Yes' if success else 'No'}")
+
+        # Test 8: Add Node to Roadmap
+        if roadmap_id:
+            node_data = {
+                "id": str(uuid.uuid4()),
+                "title": "CSS Fundamentals",
+                "description": "Learn CSS styling basics",
+                "node_type": "content",
+                "position_x": 200,
+                "position_y": 100,
+                "is_completed": False,
+                "dependencies": []
+            }
+            response = await self.make_request("POST", f"/admin/roadmaps/{roadmap_id}/nodes", node_data)
+            success = response["success"]
+            
+            self.log_test_result("roadmaps", "Add Node to Roadmap", success,
+                               f"Status: {response['status_code']}, Node added: {'Yes' if success else 'No'}")
+
+        # Test 9: Update Node in Roadmap
+        if roadmap_id and roadmap_data["nodes"]:
+            node_id = roadmap_data["nodes"][0]["id"]
+            update_node_data = {
+                "title": "Advanced HTML",
+                "description": "Learn advanced HTML concepts and semantic markup"
+            }
+            response = await self.make_request("PUT", f"/admin/roadmaps/{roadmap_id}/nodes/{node_id}", update_node_data)
+            success = response["success"]
+            
+            self.log_test_result("roadmaps", "Update Node in Roadmap", success,
+                               f"Status: {response['status_code']}, Node updated: {'Yes' if success else 'No'}")
+
+        # Test 10: Delete Node from Roadmap
+        if roadmap_id and roadmap_data["nodes"]:
+            node_id = roadmap_data["nodes"][0]["id"]
+            response = await self.make_request("DELETE", f"/admin/roadmaps/{roadmap_id}/nodes/{node_id}")
+            success = response["success"]
+            
+            self.log_test_result("roadmaps", "Delete Node from Roadmap", success,
+                               f"Status: {response['status_code']}, Node deleted: {'Yes' if success else 'No'}")
+
+        # Test 11: Delete Roadmap
+        if roadmap_id:
+            response = await self.make_request("DELETE", f"/admin/roadmaps/{roadmap_id}")
+            success = response["success"]
+            
+            self.log_test_result("roadmaps", "Delete Roadmap", success,
+                               f"Status: {response['status_code']}, Roadmap deleted: {'Yes' if success else 'No'}")
+
+    # =============================================================================
+    # CAREER TOOLS MODULE TESTS (Auth Required)
+    # =============================================================================
+
+    async def test_career_tools_module(self):
+        """Test Career Tools AI-powered features with authentication"""
+        print("\n🛠️ TESTING CAREER TOOLS MODULE...")
+        
+        if not self.user_token:
+            self.log_test_result("career_tools", "Authentication Check", False,
+                               "No user token available - skipping career tools tests")
+            return
+
+        headers = {"Authorization": f"Bearer {self.user_token}"}
+
+        # Test 1: Resume Review
+        resume_data = {
+            "resume_text": "John Doe\nSoftware Engineer\n\nExperience:\n- 3 years at Tech Corp\n- Developed web applications using React and Node.js\n- Led team of 5 developers\n\nSkills:\n- JavaScript, Python, React, Node.js\n- AWS, Docker, Kubernetes\n- Agile methodologies",
+            "target_role": "Senior Software Engineer",
+            "industry": "Technology"
+        }
+        
+        response = await self.make_request("POST", "/career-tools/resume-review", resume_data, headers=headers)
+        success = response["success"] and "review" in response["data"]
+        
+        self.log_test_result("career_tools", "Resume Review", success,
+                           f"Status: {response['status_code']}, Review generated: {'Yes' if success else 'No'}")
+
+        # Test 2: Cover Letter Generation
+        cover_letter_data = {
+            "job_title": "Senior Software Engineer",
+            "company_name": "Google",
+            "tone": "professional"
+        }
+        
+        response = await self.make_request("POST", "/career-tools/cover-letter", cover_letter_data, headers=headers)
+        success = response["success"] and "cover_letter" in response["data"]
+        
+        self.log_test_result("career_tools", "Cover Letter Generation", success,
+                           f"Status: {response['status_code']}, Cover letter generated: {'Yes' if success else 'No'}")
+
+        # Test 3: ATS Optimization
+        ats_data = {
+            "resume_text": "John Doe\nSoftware Engineer with 3 years experience in web development",
+            "job_description": "We are looking for a Senior Software Engineer with experience in React, Node.js, and cloud technologies. Must have 3+ years experience and leadership skills."
+        }
+        
+        response = await self.make_request("POST", "/career-tools/ats-hack", ats_data, headers=headers)
+        success = response["success"] and "optimized_resume" in response["data"]
+        
+        self.log_test_result("career_tools", "ATS Optimization", success,
+                           f"Status: {response['status_code']}, ATS optimization generated: {'Yes' if success else 'No'}")
+
+        # Test 4: Cold Email Generation
+        cold_email_data = {
+            "company_name": "Google",
+            "purpose": "job_inquiry",
+            "tone": "professional"
+        }
+        
+        response = await self.make_request("POST", "/career-tools/cold-email", cold_email_data, headers=headers)
+        success = response["success"] and "cold_email" in response["data"]
+        
+        self.log_test_result("career_tools", "Cold Email Generation", success,
+                           f"Status: {response['status_code']}, Cold email generated: {'Yes' if success else 'No'}")
+
+        # Test 5: Get User Usage History
+        response = await self.make_request("GET", "/career-tools/my-usage", headers=headers)
+        success = response["success"] and "usage_history" in response["data"]
+        
+        self.log_test_result("career_tools", "Get Usage History", success,
+                           f"Status: {response['status_code']}, Usage history retrieved: {'Yes' if success else 'No'}")
+
+        # Test 6: Test without authentication (should fail)
+        response = await self.make_request("POST", "/career-tools/resume-review", resume_data)
+        success = not response["success"] and response["status_code"] == 401
+        
+        self.log_test_result("career_tools", "Authentication Required Check", success,
+                           f"Status: {response['status_code']}, Properly blocked without auth: {'Yes' if success else 'No'}")
+
+        # Admin Career Tools Tests (if admin token available)
+        if self.admin_token:
+            admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
+            
+            # Test 7: Create Prompt Template (Admin)
+            template_data = {
+                "tool_type": "resume_review",
+                "template_name": "Technical Resume Review",
+                "prompt_template": "Review this technical resume for {target_role} position: {resume_text}",
                 "is_active": True
             }
-        ]
-
-        for topic_data in topics_data:
-            response = self.make_request("POST", "/admin/dsa/topics", topic_data)
-            if response["success"] and "id" in response["data"]:
-                self.created_resources["topics"].append(response["data"]["id"])
-                self.log_test_result("topics", f"Create topic '{topic_data['name']}'", True)
-            else:
-                self.log_test_result("topics", f"Create topic '{topic_data['name']}'", False, 
-                                   response["data"].get("detail", "Unknown error"))
-
-        # Test 2: Get All Topics
-        response = self.make_request("GET", "/admin/dsa/topics")
-        if response["success"] and isinstance(response["data"], list):
-            self.log_test_result("topics", "Get all topics", True)
-        else:
-            self.log_test_result("topics", "Get all topics", False, 
-                               response["data"].get("detail", "Failed to get topics"))
-
-        # Test 3: Get Topics with Filters
-        response = self.make_request("GET", "/admin/dsa/topics", params={"is_active": True})
-        if response["success"]:
-            self.log_test_result("topics", "Filter topics by is_active", True)
-        else:
-            self.log_test_result("topics", "Filter topics by is_active", False, 
-                               response["data"].get("detail", "Filter failed"))
-
-        # Test 4: Get Topic Statistics
-        response = self.make_request("GET", "/admin/dsa/topics/stats")
-        if response["success"]:
-            self.log_test_result("topics", "Get topic statistics", True)
-        else:
-            self.log_test_result("topics", "Get topic statistics", False, 
-                               response["data"].get("detail", "Stats failed"))
-
-        # Test 5: Get Single Topic
-        if self.created_resources["topics"]:
-            topic_id = self.created_resources["topics"][0]
-            response = self.make_request("GET", f"/admin/dsa/topics/{topic_id}")
-            if response["success"]:
-                self.log_test_result("topics", "Get single topic", True)
-            else:
-                self.log_test_result("topics", "Get single topic", False, 
-                                   response["data"].get("detail", "Get single failed"))
-
-        # Test 6: Update Topic
-        if self.created_resources["topics"]:
-            topic_id = self.created_resources["topics"][0]
-            update_data = {"description": "Updated: Linear data structure for efficient element access"}
-            response = self.make_request("PUT", f"/admin/dsa/topics/{topic_id}", update_data)
-            if response["success"]:
-                self.log_test_result("topics", "Update topic", True)
-            else:
-                self.log_test_result("topics", "Update topic", False, 
-                                   response["data"].get("detail", "Update failed"))
-
-    # =============================================================================
-    # DSA QUESTIONS TESTING
-    # =============================================================================
-
-    async def test_dsa_questions_crud(self):
-        """Test all DSA Questions CRUD operations"""
-        print("\n🔍 TESTING DSA QUESTIONS CRUD OPERATIONS")
-        print("=" * 50)
-
-        # Test 1: Create Manual Question
-        question_data = {
-            "title": "Two Sum Problem",
-            "description": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
-            "difficulty": "easy",
-            "topics": self.created_resources["topics"][:2] if self.created_resources["topics"] else [],
-            "companies": ["Google", "Amazon", "Microsoft"],
-            "examples": [
-                {
-                    "input": "nums = [2,7,11,15], target = 9",
-                    "output": "[0,1]",
-                    "explanation": "Because nums[0] + nums[1] == 9, we return [0, 1]."
-                }
-            ],
-            "solution_approach": "Use hash map to store complement values and their indices",
-            "code_solutions": {
-                "python": "def twoSum(nums, target):\n    hashmap = {}\n    for i, num in enumerate(nums):\n        complement = target - num\n        if complement in hashmap:\n            return [hashmap[complement], i]\n        hashmap[num] = i\n    return []",
-                "javascript": "function twoSum(nums, target) {\n    const map = new Map();\n    for (let i = 0; i < nums.length; i++) {\n        const complement = target - nums[i];\n        if (map.has(complement)) {\n            return [map.get(complement), i];\n        }\n        map.set(nums[i], i);\n    }\n    return [];\n}",
-                "java": "public int[] twoSum(int[] nums, int target) {\n    Map<Integer, Integer> map = new HashMap<>();\n    for (int i = 0; i < nums.length; i++) {\n        int complement = target - nums[i];\n        if (map.containsKey(complement)) {\n            return new int[] { map.get(complement), i };\n        }\n        map.put(nums[i], i);\n    }\n    return new int[]{};\n}"
-            },
-            "hints": ["Use a hash map", "Store complements", "Single pass solution"],
-            "time_complexity": "O(n)",
-            "space_complexity": "O(n)",
-            "is_active": True,
-            "is_premium": False
-        }
-
-        response = await self.make_request("POST", "/admin/dsa/questions", question_data)
-        if response["success"] and "id" in response["data"]:
-            self.created_resources["questions"].append(response["data"]["id"])
-            self.log_test_result("questions", "Create manual question", True)
-        else:
-            self.log_test_result("questions", "Create manual question", False, 
-                               response["data"].get("detail", "Unknown error"))
-
-        # Test 2: Get All Questions
-        response = await self.make_request("GET", "/admin/dsa/questions")
-        if response["success"] and isinstance(response["data"], list):
-            self.log_test_result("questions", "Get all questions", True)
-        else:
-            self.log_test_result("questions", "Get all questions", False, 
-                               response["data"].get("detail", "Failed to get questions"))
-
-        # Test 3: Filter Questions by Difficulty
-        response = await self.make_request("GET", "/admin/dsa/questions", params={"difficulty": "easy"})
-        if response["success"]:
-            self.log_test_result("questions", "Filter questions by difficulty", True)
-        else:
-            self.log_test_result("questions", "Filter questions by difficulty", False, 
-                               response["data"].get("detail", "Filter failed"))
-
-        # Test 4: Search Questions
-        response = await self.make_request("GET", "/admin/dsa/questions", params={"search": "Two Sum"})
-        if response["success"]:
-            self.log_test_result("questions", "Search questions", True)
-        else:
-            self.log_test_result("questions", "Search questions", False, 
-                               response["data"].get("detail", "Search failed"))
-
-        # Test 5: Get Question Statistics by Difficulty
-        response = await self.make_request("GET", "/admin/dsa/questions/stats/difficulty")
-        if response["success"]:
-            self.log_test_result("questions", "Get difficulty statistics", True)
-        else:
-            self.log_test_result("questions", "Get difficulty statistics", False, 
-                               response["data"].get("detail", "Stats failed"))
-
-        # Test 6: Get Question Statistics by Topic
-        response = await self.make_request("GET", "/admin/dsa/questions/stats/topic")
-        if response["success"]:
-            self.log_test_result("questions", "Get topic statistics", True)
-        else:
-            self.log_test_result("questions", "Get topic statistics", False, 
-                               response["data"].get("detail", "Stats failed"))
-
-        # Test 7: Get Single Question
-        if self.created_resources["questions"]:
-            question_id = self.created_resources["questions"][0]
-            response = await self.make_request("GET", f"/admin/dsa/questions/{question_id}")
-            if response["success"]:
-                self.log_test_result("questions", "Get single question", True)
-            else:
-                self.log_test_result("questions", "Get single question", False, 
-                                   response["data"].get("detail", "Get single failed"))
-
-        # Test 8: Update Question
-        if self.created_resources["questions"]:
-            question_id = self.created_resources["questions"][0]
-            update_data = {"difficulty": "medium"}
-            response = await self.make_request("PUT", f"/admin/dsa/questions/{question_id}", update_data)
-            if response["success"]:
-                self.log_test_result("questions", "Update question", True)
-            else:
-                self.log_test_result("questions", "Update question", False, 
-                                   response["data"].get("detail", "Update failed"))
-
-        # Test 9: Submit Question (Record Submission)
-        if self.created_resources["questions"]:
-            question_id = self.created_resources["questions"][0]
-            response = await self.make_request("POST", f"/admin/dsa/questions/{question_id}/submit", 
-                                             params={"is_accepted": True})
-            if response["success"]:
-                self.log_test_result("questions", "Record question submission", True)
-            else:
-                self.log_test_result("questions", "Record question submission", False, 
-                                   response["data"].get("detail", "Submission failed"))
-
-    # =============================================================================
-    # DSA SHEETS TESTING
-    # =============================================================================
-
-    async def test_dsa_sheets_crud(self):
-        """Test all DSA Sheets CRUD operations"""
-        print("\n🔍 TESTING DSA SHEETS CRUD OPERATIONS")
-        print("=" * 50)
-
-        # Test 1: Create Manual Sheet
-        sheet_data = {
-            "name": "Beginner Arrays Practice",
-            "description": "Essential array problems for coding interview preparation",
-            "questions": self.created_resources["questions"] if self.created_resources["questions"] else [],
-            "difficulty_breakdown": {
-                "easy": 5,
-                "medium": 3,
-                "hard": 2
-            },
-            "level": "beginner",
-            "tags": ["arrays", "beginner", "interview-prep"],
-            "is_published": False,
-            "is_featured": False,
-            "is_premium": False
-        }
-
-        response = await self.make_request("POST", "/admin/dsa/sheets", sheet_data)
-        if response["success"] and "id" in response["data"]:
-            self.created_resources["sheets"].append(response["data"]["id"])
-            self.log_test_result("sheets", "Create manual sheet", True)
-        else:
-            self.log_test_result("sheets", "Create manual sheet", False, 
-                               response["data"].get("detail", "Unknown error"))
-
-        # Test 2: Get All Sheets
-        response = await self.make_request("GET", "/admin/dsa/sheets")
-        if response["success"] and isinstance(response["data"], list):
-            self.log_test_result("sheets", "Get all sheets", True)
-        else:
-            self.log_test_result("sheets", "Get all sheets", False, 
-                               response["data"].get("detail", "Failed to get sheets"))
-
-        # Test 3: Filter Sheets by Level
-        response = await self.make_request("GET", "/admin/dsa/sheets", params={"level": "beginner"})
-        if response["success"]:
-            self.log_test_result("sheets", "Filter sheets by level", True)
-        else:
-            self.log_test_result("sheets", "Filter sheets by level", False, 
-                               response["data"].get("detail", "Filter failed"))
-
-        # Test 4: Get Sheet Statistics
-        response = await self.make_request("GET", "/admin/dsa/sheets/stats")
-        if response["success"]:
-            self.log_test_result("sheets", "Get sheet statistics", True)
-        else:
-            self.log_test_result("sheets", "Get sheet statistics", False, 
-                               response["data"].get("detail", "Stats failed"))
-
-        # Test 5: Get Single Sheet
-        if self.created_resources["sheets"]:
-            sheet_id = self.created_resources["sheets"][0]
-            response = await self.make_request("GET", f"/admin/dsa/sheets/{sheet_id}")
-            if response["success"]:
-                self.log_test_result("sheets", "Get single sheet", True)
-            else:
-                self.log_test_result("sheets", "Get single sheet", False, 
-                                   response["data"].get("detail", "Get single failed"))
-
-        # Test 6: Update Sheet
-        if self.created_resources["sheets"]:
-            sheet_id = self.created_resources["sheets"][0]
-            update_data = {"description": "Updated: Comprehensive array problems for beginners"}
-            response = await self.make_request("PUT", f"/admin/dsa/sheets/{sheet_id}", update_data)
-            if response["success"]:
-                self.log_test_result("sheets", "Update sheet", True)
-            else:
-                self.log_test_result("sheets", "Update sheet", False, 
-                                   response["data"].get("detail", "Update failed"))
-
-        # Test 7: Add Question to Sheet
-        if self.created_resources["sheets"] and self.created_resources["questions"]:
-            sheet_id = self.created_resources["sheets"][0]
-            question_id = self.created_resources["questions"][0]
-            response = await self.make_request("POST", f"/admin/dsa/sheets/{sheet_id}/questions", 
-                                             params={"question_id": question_id, "order": 1})
-            if response["success"]:
-                self.log_test_result("sheets", "Add question to sheet", True)
-            else:
-                self.log_test_result("sheets", "Add question to sheet", False, 
-                                   response["data"].get("detail", "Add question failed"))
-
-        # Test 8: Toggle Publish Status
-        if self.created_resources["sheets"]:
-            sheet_id = self.created_resources["sheets"][0]
-            response = await self.make_request("POST", f"/admin/dsa/sheets/{sheet_id}/toggle-publish")
-            if response["success"]:
-                self.log_test_result("sheets", "Toggle publish status", True)
-            else:
-                self.log_test_result("sheets", "Toggle publish status", False, 
-                                   response["data"].get("detail", "Toggle failed"))
-
-        # Test 9: Remove Question from Sheet
-        if self.created_resources["sheets"] and self.created_resources["questions"]:
-            sheet_id = self.created_resources["sheets"][0]
-            question_id = self.created_resources["questions"][0]
-            response = await self.make_request("DELETE", f"/admin/dsa/sheets/{sheet_id}/questions/{question_id}")
-            if response["success"]:
-                self.log_test_result("sheets", "Remove question from sheet", True)
-            else:
-                self.log_test_result("sheets", "Remove question from sheet", False, 
-                                   response["data"].get("detail", "Remove question failed"))
-
-    # =============================================================================
-    # AI GENERATION TESTING
-    # =============================================================================
-
-    async def test_ai_generation(self):
-        """Test AI generation for questions and sheets"""
-        print("\n🔍 TESTING AI GENERATION WITH GEMINI API")
-        print("=" * 50)
-
-        # Test 1: AI Generate DSA Question - Arrays
-        response = await self.make_request("POST", "/admin/dsa/questions/generate-ai", 
-                                         params={
-                                             "topic": "Arrays",
-                                             "difficulty": "medium",
-                                             "company": "Google"
-                                         })
-        if response["success"] and "id" in response["data"]:
-            self.created_resources["questions"].append(response["data"]["id"])
-            self.log_test_result("ai_generation", "AI generate Arrays question", True)
-        else:
-            self.log_test_result("ai_generation", "AI generate Arrays question", False, 
-                               response["data"].get("detail", "AI generation failed"))
-
-        # Test 2: AI Generate DSA Question - Trees
-        response = await self.make_request("POST", "/admin/dsa/questions/generate-ai", 
-                                         params={
-                                             "topic": "Trees",
-                                             "difficulty": "hard",
-                                             "company": "Amazon"
-                                         })
-        if response["success"] and "id" in response["data"]:
-            self.created_resources["questions"].append(response["data"]["id"])
-            self.log_test_result("ai_generation", "AI generate Trees question", True)
-        else:
-            self.log_test_result("ai_generation", "AI generate Trees question", False, 
-                               response["data"].get("detail", "AI generation failed"))
-
-        # Test 3: AI Generate DSA Sheet
-        response = await self.make_request("POST", "/admin/dsa/sheets/generate-ai", 
-                                         params={
-                                             "sheet_name": "FAANG Preparation",
-                                             "level": "advanced",
-                                             "focus_topics": "Arrays,Trees,Graphs"
-                                         })
-        if response["success"] and "id" in response["data"]:
-            self.created_resources["sheets"].append(response["data"]["id"])
-            self.log_test_result("ai_generation", "AI generate DSA sheet", True)
-        else:
-            self.log_test_result("ai_generation", "AI generate DSA sheet", False, 
-                               response["data"].get("detail", "AI generation failed"))
-
-    # =============================================================================
-    # INTEGRATION TESTING
-    # =============================================================================
-
-    async def test_integration(self):
-        """Test integration between topics, questions, and sheets"""
-        print("\n🔍 TESTING INTEGRATION BETWEEN MODULES")
-        print("=" * 50)
-
-        # Test 1: Verify question count updates in topics
-        if self.created_resources["topics"]:
-            topic_id = self.created_resources["topics"][0]
-            response = await self.make_request("GET", f"/admin/dsa/topics/{topic_id}")
-            if response["success"] and "question_count" in response["data"]:
-                self.log_test_result("integration", "Question count tracking in topics", True)
-            else:
-                self.log_test_result("integration", "Question count tracking in topics", False, 
-                                   "Question count not found or updated")
-
-        # Test 2: Filter questions by topic
-        if self.created_resources["topics"]:
-            topic_ids = ",".join(self.created_resources["topics"][:2])
-            response = await self.make_request("GET", "/admin/dsa/questions", 
-                                             params={"topics": topic_ids})
-            if response["success"]:
-                self.log_test_result("integration", "Filter questions by topic", True)
-            else:
-                self.log_test_result("integration", "Filter questions by topic", False, 
-                                   response["data"].get("detail", "Topic filtering failed"))
-
-        # Test 3: Verify sheet difficulty breakdown calculation
-        if self.created_resources["sheets"]:
-            sheet_id = self.created_resources["sheets"][0]
-            response = await self.make_request("GET", f"/admin/dsa/sheets/{sheet_id}")
-            if response["success"] and "difficulty_breakdown" in response["data"]:
-                self.log_test_result("integration", "Sheet difficulty breakdown", True)
-            else:
-                self.log_test_result("integration", "Sheet difficulty breakdown", False, 
-                                   "Difficulty breakdown not calculated")
-
-    # =============================================================================
-    # CLEANUP AND REPORTING
-    # =============================================================================
-
-    async def cleanup_test_data(self):
-        """Clean up created test data"""
-        print("\n🧹 CLEANING UP TEST DATA")
-        print("=" * 30)
-
-        # Delete created sheets
-        for sheet_id in self.created_resources["sheets"]:
-            await self.make_request("DELETE", f"/admin/dsa/sheets/{sheet_id}")
-
-        # Delete created questions
-        for question_id in self.created_resources["questions"]:
-            await self.make_request("DELETE", f"/admin/dsa/questions/{question_id}")
-
-        # Delete created topics
-        for topic_id in self.created_resources["topics"]:
-            await self.make_request("DELETE", f"/admin/dsa/topics/{topic_id}")
-
-        print("✅ Test data cleanup completed")
-
-    def print_summary(self):
-        """Print comprehensive test summary"""
-        print("\n" + "=" * 60)
-        print("🎯 DSA CORNER MODULE - COMPREHENSIVE TEST RESULTS")
-        print("=" * 60)
-
-        total_passed = 0
-        total_failed = 0
-
-        for category, results in self.test_results.items():
-            passed = results["passed"]
-            failed = results["failed"]
-            total_passed += passed
-            total_failed += failed
-
-            status = "✅ PASS" if failed == 0 else "❌ FAIL"
-            print(f"\n{category.upper().replace('_', ' ')}: {status}")
-            print(f"  Passed: {passed}")
-            print(f"  Failed: {failed}")
             
-            if results["errors"]:
-                print("  Errors:")
-                for error in results["errors"]:
-                    print(f"    - {error}")
+            response = await self.make_request("POST", "/admin/career-tools/templates", template_data, headers=admin_headers)
+            success = response["success"]
+            template_id = response["data"].get("template", {}).get("id") if success else None
+            
+            self.log_test_result("career_tools", "Create Prompt Template (Admin)", success,
+                               f"Status: {response['status_code']}, Template created: {'Yes' if success else 'No'}")
 
-        print(f"\n🏆 OVERALL RESULTS:")
-        print(f"  Total Passed: {total_passed}")
-        print(f"  Total Failed: {total_failed}")
-        print(f"  Success Rate: {(total_passed / (total_passed + total_failed) * 100):.1f}%")
+            # Test 8: Get All Templates (Admin)
+            response = await self.make_request("GET", "/admin/career-tools/templates", headers=admin_headers)
+            success = response["success"] and "templates" in response["data"]
+            
+            self.log_test_result("career_tools", "Get All Templates (Admin)", success,
+                               f"Status: {response['status_code']}, Templates retrieved: {'Yes' if success else 'No'}")
 
-        if total_failed == 0:
-            print("\n🎉 ALL TESTS PASSED! DSA Corner module is fully functional.")
+            # Test 9: Update Template (Admin)
+            if template_id:
+                update_template_data = {
+                    "template_name": "Advanced Technical Resume Review",
+                    "is_active": True
+                }
+                response = await self.make_request("PUT", f"/admin/career-tools/templates/{template_id}", 
+                                                 update_template_data, headers=admin_headers)
+                success = response["success"]
+                
+                self.log_test_result("career_tools", "Update Template (Admin)", success,
+                                   f"Status: {response['status_code']}, Template updated: {'Yes' if success else 'No'}")
+
+            # Test 10: Get Usage Statistics (Admin)
+            response = await self.make_request("GET", "/admin/career-tools/stats", headers=admin_headers)
+            success = response["success"] and "total_usage" in response["data"]
+            
+            self.log_test_result("career_tools", "Get Usage Statistics (Admin)", success,
+                               f"Status: {response['status_code']}, Stats retrieved: {'Yes' if success else 'No'}")
+
+            # Test 11: Delete Template (Admin)
+            if template_id:
+                response = await self.make_request("DELETE", f"/admin/career-tools/templates/{template_id}", 
+                                                 headers=admin_headers)
+                success = response["success"]
+                
+                self.log_test_result("career_tools", "Delete Template (Admin)", success,
+                                   f"Status: {response['status_code']}, Template deleted: {'Yes' if success else 'No'}")
+
+    # =============================================================================
+    # MAIN TEST RUNNER
+    # =============================================================================
+
+    async def run_all_tests(self):
+        """Run all backend tests"""
+        print("🚀 STARTING COMPREHENSIVE BACKEND TESTING...")
+        print(f"Backend URL: {BACKEND_URL}")
+        print("=" * 80)
+        
+        await self.setup_session()
+        
+        try:
+            # Test all modules
+            await self.test_authentication_system()
+            await self.test_dsa_companies_module()
+            await self.test_roadmaps_module()
+            await self.test_career_tools_module()
+            
+            # Print summary
+            self.print_test_summary()
+            
+        except Exception as e:
+            print(f"❌ CRITICAL ERROR during testing: {str(e)}")
+        finally:
+            await self.cleanup_session()
+
+    def print_test_summary(self):
+        """Print comprehensive test summary"""
+        print("\n" + "=" * 80)
+        print("📊 COMPREHENSIVE TEST SUMMARY")
+        print("=" * 80)
+        
+        total_tests = 0
+        total_passed = 0
+        
+        for module, tests in self.test_results.items():
+            if not tests:
+                continue
+                
+            module_passed = sum(1 for test in tests if test["success"])
+            module_total = len(tests)
+            total_tests += module_total
+            total_passed += module_passed
+            
+            print(f"\n🔹 {module.upper().replace('_', ' ')} MODULE:")
+            print(f"   Passed: {module_passed}/{module_total} ({(module_passed/module_total*100):.1f}%)")
+            
+            # Show failed tests
+            failed_tests = [test for test in tests if not test["success"]]
+            if failed_tests:
+                print("   ❌ Failed Tests:")
+                for test in failed_tests:
+                    print(f"      - {test['test']}: {test['details']}")
+        
+        print(f"\n🎯 OVERALL RESULTS:")
+        print(f"   Total Tests: {total_tests}")
+        print(f"   Passed: {total_passed}")
+        print(f"   Failed: {total_tests - total_passed}")
+        print(f"   Success Rate: {(total_passed/total_tests*100):.1f}%" if total_tests > 0 else "   Success Rate: 0%")
+        
+        if total_passed == total_tests:
+            print("\n🎉 ALL TESTS PASSED! Backend is fully functional.")
         else:
-            print(f"\n⚠️  {total_failed} tests failed. Please review the errors above.")
-
-        return total_failed == 0
+            print(f"\n⚠️  {total_tests - total_passed} tests failed. Review failed tests above.")
 
 async def main():
-    """Main test execution function"""
-    print("🚀 Starting DSA Corner Module Backend Testing")
-    print(f"Backend URL: {BACKEND_URL}")
-    print("=" * 60)
-
-    async with DSABackendTester() as tester:
-        # Run all test suites
-        await tester.test_dsa_topics_crud()
-        await tester.test_dsa_questions_crud()
-        await tester.test_dsa_sheets_crud()
-        await tester.test_ai_generation()
-        await tester.test_integration()
-        
-        # Print results
-        all_passed = tester.print_summary()
-        
-        # Cleanup
-        await tester.cleanup_test_data()
-        
-        return all_passed
+    """Main test runner"""
+    tester = BackendTester()
+    await tester.run_all_tests()
 
 if __name__ == "__main__":
-    try:
-        success = asyncio.run(main())
-        sys.exit(0 if success else 1)
-    except Exception as e:
-        print(f"❌ Test execution failed: {e}")
-        sys.exit(1)
+    asyncio.run(main())
