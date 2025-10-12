@@ -328,7 +328,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Articles CRUD API endpoints (Learning Module)"
+    - "DSA Topics CRUD API endpoints"
+    - "DSA Questions CRUD API endpoints with AI generation"
+    - "DSA Sheets CRUD API endpoints with AI generation"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
