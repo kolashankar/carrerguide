@@ -36,6 +36,15 @@ type LayoutConfig<Route extends LayoutRoutes = LayoutRoutes> = {
 }
 
 
+// Validate ../../app/dashboard/internships/list/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/dashboard/internships/list">> = Specific
+  const handler = {} as typeof import("../../app/dashboard/internships/list/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../app/dashboard/jobs/create-ai/page.tsx
 {
   type __IsExpected<Specific extends AppPageConfig<"/dashboard/jobs/create-ai">> = Specific
