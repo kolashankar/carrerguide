@@ -7,6 +7,7 @@ Tests all DSA Topics, Questions, and Sheets endpoints with AI generation
 import requests
 import json
 import sys
+import asyncio
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 
