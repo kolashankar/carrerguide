@@ -461,7 +461,9 @@ class CareerGuideAPITester:
             if response.status_code in [200, 201]:
                 ai_internship = response.json()
                 print(f"AI Generated internship: {ai_internship}")
-                if 'id' in ai_internship:
+                if '_id' in ai_internship:
+                    self.created_internships.append(ai_internship['_id'])
+                elif 'id' in ai_internship:
                     self.created_internships.append(ai_internship['id'])
             else:
                 print(f"AI Internship Generation Error (Expected): {response.text}")
