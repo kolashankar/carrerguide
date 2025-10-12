@@ -899,6 +899,227 @@ async def get_usage_stats(admin = Depends(get_current_admin)):
     return await career_tools_handlers.get_usage_stats()
 
 # =============================================================================
+# ADMIN ROUTES - ANALYTICS DASHBOARD (MODULE 5)
+# =============================================================================
+
+@api_router.get("/admin/analytics/dashboard", tags=["Admin - Analytics"])
+async def get_analytics_dashboard(admin = Depends(get_current_admin)):
+    """Get complete analytics dashboard data"""
+    return await analytics_handlers.get_dashboard_analytics()
+
+@api_router.get("/admin/analytics/user-engagement", tags=["Admin - Analytics"])
+async def get_user_engagement_metrics(admin = Depends(get_current_admin)):
+    """Get user engagement metrics"""
+    metrics = await analytics_handlers.get_user_engagement_metrics()
+    return {"success": True, "data": metrics}
+
+@api_router.get("/admin/analytics/job-applications", tags=["Admin - Analytics"])
+async def get_job_application_metrics(admin = Depends(get_current_admin)):
+    """Get job application statistics"""
+    metrics = await analytics_handlers.get_job_application_metrics()
+    return {"success": True, "data": metrics}
+
+@api_router.get("/admin/analytics/gemini-usage", tags=["Admin - Analytics"])
+async def get_gemini_usage_metrics(admin = Depends(get_current_admin)):
+    """Get Gemini API usage tracking"""
+    metrics = await analytics_handlers.get_gemini_api_usage_metrics()
+    return {"success": True, "data": metrics}
+
+@api_router.get("/admin/analytics/api-logs", tags=["Admin - Analytics"])
+async def get_api_logs(
+    admin = Depends(get_current_admin),
+    limit: int = Query(100, ge=1, le=500),
+    skip: int = Query(0, ge=0),
+    status_code: Optional[int] = Query(None)
+):
+    """Get API usage logs"""
+    return await analytics_handlers.get_api_usage_logs(limit=limit, skip=skip, status_code=status_code)
+
+@api_router.get("/admin/analytics/error-logs", tags=["Admin - Analytics"])
+async def get_error_logs(
+    admin = Depends(get_current_admin),
+    limit: int = Query(100, ge=1, le=500),
+    skip: int = Query(0, ge=0)
+):
+    """Get error logs (status code >= 400)"""
+    return await analytics_handlers.get_error_logs(limit=limit, skip=skip)
+
+# =============================================================================
+# ADMIN ROUTES - BULK OPERATIONS (MODULE 6)
+# =============================================================================
+
+@api_router.get("/admin/bulk/jobs/export", tags=["Admin - Bulk Operations"])
+async def export_jobs_csv(admin = Depends(get_current_admin)):
+    """Export jobs to CSV format"""
+    from fastapi.responses import StreamingResponse
+    import io
+    
+    csv_data = await bulk_operations_handlers.export_jobs_csv()
+    
+    return StreamingResponse(
+        io.StringIO(csv_data),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=jobs_export.csv"}
+    )
+
+@api_router.post("/admin/bulk/jobs/import", tags=["Admin - Bulk Operations"])
+async def import_jobs_csv(csv_data: str, admin = Depends(get_current_admin)):
+    """Import jobs from CSV data"""
+    return await bulk_operations_handlers.import_jobs_csv(csv_data)
+
+@api_router.get("/admin/bulk/internships/export", tags=["Admin - Bulk Operations"])
+async def export_internships_csv(admin = Depends(get_current_admin)):
+    """Export internships to CSV format"""
+    from fastapi.responses import StreamingResponse
+    import io
+    
+    csv_data = await bulk_operations_handlers.export_internships_csv()
+    
+    return StreamingResponse(
+        io.StringIO(csv_data),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=internships_export.csv"}
+    )
+
+@api_router.post("/admin/bulk/internships/import", tags=["Admin - Bulk Operations"])
+async def import_internships_csv(csv_data: str, admin = Depends(get_current_admin)):
+    """Import internships from CSV data"""
+    return await bulk_operations_handlers.import_internships_csv(csv_data)
+
+@api_router.post("/admin/bulk/jobs/delete", tags=["Admin - Bulk Operations"])
+async def bulk_delete_jobs(job_ids: List[str], admin = Depends(get_current_admin)):
+    """Delete multiple jobs"""
+    return await bulk_operations_handlers.bulk_delete_jobs(job_ids)
+
+@api_router.post("/admin/bulk/internships/delete", tags=["Admin - Bulk Operations"])
+async def bulk_delete_internships(internship_ids: List[str], admin = Depends(get_current_admin)):
+    """Delete multiple internships"""
+    return await bulk_operations_handlers.bulk_delete_internships(internship_ids)
+
+@api_router.post("/admin/bulk/jobs/update-status", tags=["Admin - Bulk Operations"])
+async def bulk_update_jobs_status(job_ids: List[str], is_active: bool, admin = Depends(get_current_admin)):
+    """Update status for multiple jobs"""
+    return await bulk_operations_handlers.bulk_update_jobs_status(job_ids, is_active)
+
+@api_router.post("/admin/bulk/internships/update-status", tags=["Admin - Bulk Operations"])
+async def bulk_update_internships_status(internship_ids: List[str], is_active: bool, admin = Depends(get_current_admin)):
+    """Update status for multiple internships"""
+    return await bulk_operations_handlers.bulk_update_internships_status(internship_ids, is_active)
+
+# =============================================================================
+# ADMIN ROUTES - CONTENT APPROVAL WORKFLOW (MODULE 6)
+# =============================================================================
+
+@api_router.post("/admin/content/submit", tags=["Admin - Content Approval"])
+async def submit_content(
+    content_type: str,
+    content_data: Dict,
+    user = Depends(get_current_user)
+):
+    """Submit content for admin approval"""
+    return await content_approval_handlers.submit_content_for_approval(
+        content_type=content_type,
+        content_data=content_data,
+        submitted_by=user.get("id")
+    )
+
+@api_router.get("/admin/content/pending", tags=["Admin - Content Approval"])
+async def get_pending_submissions(
+    admin = Depends(get_current_admin),
+    content_type: Optional[str] = Query(None),
+    limit: int = Query(50, ge=1, le=200),
+    skip: int = Query(0, ge=0)
+):
+    """Get all pending content submissions"""
+    return await content_approval_handlers.get_pending_submissions(
+        content_type=content_type,
+        limit=limit,
+        skip=skip
+    )
+
+@api_router.post("/admin/content/{submission_id}/approve", tags=["Admin - Content Approval"])
+async def approve_submission(
+    submission_id: str,
+    review_notes: Optional[str] = None,
+    admin = Depends(get_current_admin)
+):
+    """Approve a content submission"""
+    return await content_approval_handlers.approve_submission(
+        submission_id=submission_id,
+        reviewed_by=admin.get("id"),
+        review_notes=review_notes
+    )
+
+@api_router.post("/admin/content/{submission_id}/reject", tags=["Admin - Content Approval"])
+async def reject_submission(
+    submission_id: str,
+    review_notes: str,
+    admin = Depends(get_current_admin)
+):
+    """Reject a content submission"""
+    return await content_approval_handlers.reject_submission(
+        submission_id=submission_id,
+        reviewed_by=admin.get("id"),
+        review_notes=review_notes
+    )
+
+@api_router.get("/admin/content/stats", tags=["Admin - Content Approval"])
+async def get_content_approval_stats(admin = Depends(get_current_admin)):
+    """Get content approval statistics"""
+    return await content_approval_handlers.get_submission_stats()
+
+# =============================================================================
+# ADMIN ROUTES - PUSH NOTIFICATIONS (MODULE 6)
+# =============================================================================
+
+@api_router.post("/admin/notifications", tags=["Admin - Push Notifications"])
+async def create_notification(
+    title: str,
+    message: str,
+    target: str = Query(..., description="all, specific_users, admins"),
+    target_ids: Optional[List[str]] = None,
+    data: Optional[Dict] = None,
+    admin = Depends(get_current_admin)
+):
+    """Create a push notification"""
+    return await push_notification_handlers.create_notification(
+        title=title,
+        message=message,
+        target=target,
+        target_ids=target_ids,
+        data=data
+    )
+
+@api_router.get("/admin/notifications", tags=["Admin - Push Notifications"])
+async def get_notifications(
+    admin = Depends(get_current_admin),
+    status: Optional[str] = Query(None, description="pending, sent, failed"),
+    limit: int = Query(50, ge=1, le=200),
+    skip: int = Query(0, ge=0)
+):
+    """Get push notifications"""
+    return await push_notification_handlers.get_notifications(
+        status=status,
+        limit=limit,
+        skip=skip
+    )
+
+@api_router.post("/admin/notifications/{notification_id}/send", tags=["Admin - Push Notifications"])
+async def send_notification(notification_id: str, admin = Depends(get_current_admin)):
+    """Send a push notification"""
+    return await push_notification_handlers.send_notification(notification_id)
+
+@api_router.delete("/admin/notifications/{notification_id}", tags=["Admin - Push Notifications"])
+async def delete_notification(notification_id: str, admin = Depends(get_current_admin)):
+    """Delete a push notification"""
+    return await push_notification_handlers.delete_notification(notification_id)
+
+@api_router.get("/admin/notifications/stats", tags=["Admin - Push Notifications"])
+async def get_notification_stats(admin = Depends(get_current_admin)):
+    """Get push notification statistics"""
+    return await push_notification_handlers.get_notification_stats()
+
+# =============================================================================
 # USER ROUTES - JOBS (Public facing)
 # =============================================================================
 
