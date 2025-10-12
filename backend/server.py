@@ -33,6 +33,7 @@ from api.routes.admin.roadmaps.management.crud.operations.handlers.roadmap_handl
 from api.utils.ai.gemini.generators.jobs.prompts.generator import GeminiJobGenerator
 from api.utils.ai.gemini.generators.articles.prompts.generator import GeminiArticleGenerator
 from api.utils.ai.gemini.generators.dsa.questions.prompts.generator import GeminiDSAGenerator
+from api.utils.ai.gemini.generators.roadmaps.prompts.generator import GeminiRoadmapGenerator
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
