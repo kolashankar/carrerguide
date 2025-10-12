@@ -5,7 +5,7 @@ import re
 class GeminiDSAGenerator:
     def __init__(self, api_key: str):
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel('gemini-1.5-flash-latest')
+        self.model = genai.GenerativeModel('gemini-2.5-flash')
     
     async def generate_dsa_question(self, prompt_data: dict):
         """Generate a complete DSA question using Gemini AI"""
