@@ -48,6 +48,7 @@ article_handlers = ArticleHandlers(db)
 dsa_topic_handlers = DSATopicHandlers(db)
 dsa_question_handlers = DSAQuestionHandlers(db)
 dsa_sheet_handlers = DSASheetHandlers(db)
+company_handlers = CompanyHandlers(db)
 
 # Initialize Gemini AI
 gemini_api_key = os.environ.get('GEMINI_API_KEY')
