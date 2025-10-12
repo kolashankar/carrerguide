@@ -89,7 +89,7 @@ class DSABackendTester:
     # DSA TOPICS TESTING
     # =============================================================================
 
-    async def test_dsa_topics_crud(self):
+    def test_dsa_topics_crud(self):
         """Test all DSA Topics CRUD operations"""
         print("\n🔍 TESTING DSA TOPICS CRUD OPERATIONS")
         print("=" * 50)
@@ -127,7 +127,7 @@ class DSABackendTester:
         ]
 
         for topic_data in topics_data:
-            response = await self.make_request("POST", "/admin/dsa/topics", topic_data)
+            response = self.make_request("POST", "/admin/dsa/topics", topic_data)
             if response["success"] and "id" in response["data"]:
                 self.created_resources["topics"].append(response["data"]["id"])
                 self.log_test_result("topics", f"Create topic '{topic_data['name']}'", True)
