@@ -516,7 +516,8 @@ class CareerGuideAPITester:
             print(f"GET /admin/articles?is_published=true - Status: {response.status_code}")
             if response.status_code == 200:
                 articles = response.json()
-                print(f"Published articles: {len(articles.get('articles', []))}")
+                article_list = articles.get('data', []) if 'data' in articles else articles.get('articles', [])
+                print(f"Published articles: {len(article_list)}")
             else:
                 print(f"Error filtering articles by publish status: {response.text}")
                 return False
