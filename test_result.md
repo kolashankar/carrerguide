@@ -391,7 +391,7 @@ agent_communication:
       ✅ ERROR HANDLING: Proper validation and HTTP status codes
       ✅ HEALTH CHECKS: Backend healthy, MongoDB connected
       
-      BACKEND URL: https://jobportal-dash.preview.emergentagent.com/api
+      BACKEND URL: https://roadmap-toolkit.preview.emergentagent.com/api
       
       🔥 KEY ACHIEVEMENTS:
       - Tested 18+ API endpoints across Jobs, Internships, Scholarships
@@ -526,6 +526,6 @@ agent_communication:
       - All filtering and search functionality operational
       - All statistics endpoints functional
       
-      BACKEND URL: https://jobportal-dash.preview.emergentagent.com/api
+      BACKEND URL: https://roadmap-toolkit.preview.emergentagent.com/api
       
       🚀 DSA CORNER MODULE IS PRODUCTION READY! All backend functionality tested and verified.

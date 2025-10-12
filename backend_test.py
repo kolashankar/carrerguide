@@ -12,7 +12,7 @@ from typing import Dict, List, Any, Optional
 from datetime import datetime
 
 # Backend URL from environment
-BACKEND_URL = "https://jobportal-dash.preview.emergentagent.com/api"
+BACKEND_URL = "https://roadmap-toolkit.preview.emergentagent.com/api"
 
 class DSABackendTester:
     def __init__(self):
