@@ -486,7 +486,8 @@ class CareerGuideAPITester:
             print(f"GET /admin/articles?category=interview-tips - Status: {response.status_code}")
             if response.status_code == 200:
                 articles = response.json()
-                print(f"Category filtered articles: {len(articles.get('articles', []))}")
+                article_list = articles.get('data', []) if 'data' in articles else articles.get('articles', [])
+                print(f"Category filtered articles: {len(article_list)}")
             else:
                 print(f"Error filtering articles by category: {response.text}")
                 return False
