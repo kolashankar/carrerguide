@@ -12,7 +12,7 @@ import os
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv('/app/frontend/.env')
+load_dotenv('/app/user_app/frontend/.env')
 
 # Get backend URL from environment
 BACKEND_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://admin-careerguide-2.preview.emergentagent.com')
