@@ -586,6 +586,65 @@ async def toggle_sheet_publish(sheet_id: str):
     return await dsa_sheet_handlers.toggle_publish(sheet_id)
 
 # =============================================================================
+# ADMIN ROUTES - DSA COMPANIES
+# =============================================================================
+
+@api_router.post("/admin/dsa/companies", response_model=dict, tags=["Admin - DSA Companies"])
+async def create_company(company: CompanyCreate):
+    """Create a new company"""
+    return await company_handlers.create_company(company.dict())
+
+@api_router.get("/admin/dsa/companies", tags=["Admin - DSA Companies"])
+async def get_all_companies(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=100),
+    search: Optional[str] = Query(None),
+    industry: Optional[str] = Query(None),
+    is_active: Optional[bool] = Query(None),
+    sort_by: str = Query("name"),
+    sort_order: str = Query("asc")
+):
+    """Get list of companies with filters"""
+    return await company_handlers.get_companies(
+        skip=skip,
+        limit=limit,
+        search=search,
+        industry=industry,
+        is_active=is_active,
+        sort_by=sort_by,
+        sort_order=sort_order
+    )
+
+@api_router.get("/admin/dsa/companies/stats", tags=["Admin - DSA Companies"])
+async def get_company_stats():
+    """Get company statistics"""
+    return await company_handlers.get_statistics()
+
+@api_router.get("/admin/dsa/companies/top", tags=["Admin - DSA Companies"])
+async def get_top_companies(
+    limit: int = Query(10, ge=1, le=50),
+    by: str = Query("problems", description="Sort by 'problems' or 'jobs'")
+):
+    """Get top companies by problem count or job count"""
+    return await company_handlers.get_top_companies(limit=limit, by=by)
+
+@api_router.get("/admin/dsa/companies/{company_id}", tags=["Admin - DSA Companies"])
+async def get_company(company_id: str):
+    """Get single company by ID"""
+    return await company_handlers.get_company_by_id(company_id)
+
+@api_router.put("/admin/dsa/companies/{company_id}", tags=["Admin - DSA Companies"])
+async def update_company(company_id: str, company: CompanyUpdate):
+    """Update company"""
+    return await company_handlers.update_company(company_id, company.dict(exclude_unset=True))
+
+@api_router.delete("/admin/dsa/companies/{company_id}", tags=["Admin - DSA Companies"])
+async def delete_company(company_id: str):
+    """Delete company"""
+    success = await company_handlers.delete_company(company_id)
+    return {"success": success, "message": "Company deleted" if success else "Company not found"}
+
+# =============================================================================
 # USER ROUTES - JOBS (Public facing)
 # =============================================================================
 
