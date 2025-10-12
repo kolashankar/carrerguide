@@ -16,6 +16,7 @@ from api.models.schemas.dsa.topics.fields.validators.custom.topic_model import D
 from api.models.schemas.dsa.questions.fields.validators.custom.question_model import DSAQuestionCreate, DSAQuestionUpdate, DSAQuestionResponse
 from api.models.schemas.dsa.sheets.fields.validators.custom.sheet_model import DSASheetCreate, DSASheetUpdate, DSASheetResponse
 from api.models.schemas.dsa.companies.fields.validators.custom.company_model import CompanyCreate, CompanyUpdate, Company
+from api.models.schemas.roadmaps.fields.validators.custom.roadmap_model import RoadmapCreate, RoadmapUpdate, Roadmap, RoadmapNode, RoadmapAIGenerate
 
 # Import handlers
 from api.routes.admin.jobs.management.crud.operations.handlers.job_handlers import JobHandlers
