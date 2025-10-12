@@ -922,6 +922,10 @@ class CareerGuideAPITester:
         test_results['jobs_crud'] = self.test_jobs_crud()
         test_results['internships_crud'] = self.test_internships_crud()
         test_results['scholarships_crud'] = self.test_scholarships_crud()
+        test_results['articles_crud'] = self.test_articles_crud()
+        test_results['articles_ai_generation'] = self.test_articles_ai_generation()
+        test_results['user_articles_apis'] = self.test_user_articles_apis()
+        test_results['articles_validation'] = self.test_articles_validation()
         test_results['user_apis'] = self.test_user_public_apis()
         test_results['search_filter'] = self.test_search_and_filter()
         
