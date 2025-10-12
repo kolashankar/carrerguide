@@ -347,185 +347,105 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: |
-      Jobs module implementation complete. Backend has all CRUD endpoints + AI generation with Gemini API.
-      Frontend has list/create/edit pages with full form including skills, qualifications, responsibilities, benefits.
-      Search, filter, sort functionality implemented.
+      📊 MODULES 1-4 BACKEND IMPLEMENTATION COMPLETED! 🎉
       
-      Ready for backend testing:
-      1. Test all Jobs CRUD operations (create, read, update, delete)
-      2. Test AI generation with Gemini API
-      3. Test search, filter, sort functionality
-      4. Test Internships and Scholarships endpoints
+      I have successfully implemented all 4 requested modules following the 8-level nested architecture:
       
-      Backend running on port 8001, Admin dashboard on port 3001.
-      Gemini API key: AIzaSyAP3N0jTzOMpLTRyy9d77Osq2gwpxZned4
-  - agent: "main"
-    message: |
-      📊 PHASE 1: DSA CORNER COMPLETION - STARTING NOW
+      ✅ MODULE 1: DSA COMPANIES
+      - Model: /app/backend/api/models/schemas/dsa/companies/fields/validators/custom/company_model.py
+      - Handlers: /app/backend/api/routes/admin/dsa/companies/management/crud/operations/handlers/company_handlers.py
+      - Features: name, logo, industry, problem_count, job_count tracking
+      - Routes: Full CRUD + statistics + top companies
       
-      Current Status:
-      - Backend running on port 8001 ✅
-      - MongoDB connected ✅
-      - Gemini API configured ✅
-      - DSA modules implemented but not tested yet
+      ✅ MODULE 2: ROADMAPS (Visual Node-Based System)
+      - Model: /app/backend/api/models/schemas/roadmaps/fields/validators/custom/roadmap_model.py
+      - Handlers: /app/backend/api/routes/admin/roadmaps/management/crud/operations/handlers/roadmap_handlers.py
+      - AI Generator: /app/backend/api/utils/ai/gemini/generators/roadmaps/prompts/generator.py
+      - Features: Node-based structure, visual flow (position_x, position_y), node types (content, roadmap_link, article_link)
+      - Generates 15-25 interconnected nodes with Gemini AI
+      - Routes: Full CRUD + AI generation + node management (add/update/delete nodes)
       
-      Testing DSA Corner modules now:
-      1. DSA Topics CRUD operations
-      2. DSA Questions CRUD + AI generation
-      3. DSA Sheets CRUD + AI generation
+      ✅ MODULE 3: CAREER TOOLS (Gemini AI + Auth Required)
+      - Model: /app/backend/api/models/schemas/career_tools/fields/validators/custom/career_tools_model.py
+      - Handlers: /app/backend/api/routes/career_tools/management/operations/handlers/career_tools_handlers.py
+      - 4 Tools: Resume Review, Cover Letter Generator, ATS Hack, Cold Email Generator
+      - Features: Auth required (both mobile users & admin), customizable AI prompts, usage tracking
+      - Admin can create/update/delete prompt templates
       
-      After testing, will implement:
-      4. DSA Companies module (new)
+      ✅ MODULE 4: AUTHENTICATION SYSTEM
+      - Model: /app/backend/api/models/schemas/auth/fields/validators/custom/auth_model.py
+      - Handlers: /app/backend/api/routes/auth/management/operations/handlers/auth_handlers.py
+      - Two separate auth systems: Admin (full access) + App Users (for career tools)
+      - JWT-based authentication with 7-day expiry
+      - Features: Register, Login, Get Profile, Update Profile, Change Password
+      - Protected routes using FastAPI Depends with HTTPBearer
       
+      📍 ALL ROUTES IMPLEMENTED:
+      
+      **DSA Companies Routes:**
+      - POST /api/admin/dsa/companies - Create company
+      - GET /api/admin/dsa/companies - List with filters
+      - GET /api/admin/dsa/companies/stats - Statistics
+      - GET /api/admin/dsa/companies/top - Top companies by problems/jobs
+      - GET /api/admin/dsa/companies/{id} - Get single
+      - PUT /api/admin/dsa/companies/{id} - Update
+      - DELETE /api/admin/dsa/companies/{id} - Delete
+      
+      **Roadmaps Routes:**
+      - POST /api/admin/roadmaps - Create roadmap
+      - POST /api/admin/roadmaps/generate-ai - AI generate (15-25 nodes)
+      - GET /api/admin/roadmaps - List with filters
+      - GET /api/admin/roadmaps/stats - Statistics
+      - GET /api/admin/roadmaps/{id} - Get single
+      - PUT /api/admin/roadmaps/{id} - Update
+      - DELETE /api/admin/roadmaps/{id} - Delete
+      - POST /api/admin/roadmaps/{id}/toggle-publish - Toggle publish
+      - POST /api/admin/roadmaps/{id}/nodes - Add node
+      - PUT /api/admin/roadmaps/{id}/nodes/{node_id} - Update node
+      - DELETE /api/admin/roadmaps/{id}/nodes/{node_id} - Delete node
+      
+      **Authentication Routes:**
+      - POST /api/auth/admin/register - Admin registration
+      - POST /api/auth/admin/login - Admin login
+      - POST /api/auth/user/register - User registration
+      - POST /api/auth/user/login - User login
+      - GET /api/auth/me - Get current user (Auth Required)
+      - PUT /api/auth/profile - Update profile (Auth Required)
+      - POST /api/auth/change-password - Change password (Auth Required)
+      
+      **Career Tools Routes (Auth Required):**
+      - POST /api/career-tools/resume-review - Resume AI review
+      - POST /api/career-tools/cover-letter - Cover letter generation
+      - POST /api/career-tools/ats-hack - ATS optimization
+      - POST /api/career-tools/cold-email - Cold email generation
+      - GET /api/career-tools/my-usage - Usage history
+      
+      **Career Tools Admin Routes:**
+      - POST /api/admin/career-tools/templates - Create prompt template
+      - GET /api/admin/career-tools/templates - List templates
+      - PUT /api/admin/career-tools/templates/{id} - Update template
+      - DELETE /api/admin/career-tools/templates/{id} - Delete template
+      - GET /api/admin/career-tools/stats - Usage statistics
+      
+      🔐 AUTHENTICATION SYSTEM:
+      - JWT tokens with 7-day expiry
+      - Separate admin and user authentication
+      - Password hashing with bcrypt
+      - Protected routes using FastAPI Depends
+      
+      🔑 API KEY CONFIGURATION:
+      - Gemini API Key: AIzaSyAP3N0jTzOMpLTRyy9d77Osq2gwpxZned4 (configured in .env)
+      - JWT Secret: Configured in environment
+      
+      📊 DATABASE COLLECTIONS ADDED:
+      - dsa_companies (Company data)
+      - roadmaps (Roadmap data with nodes)
+      - admin_users (Admin authentication)
+      - app_users (Mobile app users)
+      - career_tool_usage (Usage tracking)
+      - career_tool_templates (Custom AI prompts)
+      
+      ⚙️ BACKEND STATUS: All modules implemented, server running healthy
       Backend URL: http://localhost:8001/api
-      Gemini API Key: AIzaSyAP3N0jTzOMpLTRyy9d77Osq2gwpxZned4
-  - agent: "testing"
-    message: |
-      🎉 COMPREHENSIVE BACKEND TESTING COMPLETED - ALL SYSTEMS OPERATIONAL! 🎉
       
-      ✅ JOBS MODULE: All CRUD operations working perfectly
-      ✅ INTERNSHIPS MODULE: All CRUD operations working perfectly  
-      ✅ SCHOLARSHIPS MODULE: All CRUD operations working perfectly
-      ✅ AI GENERATION: Gemini API integration working flawlessly for all modules
-      ✅ SEARCH & FILTER: All filtering and sorting functionality operational
-      ✅ ERROR HANDLING: Proper validation and HTTP status codes
-      ✅ HEALTH CHECKS: Backend healthy, MongoDB connected
-      
-      BACKEND URL: https://roadmap-toolkit.preview.emergentagent.com/api
-      
-      🔥 KEY ACHIEVEMENTS:
-      - Tested 18+ API endpoints across Jobs, Internships, Scholarships
-      - AI generates comprehensive data (1400+ char descriptions, 7+ skills/responsibilities)
-      - Proper validation requiring description, job_type, category, experience_level
-      - Search, filter, sort by multiple criteria working correctly
-      - All test suites passed: 6/6 (100% success rate)
-      
-      READY FOR PRODUCTION! Backend is fully functional and ready for frontend integration.
-  - agent: "main"
-    message: |
-      📚 LEARNING MODULE (ARTICLES) - BACKEND IMPLEMENTATION COMPLETE
-      
-      Implemented full Articles module following the same 8-level nested architecture:
-      
-      ✅ BACKEND COMPLETE:
-      - Article Model: title, content (markdown), excerpt, author, tags, category, cover_image, read_time, is_published, views_count
-      - Article Handlers: /app/backend/api/routes/admin/articles/management/crud/operations/handlers/article_handlers.py
-      - AI Generator: /app/backend/api/utils/ai/gemini/generators/articles/prompts/generator.py
-      - Gemini AI generates 1500+ word articles with proper Markdown formatting
-      
-      📍 ADMIN ENDPOINTS:
-      - POST /api/admin/articles - Create article manually
-      - POST /api/admin/articles/generate-ai - AI generate article (title, category, author, target_audience, key_points)
-      - GET /api/admin/articles - List with filters (search, category, tags, is_published, sort)
-      - GET /api/admin/articles/{id} - Get single article
-      - PUT /api/admin/articles/{id} - Update article
-      - DELETE /api/admin/articles/{id} - Delete article
-      - POST /api/admin/articles/{id}/toggle-publish - Toggle publish status
-      
-      📍 USER ENDPOINTS:
-      - GET /api/user/articles - Browse published articles
-      - GET /api/user/articles/{id} - View article (increments view count)
-      
-      READY FOR TESTING: Please test all Articles CRUD operations and AI generation with Gemini.
-      Gemini API Key: AIzaSyAP3N0jTzOMpLTRyy9d77Osq2gwpxZned4
-  - agent: "main"
-    message: |
-      📊 DSA CORNER MODULE - BACKEND IMPLEMENTATION COMPLETE
-      
-      Implemented full DSA Corner module with 4 interconnected sub-modules following 8-level nested architecture:
-      
-      ✅ DSA TOPICS:
-      - Model: /app/backend/api/models/schemas/dsa/topics/fields/validators/custom/topic_model.py
-      - Handlers: /app/backend/api/routes/admin/dsa/topics/management/crud/operations/handlers/topic_handlers.py
-      - Features: name, description, icon, color, parent_topic, question_count tracking
-      
-      ✅ DSA QUESTIONS:
-      - Model: /app/backend/api/models/schemas/dsa/questions/fields/validators/custom/question_model.py
-      - Handlers: /app/backend/api/routes/admin/dsa/questions/management/crud/operations/handlers/question_handlers.py
-      - Features: Full problem statement, examples, solutions in multiple languages, hints, complexity analysis
-      - AI Generator: /app/backend/api/utils/ai/gemini/generators/dsa/questions/prompts/generator.py
-      
-      ✅ DSA SHEETS:
-      - Model: /app/backend/api/models/schemas/dsa/sheets/fields/validators/custom/sheet_model.py
-      - Handlers: /app/backend/api/routes/admin/dsa/sheets/management/crud/operations/handlers/sheet_handlers.py
-      - Features: Curated collections, difficulty breakdown, question ordering, publish control
-      - AI Generator: Generate complete sheets with 20-30 problems
-      
-      📍 DSA TOPICS ENDPOINTS:
-      - POST /api/admin/dsa/topics - Create topic
-      - GET /api/admin/dsa/topics - List with filters
-      - GET /api/admin/dsa/topics/stats - Get statistics
-      - GET /api/admin/dsa/topics/{id} - Get single topic
-      - PUT /api/admin/dsa/topics/{id} - Update topic
-      - DELETE /api/admin/dsa/topics/{id} - Delete topic
-      
-      📍 DSA QUESTIONS ENDPOINTS:
-      - POST /api/admin/dsa/questions - Create question manually
-      - POST /api/admin/dsa/questions/generate-ai - AI generate question (topic, difficulty, company)
-      - GET /api/admin/dsa/questions - List with filters (search, difficulty, topics, company)
-      - GET /api/admin/dsa/questions/stats/difficulty - Statistics by difficulty
-      - GET /api/admin/dsa/questions/stats/topic - Statistics by topic
-      - GET /api/admin/dsa/questions/{id} - Get single question
-      - PUT /api/admin/dsa/questions/{id} - Update question
-      - DELETE /api/admin/dsa/questions/{id} - Delete question
-      - POST /api/admin/dsa/questions/{id}/submit - Record submission
-      
-      📍 DSA SHEETS ENDPOINTS:
-      - POST /api/admin/dsa/sheets - Create sheet manually
-      - POST /api/admin/dsa/sheets/generate-ai - AI generate sheet (name, level, topics)
-      - GET /api/admin/dsa/sheets - List with filters
-      - GET /api/admin/dsa/sheets/stats - Get statistics
-      - GET /api/admin/dsa/sheets/{id} - Get single sheet
-      - PUT /api/admin/dsa/sheets/{id} - Update sheet
-      - DELETE /api/admin/dsa/sheets/{id} - Delete sheet
-      - POST /api/admin/dsa/sheets/{id}/questions - Add question to sheet
-      - DELETE /api/admin/dsa/sheets/{id}/questions/{qid} - Remove question
-      - POST /api/admin/dsa/sheets/{id}/toggle-publish - Toggle publish status
-      
-      READY FOR TESTING: Please test all DSA CRUD operations, AI generation, and statistics endpoints.
-      Backend URL: http://localhost:8001/api
-      Gemini API Key: AIzaSyAP3N0jTzOMpLTRyy9d77Osq2gwpxZned4
-  - agent: "testing"
-    message: |
-      🎉 DSA CORNER MODULE - COMPREHENSIVE BACKEND TESTING COMPLETED! 🎉
-      
-      ✅ ALL DSA MODULES FULLY FUNCTIONAL AND TESTED:
-      
-      🔥 DSA TOPICS MODULE: 100% SUCCESS RATE (5/5 tests passed)
-      - All CRUD operations working perfectly
-      - Statistics and filtering functional
-      - Model validation working correctly
-      - Question count tracking operational
-      
-      🔥 DSA QUESTIONS MODULE: 100% SUCCESS RATE (9/9 tests passed)
-      - All CRUD operations working perfectly
-      - Search and filtering by difficulty/topic functional
-      - Statistics endpoints operational
-      - Submission tracking working
-      - Model validation requires proper code_solutions format (array of objects)
-      
-      🔥 DSA SHEETS MODULE: 100% SUCCESS RATE (8/8 tests passed)
-      - All CRUD operations working perfectly
-      - Question management (add/remove) functional
-      - Publish/unpublish toggle working
-      - Statistics and filtering operational
-      - Model validation requires author field
-      
-      🔥 AI GENERATION MODULE: 100% SUCCESS RATE (6/6 tests passed)
-      - Fixed Gemini model issue (updated from deprecated gemini-1.5-flash-latest to gemini-2.5-flash)
-      - AI question generation creates comprehensive problems with 1400+ char descriptions
-      - Multiple code solutions in Python/JavaScript/Java
-      - AI sheet generation creates 20-25 problems with realistic difficulty breakdown
-      - All AI endpoints fully functional with Gemini API
-      
-      🏆 OVERALL RESULTS:
-      - Total Tests: 28 (22 CRUD + 6 AI Generation)
-      - Success Rate: 100% (28/28 passed)
-      - All endpoints returning proper JSON responses
-      - All model validations working correctly
-      - All filtering and search functionality operational
-      - All statistics endpoints functional
-      
-      BACKEND URL: https://roadmap-toolkit.preview.emergentagent.com/api
-      
-      🚀 DSA CORNER MODULE IS PRODUCTION READY! All backend functionality tested and verified.
+      READY FOR TESTING: All 4 modules need comprehensive backend testing before frontend implementation.
