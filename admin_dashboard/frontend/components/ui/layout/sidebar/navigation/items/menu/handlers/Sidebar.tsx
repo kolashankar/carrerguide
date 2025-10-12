@@ -9,6 +9,13 @@ interface SidebarProps {
   onClose: () => void
 }
 
+interface MenuItem {
+  name: string
+  path: string
+  icon: string
+  disabled?: boolean
+}
+
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname()
 
