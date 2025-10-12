@@ -86,7 +86,11 @@ class CareerGuideAPITester:
             if response.status_code in [200, 201]:
                 job_response = response.json()
                 print(f"Created job: {job_response}")
-                if 'id' in job_response:
+                if '_id' in job_response:
+                    job_id = job_response['_id']
+                    self.created_jobs.append(job_id)
+                    print(f"Job created with ID: {job_id}")
+                elif 'id' in job_response:
                     job_id = job_response['id']
                     self.created_jobs.append(job_id)
                     print(f"Job created with ID: {job_id}")
