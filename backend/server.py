@@ -354,6 +354,235 @@ async def toggle_article_publish(article_id: str):
     return await article_handlers.toggle_publish_status(article_id)
 
 # =============================================================================
+# ADMIN ROUTES - DSA TOPICS
+# =============================================================================
+
+@api_router.post("/admin/dsa/topics", response_model=dict, tags=["Admin - DSA Topics"])
+async def create_dsa_topic(topic: DSATopicCreate):
+    """Create a new DSA topic"""
+    return await dsa_topic_handlers.create_topic(topic.dict())
+
+@api_router.get("/admin/dsa/topics", tags=["Admin - DSA Topics"])
+async def get_all_dsa_topics(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=1000),
+    search: Optional[str] = Query(None),
+    is_active: Optional[bool] = Query(None),
+    parent_topic: Optional[str] = Query(None),
+    sort_by: str = Query("name"),
+    sort_order: int = Query(1)
+):
+    """Get all DSA topics with filtering and sorting"""
+    return await dsa_topic_handlers.get_all_topics(
+        skip=skip,
+        limit=limit,
+        search=search,
+        is_active=is_active,
+        parent_topic=parent_topic,
+        sort_by=sort_by,
+        sort_order=sort_order
+    )
+
+@api_router.get("/admin/dsa/topics/stats", tags=["Admin - DSA Topics"])
+async def get_dsa_topic_stats():
+    """Get statistics for DSA topics"""
+    return await dsa_topic_handlers.get_topic_stats()
+
+@api_router.get("/admin/dsa/topics/{topic_id}", tags=["Admin - DSA Topics"])
+async def get_dsa_topic(topic_id: str):
+    """Get a specific DSA topic by ID"""
+    return await dsa_topic_handlers.get_topic(topic_id)
+
+@api_router.put("/admin/dsa/topics/{topic_id}", tags=["Admin - DSA Topics"])
+async def update_dsa_topic(topic_id: str, topic: DSATopicUpdate):
+    """Update a DSA topic"""
+    return await dsa_topic_handlers.update_topic(topic_id, topic.dict(exclude_unset=True))
+
+@api_router.delete("/admin/dsa/topics/{topic_id}", tags=["Admin - DSA Topics"])
+async def delete_dsa_topic(topic_id: str):
+    """Delete a DSA topic"""
+    return await dsa_topic_handlers.delete_topic(topic_id)
+
+# =============================================================================
+# ADMIN ROUTES - DSA QUESTIONS
+# =============================================================================
+
+@api_router.post("/admin/dsa/questions", response_model=dict, tags=["Admin - DSA Questions"])
+async def create_dsa_question(question: DSAQuestionCreate):
+    """Create a new DSA question manually"""
+    return await dsa_question_handlers.create_question(question.dict())
+
+@api_router.post("/admin/dsa/questions/generate-ai", response_model=dict, tags=["Admin - DSA Questions"])
+async def generate_dsa_question_with_ai(
+    topic: str = Query(..., description="Main topic (e.g., Arrays, Trees)"),
+    difficulty: str = Query(default="medium", description="Difficulty level"),
+    company: Optional[str] = Query(None, description="Company context (optional)")
+):
+    """Generate a DSA question using Gemini AI"""
+    if not dsa_gemini_generator:
+        return {"error": "Gemini API not configured"}
+    
+    prompt_data = {
+        "topic": topic,
+        "difficulty": difficulty,
+        "company": company
+    }
+    
+    generated_question = await dsa_gemini_generator.generate_dsa_question(prompt_data)
+    return await dsa_question_handlers.create_question(generated_question)
+
+@api_router.get("/admin/dsa/questions", tags=["Admin - DSA Questions"])
+async def get_all_dsa_questions(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=1000),
+    search: Optional[str] = Query(None),
+    difficulty: Optional[str] = Query(None),
+    topics: Optional[str] = Query(None, description="Comma-separated topic IDs"),
+    company: Optional[str] = Query(None),
+    is_active: Optional[bool] = Query(None),
+    is_premium: Optional[bool] = Query(None),
+    sort_by: str = Query("created_at"),
+    sort_order: int = Query(-1)
+):
+    """Get all DSA questions with filtering and sorting"""
+    return await dsa_question_handlers.get_all_questions(
+        skip=skip,
+        limit=limit,
+        search=search,
+        difficulty=difficulty,
+        topics=topics,
+        company=company,
+        is_active=is_active,
+        is_premium=is_premium,
+        sort_by=sort_by,
+        sort_order=sort_order
+    )
+
+@api_router.get("/admin/dsa/questions/stats/difficulty", tags=["Admin - DSA Questions"])
+async def get_questions_by_difficulty():
+    """Get question count by difficulty"""
+    return await dsa_question_handlers.get_questions_by_difficulty()
+
+@api_router.get("/admin/dsa/questions/stats/topic", tags=["Admin - DSA Questions"])
+async def get_questions_by_topic():
+    """Get question count by topic"""
+    return await dsa_question_handlers.get_questions_by_topic()
+
+@api_router.get("/admin/dsa/questions/{question_id}", tags=["Admin - DSA Questions"])
+async def get_dsa_question(question_id: str):
+    """Get a specific DSA question by ID"""
+    return await dsa_question_handlers.get_question(question_id)
+
+@api_router.put("/admin/dsa/questions/{question_id}", tags=["Admin - DSA Questions"])
+async def update_dsa_question(question_id: str, question: DSAQuestionUpdate):
+    """Update a DSA question"""
+    return await dsa_question_handlers.update_question(question_id, question.dict(exclude_unset=True))
+
+@api_router.delete("/admin/dsa/questions/{question_id}", tags=["Admin - DSA Questions"])
+async def delete_dsa_question(question_id: str):
+    """Delete a DSA question"""
+    return await dsa_question_handlers.delete_question(question_id)
+
+@api_router.post("/admin/dsa/questions/{question_id}/submit", tags=["Admin - DSA Questions"])
+async def submit_dsa_question(question_id: str, is_accepted: bool = Query(False)):
+    """Record a submission for a question"""
+    return await dsa_question_handlers.increment_submission(question_id, is_accepted)
+
+# =============================================================================
+# ADMIN ROUTES - DSA SHEETS
+# =============================================================================
+
+@api_router.post("/admin/dsa/sheets", response_model=dict, tags=["Admin - DSA Sheets"])
+async def create_dsa_sheet(sheet: DSASheetCreate):
+    """Create a new DSA sheet manually"""
+    return await dsa_sheet_handlers.create_sheet(sheet.dict())
+
+@api_router.post("/admin/dsa/sheets/generate-ai", response_model=dict, tags=["Admin - DSA Sheets"])
+async def generate_dsa_sheet_with_ai(
+    sheet_name: str = Query(..., description="Sheet name"),
+    level: str = Query(default="intermediate", description="Difficulty level"),
+    focus_topics: str = Query(default="Arrays,Strings,Trees", description="Comma-separated topics")
+):
+    """Generate a DSA sheet using Gemini AI"""
+    if not dsa_gemini_generator:
+        return {"error": "Gemini API not configured"}
+    
+    prompt_data = {
+        "sheet_name": sheet_name,
+        "level": level,
+        "focus_topics": [topic.strip() for topic in focus_topics.split(",")]
+    }
+    
+    generated_sheet = await dsa_gemini_generator.generate_dsa_sheet(prompt_data)
+    return await dsa_sheet_handlers.create_sheet(generated_sheet)
+
+@api_router.get("/admin/dsa/sheets", tags=["Admin - DSA Sheets"])
+async def get_all_dsa_sheets(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=1000),
+    search: Optional[str] = Query(None),
+    level: Optional[str] = Query(None),
+    tag: Optional[str] = Query(None),
+    is_published: Optional[bool] = Query(None),
+    is_featured: Optional[bool] = Query(None),
+    is_premium: Optional[bool] = Query(None),
+    sort_by: str = Query("created_at"),
+    sort_order: int = Query(-1)
+):
+    """Get all DSA sheets with filtering and sorting"""
+    return await dsa_sheet_handlers.get_all_sheets(
+        skip=skip,
+        limit=limit,
+        search=search,
+        level=level,
+        tag=tag,
+        is_published=is_published,
+        is_featured=is_featured,
+        is_premium=is_premium,
+        sort_by=sort_by,
+        sort_order=sort_order
+    )
+
+@api_router.get("/admin/dsa/sheets/stats", tags=["Admin - DSA Sheets"])
+async def get_dsa_sheet_stats():
+    """Get statistics for DSA sheets"""
+    return await dsa_sheet_handlers.get_sheet_stats()
+
+@api_router.get("/admin/dsa/sheets/{sheet_id}", tags=["Admin - DSA Sheets"])
+async def get_dsa_sheet(sheet_id: str):
+    """Get a specific DSA sheet by ID"""
+    return await dsa_sheet_handlers.get_sheet(sheet_id)
+
+@api_router.put("/admin/dsa/sheets/{sheet_id}", tags=["Admin - DSA Sheets"])
+async def update_dsa_sheet(sheet_id: str, sheet: DSASheetUpdate):
+    """Update a DSA sheet"""
+    return await dsa_sheet_handlers.update_sheet(sheet_id, sheet.dict(exclude_unset=True))
+
+@api_router.delete("/admin/dsa/sheets/{sheet_id}", tags=["Admin - DSA Sheets"])
+async def delete_dsa_sheet(sheet_id: str):
+    """Delete a DSA sheet"""
+    return await dsa_sheet_handlers.delete_sheet(sheet_id)
+
+@api_router.post("/admin/dsa/sheets/{sheet_id}/questions", tags=["Admin - DSA Sheets"])
+async def add_question_to_sheet(
+    sheet_id: str,
+    question_id: str = Query(...),
+    order: int = Query(0)
+):
+    """Add a question to a DSA sheet"""
+    return await dsa_sheet_handlers.add_question_to_sheet(sheet_id, question_id, order)
+
+@api_router.delete("/admin/dsa/sheets/{sheet_id}/questions/{question_id}", tags=["Admin - DSA Sheets"])
+async def remove_question_from_sheet(sheet_id: str, question_id: str):
+    """Remove a question from a DSA sheet"""
+    return await dsa_sheet_handlers.remove_question_from_sheet(sheet_id, question_id)
+
+@api_router.post("/admin/dsa/sheets/{sheet_id}/toggle-publish", tags=["Admin - DSA Sheets"])
+async def toggle_sheet_publish(sheet_id: str):
+    """Toggle publish status of a DSA sheet"""
+    return await dsa_sheet_handlers.toggle_publish(sheet_id)
+
+# =============================================================================
 # USER ROUTES - JOBS (Public facing)
 # =============================================================================
 
