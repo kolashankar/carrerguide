@@ -64,22 +64,36 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             <ul className="space-y-2">
               {menuItems.map((item) => {
                 const isActive = pathname === item.path
+                const isDisabled = item.disabled
                 return (
                   <li key={item.path}>
-                    <Link
-                      href={item.path}
-                      className={`
-                        flex items-center px-4 py-3 rounded-lg transition-colors
-                        ${isActive
-                          ? 'bg-blue-500 text-white'
-                          : 'text-gray-700 hover:bg-gray-100'
-                        }
-                      `}
-                      onClick={() => onClose()}
-                    >
-                      <span className="text-2xl mr-3">{item.icon}</span>
-                      <span className="font-medium">{item.name}</span>
-                    </Link>
+                    {isDisabled ? (
+                      <div
+                        className={`
+                          flex items-center px-4 py-3 rounded-lg opacity-50 cursor-not-allowed
+                          text-gray-400
+                        `}
+                      >
+                        <span className="text-2xl mr-3">{item.icon}</span>
+                        <span className="font-medium">{item.name}</span>
+                        <span className="ml-auto text-xs">(Coming Soon)</span>
+                      </div>
+                    ) : (
+                      <Link
+                        href={item.path}
+                        className={`
+                          flex items-center px-4 py-3 rounded-lg transition-colors
+                          ${isActive
+                            ? 'bg-blue-500 text-white'
+                            : 'text-gray-700 hover:bg-gray-100'
+                          }
+                        `}
+                        onClick={() => onClose()}
+                      >
+                        <span className="text-2xl mr-3">{item.icon}</span>
+                        <span className="font-medium">{item.name}</span>
+                      </Link>
+                    )}
                   </li>
                 )
               })}
