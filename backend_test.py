@@ -376,7 +376,13 @@ class CareerGuideAPITester:
             if response.status_code in [200, 201]:
                 article_response = response.json()
                 print(f"Created article: {article_response}")
-                if '_id' in article_response:
+                
+                # Handle nested response structure for articles
+                if 'data' in article_response and 'id' in article_response['data']:
+                    article_id = article_response['data']['id']
+                    self.created_articles.append(article_id)
+                    print(f"Article created with ID: {article_id}")
+                elif '_id' in article_response:
                     article_id = article_response['_id']
                     self.created_articles.append(article_id)
                     print(f"Article created with ID: {article_id}")
