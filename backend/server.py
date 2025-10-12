@@ -18,6 +18,11 @@ from api.models.schemas.dsa.questions.fields.validators.custom.question_model im
 from api.models.schemas.dsa.sheets.fields.validators.custom.sheet_model import DSASheetCreate, DSASheetUpdate, DSASheetResponse
 from api.models.schemas.dsa.companies.fields.validators.custom.company_model import CompanyCreate, CompanyUpdate, Company
 from api.models.schemas.roadmaps.fields.validators.custom.roadmap_model import RoadmapCreate, RoadmapUpdate, Roadmap, RoadmapNode, RoadmapAIGenerate
+from api.models.schemas.auth.fields.validators.custom.auth_model import AdminRegister, UserRegister, LoginRequest, ChangePasswordRequest, UpdateProfileRequest
+from api.models.schemas.career_tools.fields.validators.custom.career_tools_model import (
+    ResumeReviewRequest, CoverLetterRequest, ATSHackRequest, ColdEmailRequest, 
+    PromptTemplateCreate, PromptTemplateUpdate
+)
 
 # Import handlers
 from api.routes.admin.jobs.management.crud.operations.handlers.job_handlers import JobHandlers
