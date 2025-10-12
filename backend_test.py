@@ -423,7 +423,8 @@ class CareerGuideAPITester:
                 print(f"GET /admin/articles/{article_id} - Status: {response.status_code}")
                 if response.status_code == 200:
                     article = response.json()
-                    print(f"Retrieved article: {article.get('title', 'Unknown')}")
+                    article_data = article.get('data', article) if 'data' in article else article
+                    print(f"Retrieved article: {article_data.get('title', 'Unknown')}")
                 else:
                     print(f"Error getting article by ID: {response.text}")
                     return False
