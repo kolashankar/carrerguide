@@ -192,7 +192,11 @@ class CareerGuideAPITester:
             if response.status_code in [200, 201]:
                 internship_response = response.json()
                 print(f"Created internship: {internship_response}")
-                if 'id' in internship_response:
+                if '_id' in internship_response:
+                    internship_id = internship_response['_id']
+                    self.created_internships.append(internship_id)
+                    print(f"Internship created with ID: {internship_id}")
+                elif 'id' in internship_response:
                     internship_id = internship_response['id']
                     self.created_internships.append(internship_id)
                     print(f"Internship created with ID: {internship_id}")
