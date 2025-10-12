@@ -136,7 +136,7 @@ class DSABackendTester:
                                    response["data"].get("detail", "Unknown error"))
 
         # Test 2: Get All Topics
-        response = await self.make_request("GET", "/admin/dsa/topics")
+        response = self.make_request("GET", "/admin/dsa/topics")
         if response["success"] and isinstance(response["data"], list):
             self.log_test_result("topics", "Get all topics", True)
         else:
@@ -144,7 +144,7 @@ class DSABackendTester:
                                response["data"].get("detail", "Failed to get topics"))
 
         # Test 3: Get Topics with Filters
-        response = await self.make_request("GET", "/admin/dsa/topics", params={"is_active": True})
+        response = self.make_request("GET", "/admin/dsa/topics", params={"is_active": True})
         if response["success"]:
             self.log_test_result("topics", "Filter topics by is_active", True)
         else:
@@ -152,7 +152,7 @@ class DSABackendTester:
                                response["data"].get("detail", "Filter failed"))
 
         # Test 4: Get Topic Statistics
-        response = await self.make_request("GET", "/admin/dsa/topics/stats")
+        response = self.make_request("GET", "/admin/dsa/topics/stats")
         if response["success"]:
             self.log_test_result("topics", "Get topic statistics", True)
         else:
@@ -162,7 +162,7 @@ class DSABackendTester:
         # Test 5: Get Single Topic
         if self.created_resources["topics"]:
             topic_id = self.created_resources["topics"][0]
-            response = await self.make_request("GET", f"/admin/dsa/topics/{topic_id}")
+            response = self.make_request("GET", f"/admin/dsa/topics/{topic_id}")
             if response["success"]:
                 self.log_test_result("topics", "Get single topic", True)
             else:
@@ -173,7 +173,7 @@ class DSABackendTester:
         if self.created_resources["topics"]:
             topic_id = self.created_resources["topics"][0]
             update_data = {"description": "Updated: Linear data structure for efficient element access"}
-            response = await self.make_request("PUT", f"/admin/dsa/topics/{topic_id}", update_data)
+            response = self.make_request("PUT", f"/admin/dsa/topics/{topic_id}", update_data)
             if response["success"]:
                 self.log_test_result("topics", "Update topic", True)
             else:
