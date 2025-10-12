@@ -767,6 +767,131 @@ async def delete_roadmap_node(roadmap_id: str, node_id: str):
     return await roadmap_handlers.delete_node(roadmap_id, node_id)
 
 # =============================================================================
+# AUTHENTICATION ROUTES
+# =============================================================================
+
+@api_router.post("/auth/admin/register", tags=["Authentication"])
+async def register_admin(admin_data: AdminRegister):
+    """Register a new admin user"""
+    return await auth_handlers.register_admin(admin_data.dict())
+
+@api_router.post("/auth/admin/login", tags=["Authentication"])
+async def login_admin(login_data: LoginRequest):
+    """Admin login"""
+    return await auth_handlers.login_admin(login_data.email, login_data.password)
+
+@api_router.post("/auth/user/register", tags=["Authentication"])
+async def register_user(user_data: UserRegister):
+    """Register a new app user"""
+    return await auth_handlers.register_user(user_data.dict())
+
+@api_router.post("/auth/user/login", tags=["Authentication"])
+async def login_user(login_data: LoginRequest):
+    """App user login"""
+    return await auth_handlers.login_user(login_data.email, login_data.password)
+
+@api_router.get("/auth/me", tags=["Authentication"])
+async def get_current_user_info(current_user = Depends(get_current_user)):
+    """Get current user information"""
+    return {"success": True, "user": current_user}
+
+@api_router.put("/auth/profile", tags=["Authentication"])
+async def update_profile(update_data: UpdateProfileRequest, current_user = Depends(get_current_user)):
+    """Update user profile"""
+    if current_user.get("user_type") != "user":
+        raise HTTPException(status_code=403, detail="Only app users can update profile")
+    return await auth_handlers.update_user_profile(current_user["id"], update_data.dict(exclude_unset=True))
+
+@api_router.post("/auth/change-password", tags=["Authentication"])
+async def change_password(password_data: ChangePasswordRequest, current_user = Depends(get_current_user)):
+    """Change user password"""
+    return await auth_handlers.change_password(
+        current_user["id"], 
+        current_user.get("user_type", "user"),
+        password_data.old_password,
+        password_data.new_password
+    )
+
+# =============================================================================
+# CAREER TOOLS ROUTES (Auth Required)
+# =============================================================================
+
+@api_router.post("/career-tools/resume-review", tags=["Career Tools"])
+async def review_resume(request_data: ResumeReviewRequest, current_user = Depends(get_current_user)):
+    """Review resume using AI (Auth Required)"""
+    if not career_tools_handlers:
+        raise HTTPException(status_code=503, detail="Career tools service not available")
+    return await career_tools_handlers.review_resume(current_user["id"], request_data.dict())
+
+@api_router.post("/career-tools/cover-letter", tags=["Career Tools"])
+async def generate_cover_letter(request_data: CoverLetterRequest, current_user = Depends(get_current_user)):
+    """Generate cover letter using AI (Auth Required)"""
+    if not career_tools_handlers:
+        raise HTTPException(status_code=503, detail="Career tools service not available")
+    return await career_tools_handlers.generate_cover_letter(current_user["id"], request_data.dict())
+
+@api_router.post("/career-tools/ats-hack", tags=["Career Tools"])
+async def optimize_for_ats(request_data: ATSHackRequest, current_user = Depends(get_current_user)):
+    """Optimize resume for ATS using AI (Auth Required)"""
+    if not career_tools_handlers:
+        raise HTTPException(status_code=503, detail="Career tools service not available")
+    return await career_tools_handlers.optimize_for_ats(current_user["id"], request_data.dict())
+
+@api_router.post("/career-tools/cold-email", tags=["Career Tools"])
+async def generate_cold_email(request_data: ColdEmailRequest, current_user = Depends(get_current_user)):
+    """Generate cold email using AI (Auth Required)"""
+    if not career_tools_handlers:
+        raise HTTPException(status_code=503, detail="Career tools service not available")
+    return await career_tools_handlers.generate_cold_email(current_user["id"], request_data.dict())
+
+@api_router.get("/career-tools/my-usage", tags=["Career Tools"])
+async def get_my_usage(current_user = Depends(get_current_user)):
+    """Get user's career tools usage history"""
+    if not career_tools_handlers:
+        raise HTTPException(status_code=503, detail="Career tools service not available")
+    return await career_tools_handlers.get_user_usage(current_user["id"])
+
+# =============================================================================
+# ADMIN ROUTES - CAREER TOOLS MANAGEMENT
+# =============================================================================
+
+@api_router.post("/admin/career-tools/templates", tags=["Admin - Career Tools"])
+async def create_prompt_template(template_data: PromptTemplateCreate, admin = Depends(get_current_admin)):
+    """Create new prompt template"""
+    if not career_tools_handlers:
+        raise HTTPException(status_code=503, detail="Career tools service not available")
+    return await career_tools_handlers.create_template(template_data.dict())
+
+@api_router.get("/admin/career-tools/templates", tags=["Admin - Career Tools"])
+async def get_all_templates(admin = Depends(get_current_admin)):
+    """Get all prompt templates"""
+    if not career_tools_handlers:
+        raise HTTPException(status_code=503, detail="Career tools service not available")
+    return await career_tools_handlers.get_templates()
+
+@api_router.put("/admin/career-tools/templates/{template_id}", tags=["Admin - Career Tools"])
+async def update_prompt_template(template_id: str, template_data: PromptTemplateUpdate, admin = Depends(get_current_admin)):
+    """Update prompt template"""
+    if not career_tools_handlers:
+        raise HTTPException(status_code=503, detail="Career tools service not available")
+    return await career_tools_handlers.update_template(template_id, template_data.dict(exclude_unset=True))
+
+@api_router.delete("/admin/career-tools/templates/{template_id}", tags=["Admin - Career Tools"])
+async def delete_prompt_template(template_id: str, admin = Depends(get_current_admin)):
+    """Delete prompt template"""
+    if not career_tools_handlers:
+        raise HTTPException(status_code=503, detail="Career tools service not available")
+    success = await career_tools_handlers.delete_template(template_id)
+    return {"success": success, "message": "Template deleted" if success else "Template not found"}
+
+@api_router.get("/admin/career-tools/stats", tags=["Admin - Career Tools"])
+async def get_usage_stats(admin = Depends(get_current_admin)):
+    """Get career tools usage statistics"""
+    if not career_tools_handlers:
+        raise HTTPException(status_code=503, detail="Career tools service not available")
+    return await career_tools_handlers.get_usage_stats()
+
+# =============================================================================
 # USER ROUTES - JOBS (Public facing)
 # =============================================================================
 
