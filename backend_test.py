@@ -900,6 +900,14 @@ class CareerGuideAPITester:
                 print(f"DELETE /admin/scholarships/{scholarship_id} - Status: {response.status_code}")
             except Exception as e:
                 print(f"Error deleting scholarship {scholarship_id}: {str(e)}")
+        
+        # Delete created articles
+        for article_id in self.created_articles:
+            try:
+                response = self.session.delete(f"{BASE_URL}/admin/articles/{article_id}")
+                print(f"DELETE /admin/articles/{article_id} - Status: {response.status_code}")
+            except Exception as e:
+                print(f"Error deleting article {article_id}: {str(e)}")
     
     def run_all_tests(self):
         """Run all test suites"""
