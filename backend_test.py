@@ -406,7 +406,8 @@ class CareerGuideAPITester:
             print(f"GET /admin/articles - Status: {response.status_code}")
             if response.status_code == 200:
                 articles = response.json()
-                print(f"Retrieved {len(articles.get('articles', []))} articles")
+                article_list = articles.get('data', []) if 'data' in articles else articles.get('articles', [])
+                print(f"Retrieved {len(article_list)} articles")
             else:
                 print(f"Error getting articles: {response.text}")
                 return False
