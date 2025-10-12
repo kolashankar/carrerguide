@@ -36,37 +36,37 @@ class DSABackendTester:
         
         try:
             if method.upper() == "GET":
-                async with self.session.get(url, params=params) as response:
-                    response_data = await response.json()
-                    return {
-                        "status": response.status,
-                        "data": response_data,
-                        "success": response.status < 400
-                    }
+                response = self.session.get(url, params=params)
+                response_data = response.json()
+                return {
+                    "status": response.status_code,
+                    "data": response_data,
+                    "success": response.status_code < 400
+                }
             elif method.upper() == "POST":
-                async with self.session.post(url, json=data, params=params) as response:
-                    response_data = await response.json()
-                    return {
-                        "status": response.status,
-                        "data": response_data,
-                        "success": response.status < 400
-                    }
+                response = self.session.post(url, json=data, params=params)
+                response_data = response.json()
+                return {
+                    "status": response.status_code,
+                    "data": response_data,
+                    "success": response.status_code < 400
+                }
             elif method.upper() == "PUT":
-                async with self.session.put(url, json=data) as response:
-                    response_data = await response.json()
-                    return {
-                        "status": response.status,
-                        "data": response_data,
-                        "success": response.status < 400
-                    }
+                response = self.session.put(url, json=data)
+                response_data = response.json()
+                return {
+                    "status": response.status_code,
+                    "data": response_data,
+                    "success": response.status_code < 400
+                }
             elif method.upper() == "DELETE":
-                async with self.session.delete(url) as response:
-                    response_data = await response.json()
-                    return {
-                        "status": response.status,
-                        "data": response_data,
-                        "success": response.status < 400
-                    }
+                response = self.session.delete(url)
+                response_data = response.json()
+                return {
+                    "status": response.status_code,
+                    "data": response_data,
+                    "success": response.status_code < 400
+                }
         except Exception as e:
             return {
                 "status": 500,
