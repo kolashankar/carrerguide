@@ -172,10 +172,11 @@ class CareerGuideAPITester:
             "company": "StartupXYZ",
             "location": "Remote",
             "duration": "3 months",
+            "internship_type": "paid",
             "category": "technology",
             "description": "Join our team as a software development intern.",
-            "requirements": ["Computer Science student", "Python basics", "Git knowledge"],
-            "stipend": "$2000/month",
+            "skills_required": ["Computer Science student", "Python basics", "Git knowledge"],
+            "stipend_amount": 2000.0,
             "application_deadline": "2024-11-30T23:59:59",
             "is_active": True
         }
