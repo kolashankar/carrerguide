@@ -14,8 +14,7 @@ Testing scope:
 7. Admin Dashboard Pages (Module 7)
 """
 
-import asyncio
-import aiohttp
+import requests
 import json
 import uuid
 import csv
