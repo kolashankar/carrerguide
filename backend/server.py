@@ -59,6 +59,7 @@ gemini_api_key = os.environ.get('GEMINI_API_KEY')
 gemini_generator = GeminiJobGenerator(gemini_api_key) if gemini_api_key else None
 article_gemini_generator = GeminiArticleGenerator(gemini_api_key) if gemini_api_key else None
 dsa_gemini_generator = GeminiDSAGenerator(gemini_api_key) if gemini_api_key else None
+roadmap_gemini_generator = GeminiRoadmapGenerator(gemini_api_key) if gemini_api_key else None
 
 # Create the main app without a prefix
 app = FastAPI(title="CareerGuide API", version="1.0.0")
