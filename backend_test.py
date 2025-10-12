@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 load_dotenv('/app/frontend/.env')
 
 # Get backend URL from environment
-BACKEND_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://admin-careerguide.preview.emergentagent.com')
+BACKEND_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'https://admin-careerguide-1.preview.emergentagent.com')
 BASE_URL = f"{BACKEND_URL}/api"
 
 print(f"Testing backend at: {BASE_URL}")
