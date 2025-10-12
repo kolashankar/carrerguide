@@ -471,7 +471,8 @@ class CareerGuideAPITester:
             print(f"GET /admin/articles?search=Interview - Status: {response.status_code}")
             if response.status_code == 200:
                 articles = response.json()
-                print(f"Search results: {len(articles.get('articles', []))} articles")
+                article_list = articles.get('data', []) if 'data' in articles else articles.get('articles', [])
+                print(f"Search results: {len(article_list)} articles")
             else:
                 print(f"Error searching articles: {response.text}")
                 return False
