@@ -543,10 +543,13 @@ class CareerGuideAPITester:
             print(f"POST /admin/articles/generate-ai - Status: {response.status_code}")
             if response.status_code in [200, 201]:
                 ai_article = response.json()
-                print(f"AI Generated article: {ai_article.get('title', 'Unknown')}")
+                
+                # Handle nested response structure
+                article_data = ai_article.get('data', ai_article) if 'data' in ai_article else ai_article
+                print(f"AI Generated article: {article_data.get('title', 'Unknown')}")
                 
                 # Verify AI generated content
-                content = ai_article.get('content', '')
+                content = article_data.get('content', '')
                 if len(content) >= 1500:
                     print(f"✅ AI generated comprehensive content ({len(content)} characters)")
                 else:
@@ -554,7 +557,7 @@ class CareerGuideAPITester:
                 
                 # Check if all required fields are populated
                 required_fields = ['title', 'content', 'excerpt', 'author', 'tags', 'category', 'read_time']
-                missing_fields = [field for field in required_fields if not ai_article.get(field)]
+                missing_fields = [field for field in required_fields if not article_data.get(field)]
                 if missing_fields:
                     print(f"⚠️ Missing fields in AI generated article: {missing_fields}")
                 else:
