@@ -196,6 +196,18 @@ backend:
         agent: "testing"
         comment: "✅ SCHOLARSHIPS CRUD WORKING PERFECTLY: All endpoints tested successfully - POST /api/admin/scholarships (create), GET /api/admin/scholarships (list), GET /api/admin/scholarships/{id} (single), PUT /api/admin/scholarships/{id} (update), DELETE /api/admin/scholarships/{id} (delete). Filtering by education_level, scholarship_type, and country working correctly. AI generation endpoint also functional generating comprehensive scholarship data including eligibility criteria, benefits, application process, and field of study information."
 
+  - task: "Articles CRUD API endpoints (Learning Module)"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Articles CRUD endpoints implemented with full functionality: POST /api/admin/articles (create), POST /api/admin/articles/generate-ai (AI generation), GET /api/admin/articles (list with search/filter), GET /api/admin/articles/{id} (single), PUT /api/admin/articles/{id} (update), DELETE /api/admin/articles/{id} (delete), POST /api/admin/articles/{id}/toggle-publish (toggle publish status). Also added public user routes: GET /api/user/articles and GET /api/user/articles/{id}. Article model includes: title, content (markdown), excerpt, author, tags (array), category, cover_image, read_time, is_published, views_count. AI generator creates comprehensive 1500+ word articles with proper Markdown formatting."
+
 frontend:
   - task: "Next.js admin dashboard setup with Tailwind CSS"
     implemented: true
