@@ -26,6 +26,7 @@ class CareerGuideAPITester:
         self.created_jobs = []
         self.created_internships = []
         self.created_scholarships = []
+        self.created_articles = []
         
     def test_health_endpoints(self):
         """Test health check endpoints"""
