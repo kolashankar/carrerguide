@@ -801,6 +801,29 @@ class CareerGuideAPITester:
                 print(f"AI Scholarship Generation Error (Expected): {response.text}")
         except Exception as e:
             print(f"POST /admin/scholarships/generate-ai - Error (Expected): {str(e)}")
+        
+        # Test Article AI Generation
+        try:
+            params = {
+                "title": "Machine Learning Career Guide",
+                "category": "career-advice",
+                "author": "AI Expert",
+                "target_audience": "aspiring data scientists",
+                "key_points": "skills,education,job market,salary"
+            }
+            response = self.session.post(f"{BASE_URL}/admin/articles/generate-ai", params=params)
+            print(f"POST /admin/articles/generate-ai - Status: {response.status_code}")
+            if response.status_code in [200, 201]:
+                ai_article = response.json()
+                print(f"AI Generated article: {ai_article}")
+                if '_id' in ai_article:
+                    self.created_articles.append(ai_article['_id'])
+                elif 'id' in ai_article:
+                    self.created_articles.append(ai_article['id'])
+            else:
+                print(f"AI Article Generation Error (Expected): {response.text}")
+        except Exception as e:
+            print(f"POST /admin/articles/generate-ai - Error (Expected): {str(e)}")
     
     def test_search_and_filter(self):
         """Test search and filter functionality"""
