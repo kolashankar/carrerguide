@@ -1,172 +1,215 @@
+diff --git a/backend/api/utils/ai/gemini/generators/articles/prompts/generator.py b/backend/api/utils/ai/gemini/generators/articles/prompts/generator.py
+index 8ca2286..84a4c12 100644
+--- a/backend/api/utils/ai/gemini/generators/articles/prompts/generator.py
++++ b/backend/api/utils/ai/gemini/generators/articles/prompts/generator.py
+@@ -5,7 +5,7 @@ import re
+ class GeminiArticleGenerator:
+     def __init__(self, api_key: str):
+         genai.configure(api_key=api_key)
+-        self.model = genai.GenerativeModel('gemini-pro')
++        self.model = genai.GenerativeModel('gemini-flash-latest')
+     
+     async def generate_article(self, prompt_data: dict) -> dict:
+         """
 diff --git a/model.patch b/model.patch
-index 3cf1e2c..e69de29 100644
+index 9e5a9f5..e69de29 100644
 --- a/model.patch
 +++ b/model.patch
-@@ -1,128 +0,0 @@
+@@ -1,172 +0,0 @@
 -diff --git a/model.patch b/model.patch
--index fcb67f3..e69de29 100644
+-index 3cf1e2c..e69de29 100644
 ---- a/model.patch
 -+++ b/model.patch
--@@ -1,13 +0,0 @@
---diff --git a/backend/api/utils/ai/gemini/generators/jobs/prompts/generator.py b/backend/api/utils/ai/gemini/generators/jobs/prompts/generator.py
---index 7aa6dd0..ba54f52 100644
------ a/backend/api/utils/ai/gemini/generators/jobs/prompts/generator.py
---+++ b/backend/api/utils/ai/gemini/generators/jobs/prompts/generator.py
---@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
--- class GeminiJobGenerator:
---     def __init__(self, api_key: str):
---         genai.configure(api_key=api_key)
----        self.model = genai.GenerativeModel('gemini-1.5-flash-latest')
---+        self.model = genai.GenerativeModel('gemini-flash-latest')
---     
---     async def generate_job_listing(self, prompt_data: Dict[str, Any]) -> Dict[str, Any]:
---         """
+-@@ -1,128 +0,0 @@
+--diff --git a/model.patch b/model.patch
+--index fcb67f3..e69de29 100644
+----- a/model.patch
+--+++ b/model.patch
+--@@ -1,13 +0,0 @@
+---diff --git a/backend/api/utils/ai/gemini/generators/jobs/prompts/generator.py b/backend/api/utils/ai/gemini/generators/jobs/prompts/generator.py
+---index 7aa6dd0..ba54f52 100644
+------ a/backend/api/utils/ai/gemini/generators/jobs/prompts/generator.py
+---+++ b/backend/api/utils/ai/gemini/generators/jobs/prompts/generator.py
+---@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
+--- class GeminiJobGenerator:
+---     def __init__(self, api_key: str):
+---         genai.configure(api_key=api_key)
+----        self.model = genai.GenerativeModel('gemini-1.5-flash-latest')
+---+        self.model = genai.GenerativeModel('gemini-flash-latest')
+---     
+---     async def generate_job_listing(self, prompt_data: Dict[str, Any]) -> Dict[str, Any]:
+---         """
+--diff --git a/test_result.md b/test_result.md
+--index fac41e6..4fefdaf 100644
+----- a/test_result.md
+--+++ b/test_result.md
+--@@ -142,47 +142,59 @@ backend:
+--     file: "/app/backend/server.py"
+--     stuck_count: 0
+--     priority: "high"
+---    needs_retesting: true
+--+    needs_retesting: false
+--     status_history:
+--       - working: "NA"
+--         agent: "main"
+--         comment: "All Jobs CRUD endpoints implemented with search, filter, sort. GET /api/admin/jobs returns empty array (no data yet)"
+--+      - working: true
+--+        agent: "testing"
+--+        comment: "✅ COMPREHENSIVE TESTING COMPLETED: All Jobs CRUD operations working perfectly. Tested: POST /api/admin/jobs (create with full validation), GET /api/admin/jobs (list with pagination), GET /api/admin/jobs/{id} (single job), PUT /api/admin/jobs/{id} (update), DELETE /api/admin/jobs/{id} (delete). Search, filter, sort functionality all working correctly. Proper validation in place requiring description, job_type, category, experience_level. Error handling returns appropriate HTTP status codes for non-existent resources."
+-- 
+--   - task: "Jobs AI generation endpoint with Gemini API"
+--     implemented: true
+---    working: "NA"
+--+    working: true
+--     file: "/app/backend/api/utils/ai/gemini/generators/jobs/prompts/generator.py"
+--     stuck_count: 0
+--     priority: "high"
+---    needs_retesting: true
+--+    needs_retesting: false
+--     status_history:
+--       - working: "NA"
+--         agent: "main"
+--         comment: "AI generation endpoint POST /api/admin/jobs/generate-ai implemented with Gemini API key configured. Not tested yet"
+--+      - working: true
+--+        agent: "testing"
+--+        comment: "✅ AI GENERATION WORKING PERFECTLY: POST /api/admin/jobs/generate-ai successfully generates comprehensive job listings using Gemini API. Tested with multiple job types (Machine Learning Engineer, Marketing Manager, Data Scientist). AI generates complete data including detailed descriptions (1400+ chars), 7+ skills, 7+ responsibilities, qualifications, benefits, and realistic salary ranges. Gemini API key (AIzaSyAP3N0jTzOMpLTRyy9d77Osq2gwpxZned4) is properly configured and functional."
+-- 
+--   - task: "Internships CRUD API endpoints"
+--     implemented: true
+---    working: "NA"
+--+    working: true
+--     file: "/app/backend/server.py"
+--     stuck_count: 0
+--     priority: "high"
+---    needs_retesting: true
+--+    needs_retesting: false
+--     status_history:
+--       - working: "NA"
+--         agent: "main"
+--         comment: "All Internships CRUD endpoints implemented, similar structure to Jobs"
+--+      - working: true
+--+        agent: "testing"
+--+        comment: "✅ INTERNSHIPS CRUD WORKING PERFECTLY: All endpoints tested successfully - POST /api/admin/internships (create), GET /api/admin/internships (list), GET /api/admin/internships/{id} (single), PUT /api/admin/internships/{id} (update), DELETE /api/admin/internships/{id} (delete). Filtering by category and internship_type working correctly. AI generation endpoint also functional with comprehensive data generation including skills, qualifications, learning outcomes, and stipend amounts."
+-- 
+--   - task: "Scholarships CRUD API endpoints"
+--     implemented: true
+---    working: "NA"
+--+    working: true
+--     file: "/app/backend/server.py"
+--     stuck_count: 0
+--     priority: "high"
+---    needs_retesting: true
+--+    needs_retesting: false
+--     status_history:
+--       - working: "NA"
+--         agent: "main"
+--         comment: "All Scholarships CRUD endpoints implemented, similar structure to Jobs"
+--+      - working: true
+--+        agent: "testing"
+--+        comment: "✅ SCHOLARSHIPS CRUD WORKING PERFECTLY: All endpoints tested successfully - POST /api/admin/scholarships (create), GET /api/admin/scholarships (list), GET /api/admin/scholarships/{id} (single), PUT /api/admin/scholarships/{id} (update), DELETE /api/admin/scholarships/{id} (delete). Filtering by education_level, scholarship_type, and country working correctly. AI generation endpoint also functional generating comprehensive scholarship data including eligibility criteria, benefits, application process, and field of study information."
+-- 
+-- frontend:
+--   - task: "Next.js admin dashboard setup with Tailwind CSS"
+--@@ -265,8 +277,6 @@ metadata:
+-- 
+-- test_plan:
+--   current_focus:
+---    - "Jobs CRUD API endpoints (create, read, update, delete)"
+---    - "Jobs AI generation endpoint with Gemini API"
+--     - "Jobs list page with search, filter, sort"
+--     - "Jobs create page (manual form)"
+--     - "Jobs create with AI generation"
+--@@ -289,4 +299,26 @@ agent_communication:
+--       4. Test Internships and Scholarships endpoints
+--       
+--       Backend running on port 8001, Admin dashboard on port 3001.
+---      Gemini API key: AIzaSyAP3N0jTzOMpLTRyy9d77Osq2gwpxZned4
+--\ No newline at end of file
+--+      Gemini API key: AIzaSyAP3N0jTzOMpLTRyy9d77Osq2gwpxZned4
+--+  - agent: "testing"
+--+    message: |
+--+      🎉 COMPREHENSIVE BACKEND TESTING COMPLETED - ALL SYSTEMS OPERATIONAL! 🎉
+--+      
+--+      ✅ JOBS MODULE: All CRUD operations working perfectly
+--+      ✅ INTERNSHIPS MODULE: All CRUD operations working perfectly  
+--+      ✅ SCHOLARSHIPS MODULE: All CRUD operations working perfectly
+--+      ✅ AI GENERATION: Gemini API integration working flawlessly for all modules
+--+      ✅ SEARCH & FILTER: All filtering and sorting functionality operational
+--+      ✅ ERROR HANDLING: Proper validation and HTTP status codes
+--+      ✅ HEALTH CHECKS: Backend healthy, MongoDB connected
+--+      
+--+      BACKEND URL: https://career-backend.preview.emergentagent.com/api
+--+      
+--+      🔥 KEY ACHIEVEMENTS:
+--+      - Tested 18+ API endpoints across Jobs, Internships, Scholarships
+--+      - AI generates comprehensive data (1400+ char descriptions, 7+ skills/responsibilities)
+--+      - Proper validation requiring description, job_type, category, experience_level
+--+      - Search, filter, sort by multiple criteria working correctly
+--+      - All test suites passed: 6/6 (100% success rate)
+--+      
+--+      READY FOR PRODUCTION! Backend is fully functional and ready for frontend integration.
+--\ No newline at end of file
 -diff --git a/test_result.md b/test_result.md
--index fac41e6..4fefdaf 100644
+-index 6f9c881..cd90791 100644
 ---- a/test_result.md
 -+++ b/test_result.md
--@@ -142,47 +142,59 @@ backend:
--     file: "/app/backend/server.py"
--     stuck_count: 0
--     priority: "high"
---    needs_retesting: true
--+    needs_retesting: false
--     status_history:
--       - working: "NA"
--         agent: "main"
--         comment: "All Jobs CRUD endpoints implemented with search, filter, sort. GET /api/admin/jobs returns empty array (no data yet)"
--+      - working: true
--+        agent: "testing"
--+        comment: "✅ COMPREHENSIVE TESTING COMPLETED: All Jobs CRUD operations working perfectly. Tested: POST /api/admin/jobs (create with full validation), GET /api/admin/jobs (list with pagination), GET /api/admin/jobs/{id} (single job), PUT /api/admin/jobs/{id} (update), DELETE /api/admin/jobs/{id} (delete). Search, filter, sort functionality all working correctly. Proper validation in place requiring description, job_type, category, experience_level. Error handling returns appropriate HTTP status codes for non-existent resources."
-- 
--   - task: "Jobs AI generation endpoint with Gemini API"
--     implemented: true
---    working: "NA"
--+    working: true
--     file: "/app/backend/api/utils/ai/gemini/generators/jobs/prompts/generator.py"
--     stuck_count: 0
--     priority: "high"
---    needs_retesting: true
--+    needs_retesting: false
--     status_history:
--       - working: "NA"
--         agent: "main"
--         comment: "AI generation endpoint POST /api/admin/jobs/generate-ai implemented with Gemini API key configured. Not tested yet"
--+      - working: true
--+        agent: "testing"
--+        comment: "✅ AI GENERATION WORKING PERFECTLY: POST /api/admin/jobs/generate-ai successfully generates comprehensive job listings using Gemini API. Tested with multiple job types (Machine Learning Engineer, Marketing Manager, Data Scientist). AI generates complete data including detailed descriptions (1400+ chars), 7+ skills, 7+ responsibilities, qualifications, benefits, and realistic salary ranges. Gemini API key (AIzaSyAP3N0jTzOMpLTRyy9d77Osq2gwpxZned4) is properly configured and functional."
-- 
--   - task: "Internships CRUD API endpoints"
--     implemented: true
---    working: "NA"
--+    working: true
--     file: "/app/backend/server.py"
--     stuck_count: 0
--     priority: "high"
---    needs_retesting: true
--+    needs_retesting: false
--     status_history:
--       - working: "NA"
--         agent: "main"
--         comment: "All Internships CRUD endpoints implemented, similar structure to Jobs"
--+      - working: true
--+        agent: "testing"
--+        comment: "✅ INTERNSHIPS CRUD WORKING PERFECTLY: All endpoints tested successfully - POST /api/admin/internships (create), GET /api/admin/internships (list), GET /api/admin/internships/{id} (single), PUT /api/admin/internships/{id} (update), DELETE /api/admin/internships/{id} (delete). Filtering by category and internship_type working correctly. AI generation endpoint also functional with comprehensive data generation including skills, qualifications, learning outcomes, and stipend amounts."
-- 
--   - task: "Scholarships CRUD API endpoints"
--     implemented: true
---    working: "NA"
--+    working: true
--     file: "/app/backend/server.py"
--     stuck_count: 0
--     priority: "high"
---    needs_retesting: true
--+    needs_retesting: false
--     status_history:
--       - working: "NA"
--         agent: "main"
--         comment: "All Scholarships CRUD endpoints implemented, similar structure to Jobs"
--+      - working: true
--+        agent: "testing"
--+        comment: "✅ SCHOLARSHIPS CRUD WORKING PERFECTLY: All endpoints tested successfully - POST /api/admin/scholarships (create), GET /api/admin/scholarships (list), GET /api/admin/scholarships/{id} (single), PUT /api/admin/scholarships/{id} (update), DELETE /api/admin/scholarships/{id} (delete). Filtering by education_level, scholarship_type, and country working correctly. AI generation endpoint also functional generating comprehensive scholarship data including eligibility criteria, benefits, application process, and field of study information."
-- 
-- frontend:
--   - task: "Next.js admin dashboard setup with Tailwind CSS"
--@@ -265,8 +277,6 @@ metadata:
-- 
-- test_plan:
--   current_focus:
---    - "Jobs CRUD API endpoints (create, read, update, delete)"
---    - "Jobs AI generation endpoint with Gemini API"
--     - "Jobs list page with search, filter, sort"
--     - "Jobs create page (manual form)"
--     - "Jobs create with AI generation"
--@@ -289,4 +299,26 @@ agent_communication:
--       4. Test Internships and Scholarships endpoints
+-@@ -330,4 +330,31 @@ agent_communication:
+-       - Search, filter, sort by multiple criteria working correctly
+-       - All test suites passed: 6/6 (100% success rate)
 -       
--       Backend running on port 8001, Admin dashboard on port 3001.
---      Gemini API key: AIzaSyAP3N0jTzOMpLTRyy9d77Osq2gwpxZned4
+--      READY FOR PRODUCTION! Backend is fully functional and ready for frontend integration.
 -\ No newline at end of file
--+      Gemini API key: AIzaSyAP3N0jTzOMpLTRyy9d77Osq2gwpxZned4
--+  - agent: "testing"
--+    message: |
--+      🎉 COMPREHENSIVE BACKEND TESTING COMPLETED - ALL SYSTEMS OPERATIONAL! 🎉
--+      
--+      ✅ JOBS MODULE: All CRUD operations working perfectly
--+      ✅ INTERNSHIPS MODULE: All CRUD operations working perfectly  
--+      ✅ SCHOLARSHIPS MODULE: All CRUD operations working perfectly
--+      ✅ AI GENERATION: Gemini API integration working flawlessly for all modules
--+      ✅ SEARCH & FILTER: All filtering and sorting functionality operational
--+      ✅ ERROR HANDLING: Proper validation and HTTP status codes
--+      ✅ HEALTH CHECKS: Backend healthy, MongoDB connected
--+      
--+      BACKEND URL: https://career-backend.preview.emergentagent.com/api
--+      
--+      🔥 KEY ACHIEVEMENTS:
--+      - Tested 18+ API endpoints across Jobs, Internships, Scholarships
--+      - AI generates comprehensive data (1400+ char descriptions, 7+ skills/responsibilities)
--+      - Proper validation requiring description, job_type, category, experience_level
--+      - Search, filter, sort by multiple criteria working correctly
--+      - All test suites passed: 6/6 (100% success rate)
--+      
 -+      READY FOR PRODUCTION! Backend is fully functional and ready for frontend integration.
+-+  - agent: "main"
+-+    message: |
+-+      📚 LEARNING MODULE (ARTICLES) - BACKEND IMPLEMENTATION COMPLETE
+-+      
+-+      Implemented full Articles module following the same 8-level nested architecture:
+-+      
+-+      ✅ BACKEND COMPLETE:
+-+      - Article Model: title, content (markdown), excerpt, author, tags, category, cover_image, read_time, is_published, views_count
+-+      - Article Handlers: /app/backend/api/routes/admin/articles/management/crud/operations/handlers/article_handlers.py
+-+      - AI Generator: /app/backend/api/utils/ai/gemini/generators/articles/prompts/generator.py
+-+      - Gemini AI generates 1500+ word articles with proper Markdown formatting
+-+      
+-+      📍 ADMIN ENDPOINTS:
+-+      - POST /api/admin/articles - Create article manually
+-+      - POST /api/admin/articles/generate-ai - AI generate article (title, category, author, target_audience, key_points)
+-+      - GET /api/admin/articles - List with filters (search, category, tags, is_published, sort)
+-+      - GET /api/admin/articles/{id} - Get single article
+-+      - PUT /api/admin/articles/{id} - Update article
+-+      - DELETE /api/admin/articles/{id} - Delete article
+-+      - POST /api/admin/articles/{id}/toggle-publish - Toggle publish status
+-+      
+-+      📍 USER ENDPOINTS:
+-+      - GET /api/user/articles - Browse published articles
+-+      - GET /api/user/articles/{id} - View article (increments view count)
+-+      
+-+      READY FOR TESTING: Please test all Articles CRUD operations and AI generation with Gemini.
+-+      Gemini API Key: AIzaSyAP3N0jTzOMpLTRyy9d77Osq2gwpxZned4
 -\ No newline at end of file
 diff --git a/test_result.md b/test_result.md
-index 6f9c881..cd90791 100644
+index cd90791..345d6a5 100644
 --- a/test_result.md
 +++ b/test_result.md
-@@ -330,4 +330,31 @@ agent_communication:
-       - Search, filter, sort by multiple criteria working correctly
-       - All test suites passed: 6/6 (100% success rate)
-       
--      READY FOR PRODUCTION! Backend is fully functional and ready for frontend integration.
-\ No newline at end of file
-+      READY FOR PRODUCTION! Backend is fully functional and ready for frontend integration.
-+  - agent: "main"
-+    message: |
-+      📚 LEARNING MODULE (ARTICLES) - BACKEND IMPLEMENTATION COMPLETE
-+      
-+      Implemented full Articles module following the same 8-level nested architecture:
-+      
-+      ✅ BACKEND COMPLETE:
-+      - Article Model: title, content (markdown), excerpt, author, tags, category, cover_image, read_time, is_published, views_count
-+      - Article Handlers: /app/backend/api/routes/admin/articles/management/crud/operations/handlers/article_handlers.py
-+      - AI Generator: /app/backend/api/utils/ai/gemini/generators/articles/prompts/generator.py
-+      - Gemini AI generates 1500+ word articles with proper Markdown formatting
-+      
-+      📍 ADMIN ENDPOINTS:
-+      - POST /api/admin/articles - Create article manually
-+      - POST /api/admin/articles/generate-ai - AI generate article (title, category, author, target_audience, key_points)
-+      - GET /api/admin/articles - List with filters (search, category, tags, is_published, sort)
-+      - GET /api/admin/articles/{id} - Get single article
-+      - PUT /api/admin/articles/{id} - Update article
-+      - DELETE /api/admin/articles/{id} - Delete article
-+      - POST /api/admin/articles/{id}/toggle-publish - Toggle publish status
-+      
-+      📍 USER ENDPOINTS:
-+      - GET /api/user/articles - Browse published articles
-+      - GET /api/user/articles/{id} - View article (increments view count)
-+      
-+      READY FOR TESTING: Please test all Articles CRUD operations and AI generation with Gemini.
-+      Gemini API Key: AIzaSyAP3N0jTzOMpLTRyy9d77Osq2gwpxZned4
-\ No newline at end of file
+@@ -198,15 +198,18 @@ backend:
+ 
+   - task: "Articles CRUD API endpoints (Learning Module)"
+     implemented: true
+-    working: "NA"
++    working: true
+     file: "/app/backend/server.py"
+     stuck_count: 0
+     priority: "high"
+-    needs_retesting: true
++    needs_retesting: false
+     status_history:
+       - working: "NA"
+         agent: "main"
+         comment: "Articles CRUD endpoints implemented with full functionality: POST /api/admin/articles (create), POST /api/admin/articles/generate-ai (AI generation), GET /api/admin/articles (list with search/filter), GET /api/admin/articles/{id} (single), PUT /api/admin/articles/{id} (update), DELETE /api/admin/articles/{id} (delete), POST /api/admin/articles/{id}/toggle-publish (toggle publish status). Also added public user routes: GET /api/user/articles and GET /api/user/articles/{id}. Article model includes: title, content (markdown), excerpt, author, tags (array), category, cover_image, read_time, is_published, views_count. AI generator creates comprehensive 1500+ word articles with proper Markdown formatting."
++      - working: true
++        agent: "testing"
++        comment: "✅ COMPREHENSIVE ARTICLES TESTING COMPLETED: All Articles CRUD operations working perfectly. Tested: POST /api/admin/articles (create with full validation), GET /api/admin/articles (list with search/filter/sort), GET /api/admin/articles/{id} (single article), PUT /api/admin/articles/{id} (update), DELETE /api/admin/articles/{id} (delete), POST /api/admin/articles/{id}/toggle-publish (toggle publish status). AI generation with Gemini API working flawlessly - generates 1500+ word comprehensive articles with proper Markdown formatting. Search and filter functionality working correctly (by title, category, tags, publish status). Public user endpoints working: GET /api/user/articles (published only), GET /api/user/articles/{id} (increments view count). Validation working properly for missing required fields. Fixed Gemini model from deprecated 'gemini-pro' to 'gemini-flash-latest'. All test suites passed: 10/10 (100% success rate)."
+ 
+ frontend:
+   - task: "Next.js admin dashboard setup with Tailwind CSS"
