@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Testing for DSA Corner Module
-Tests all DSA Topics, Questions, and Sheets endpoints with AI generation
+Comprehensive Backend Testing for CareerGuide API
+Testing 4 newly implemented modules:
+1. DSA Companies Module
+2. Roadmaps Module (Visual Node-Based)
+3. Authentication System
+4. Career Tools Module (Auth Required)
 """
 
-import requests
-import json
-import sys
 import asyncio
-from typing import Dict, List, Any, Optional
+import aiohttp
+import json
+import uuid
+from typing import Dict, Any, Optional
 from datetime import datetime
 
 # Backend URL from environment
