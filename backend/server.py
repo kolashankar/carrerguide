@@ -65,6 +65,10 @@ dsa_sheet_handlers = DSASheetHandlers(db)
 company_handlers = CompanyHandlers(db)
 roadmap_handlers = RoadmapHandlers(db)
 auth_handlers = AuthHandlers(db)
+analytics_handlers = AnalyticsHandlers(db)
+bulk_operations_handlers = BulkOperationsHandlers(db)
+content_approval_handlers = ContentApprovalHandlers(db)
+push_notification_handlers = PushNotificationHandlers(db)
 
 # Initialize Gemini AI
 gemini_api_key = os.environ.get('GEMINI_API_KEY')
