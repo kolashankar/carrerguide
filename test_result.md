@@ -277,8 +277,6 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Jobs CRUD API endpoints (create, read, update, delete)"
-    - "Jobs AI generation endpoint with Gemini API"
     - "Jobs list page with search, filter, sort"
     - "Jobs create page (manual form)"
     - "Jobs create with AI generation"
