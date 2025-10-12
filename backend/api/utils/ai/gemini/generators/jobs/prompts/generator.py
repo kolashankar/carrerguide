@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 class GeminiJobGenerator:
     def __init__(self, api_key: str):
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel('gemini-1.5-flash')
+        self.model = genai.GenerativeModel('models/gemini-1.5-flash')
     
     async def generate_job_listing(self, prompt_data: Dict[str, Any]) -> Dict[str, Any]:
         """
