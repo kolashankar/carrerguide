@@ -61,6 +61,7 @@ dsa_question_handlers = DSAQuestionHandlers(db)
 dsa_sheet_handlers = DSASheetHandlers(db)
 company_handlers = CompanyHandlers(db)
 roadmap_handlers = RoadmapHandlers(db)
+auth_handlers = AuthHandlers(db)
 
 # Initialize Gemini AI
 gemini_api_key = os.environ.get('GEMINI_API_KEY')
@@ -68,6 +69,28 @@ gemini_generator = GeminiJobGenerator(gemini_api_key) if gemini_api_key else Non
 article_gemini_generator = GeminiArticleGenerator(gemini_api_key) if gemini_api_key else None
 dsa_gemini_generator = GeminiDSAGenerator(gemini_api_key) if gemini_api_key else None
 roadmap_gemini_generator = GeminiRoadmapGenerator(gemini_api_key) if gemini_api_key else None
+career_tools_handlers = CareerToolsHandlers(db, gemini_api_key) if gemini_api_key else None
+
+# Security
+security = HTTPBearer()
+
+# =============================================================================
+# AUTH DEPENDENCY
+# =============================================================================
+
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get current authenticated user from token"""
+    token = credentials.credentials
+    user = await auth_handlers.get_current_user(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+    return user
+
+async def get_current_admin(user = Depends(get_current_user)):
+    """Ensure current user is admin"""
+    if user.get("user_type") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return user
 
 # Create the main app without a prefix
 app = FastAPI(title="CareerGuide API", version="1.0.0")
