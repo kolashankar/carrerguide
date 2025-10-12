@@ -263,6 +263,86 @@ async def delete_scholarship(scholarship_id: str):
     return await scholarship_handlers.delete_scholarship(scholarship_id)
 
 # =============================================================================
+# ADMIN ROUTES - ARTICLES
+# =============================================================================
+
+@api_router.post("/admin/articles", response_model=dict, tags=["Admin - Articles"])
+async def create_article(article: ArticleCreate):
+    """Create a new article manually"""
+    return await article_handlers.create_article(article.dict())
+
+@api_router.post("/admin/articles/generate-ai", response_model=dict, tags=["Admin - Articles"])
+async def generate_article_with_ai(
+    title: str = Query(..., description="Article title"),
+    category: str = Query(default="technology", description="Article category"),
+    author: str = Query(default="Admin", description="Author name"),
+    target_audience: str = Query(default="professionals and students", description="Target audience"),
+    key_points: Optional[str] = Query(None, description="Comma-separated key points to cover")
+):
+    """Generate an article using Gemini AI"""
+    if not article_gemini_generator:
+        return {"error": "Gemini API not configured"}
+    
+    prompt_data = {
+        "title": title,
+        "category": category,
+        "author": author,
+        "target_audience": target_audience
+    }
+    
+    # Parse key points if provided
+    if key_points:
+        prompt_data["key_points"] = [kp.strip() for kp in key_points.split(",")]
+    
+    generated_article = await article_gemini_generator.generate_article(prompt_data)
+    return await article_handlers.create_article(generated_article)
+
+@api_router.get("/admin/articles", tags=["Admin - Articles"])
+async def get_all_articles(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=1000),
+    search: Optional[str] = Query(None),
+    category: Optional[str] = Query(None),
+    tags: Optional[str] = Query(None, description="Comma-separated tags"),
+    is_published: Optional[bool] = Query(None),
+    sort_by: str = Query("created_at"),
+    sort_order: int = Query(-1, ge=-1, le=1)
+):
+    """Get all articles with filtering and sorting"""
+    tags_list = [tag.strip() for tag in tags.split(",")] if tags else None
+    
+    return await article_handlers.get_all_articles(
+        skip=skip,
+        limit=limit,
+        search=search,
+        category=category,
+        tags=tags_list,
+        is_published=is_published,
+        sort_by=sort_by,
+        sort_order=sort_order
+    )
+
+@api_router.get("/admin/articles/{article_id}", tags=["Admin - Articles"])
+async def get_article(article_id: str):
+    """Get a specific article by ID"""
+    return await article_handlers.get_article_by_id(article_id)
+
+@api_router.put("/admin/articles/{article_id}", tags=["Admin - Articles"])
+async def update_article(article_id: str, article: ArticleUpdate):
+    """Update an article"""
+    return await article_handlers.update_article(article_id, article.dict(exclude_unset=True))
+
+@api_router.delete("/admin/articles/{article_id}", tags=["Admin - Articles"])
+async def delete_article(article_id: str):
+    """Delete an article"""
+    return await article_handlers.delete_article(article_id)
+
+@api_router.post("/admin/articles/{article_id}/toggle-publish", tags=["Admin - Articles"])
+async def toggle_article_publish(article_id: str):
+    """Toggle article publish status"""
+    return await article_handlers.toggle_publish_status(article_id)
+
+# =============================================================================
 # USER ROUTES - JOBS (Public facing)
 # =============================================================================
 
