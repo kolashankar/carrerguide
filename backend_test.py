@@ -16,11 +16,20 @@ BACKEND_URL = "https://jobadmin-portal.preview.emergentagent.com/api"
 
 class DSABackendTester:
     def __init__(self):
-        self.session = requests.Session()
-        self.created_jobs = []
-        self.created_internships = []
-        self.created_scholarships = []
-        self.created_articles = []
+        self.session = None
+        self.base_url = BACKEND_URL
+        self.test_results = {
+            "topics": {"passed": 0, "failed": 0, "errors": []},
+            "questions": {"passed": 0, "failed": 0, "errors": []},
+            "sheets": {"passed": 0, "failed": 0, "errors": []},
+            "integration": {"passed": 0, "failed": 0, "errors": []},
+            "ai_generation": {"passed": 0, "failed": 0, "errors": []}
+        }
+        self.created_resources = {
+            "topics": [],
+            "questions": [],
+            "sheets": []
+        }
         
     def test_health_endpoints(self):
         """Test health check endpoints"""
