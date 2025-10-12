@@ -421,6 +421,35 @@ async def get_user_scholarships(
         sort_order=sort_order
     )
 
+@api_router.get("/user/articles", tags=["User - Articles"])
+async def get_user_articles(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(20, ge=1, le=100),
+    search: Optional[str] = Query(None),
+    category: Optional[str] = Query(None),
+    tags: Optional[str] = Query(None),
+    sort_by: str = Query("created_at"),
+    sort_order: int = Query(-1)
+):
+    """Public endpoint for users to browse published articles"""
+    tags_list = [tag.strip() for tag in tags.split(",")] if tags else None
+    
+    return await article_handlers.get_all_articles(
+        skip=skip,
+        limit=limit,
+        search=search,
+        category=category,
+        tags=tags_list,
+        is_published=True,  # Only show published articles
+        sort_by=sort_by,
+        sort_order=sort_order
+    )
+
+@api_router.get("/user/articles/{article_id}", tags=["User - Articles"])
+async def get_user_article(article_id: str):
+    """Public endpoint to get a specific article (increments view count)"""
+    return await article_handlers.get_article_by_id(article_id)
+
 # =============================================================================
 # Health Check
 # =============================================================================
