@@ -650,6 +650,92 @@ async def delete_company(company_id: str):
     return {"success": success, "message": "Company deleted" if success else "Company not found"}
 
 # =============================================================================
+# ADMIN ROUTES - ROADMAPS
+# =============================================================================
+
+@api_router.post("/admin/roadmaps", response_model=dict, tags=["Admin - Roadmaps"])
+async def create_roadmap(roadmap: RoadmapCreate):
+    """Create a new roadmap manually"""
+    return await roadmap_handlers.create_roadmap(roadmap.dict())
+
+@api_router.post("/admin/roadmaps/generate-ai", response_model=dict, tags=["Admin - Roadmaps"])
+async def generate_roadmap_with_ai(prompt_data: RoadmapAIGenerate):
+    """Generate a complete roadmap using Gemini AI"""
+    if not roadmap_gemini_generator:
+        return {"error": "Gemini API not configured"}
+    
+    generated_roadmap = await roadmap_gemini_generator.generate_roadmap(prompt_data.dict())
+    return await roadmap_handlers.create_roadmap(generated_roadmap)
+
+@api_router.get("/admin/roadmaps", tags=["Admin - Roadmaps"])
+async def get_all_roadmaps(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=100),
+    search: Optional[str] = Query(None),
+    category: Optional[str] = Query(None),
+    subcategory: Optional[str] = Query(None),
+    difficulty_level: Optional[str] = Query(None),
+    is_published: Optional[bool] = Query(None),
+    is_active: Optional[bool] = Query(None),
+    sort_by: str = Query("created_at"),
+    sort_order: str = Query("desc")
+):
+    """Get list of roadmaps with filters"""
+    return await roadmap_handlers.get_roadmaps(
+        skip=skip,
+        limit=limit,
+        search=search,
+        category=category,
+        subcategory=subcategory,
+        difficulty_level=difficulty_level,
+        is_published=is_published,
+        is_active=is_active,
+        sort_by=sort_by,
+        sort_order=sort_order
+    )
+
+@api_router.get("/admin/roadmaps/stats", tags=["Admin - Roadmaps"])
+async def get_roadmap_stats():
+    """Get roadmap statistics"""
+    return await roadmap_handlers.get_statistics()
+
+@api_router.get("/admin/roadmaps/{roadmap_id}", tags=["Admin - Roadmaps"])
+async def get_roadmap(roadmap_id: str):
+    """Get single roadmap by ID"""
+    return await roadmap_handlers.get_roadmap_by_id(roadmap_id)
+
+@api_router.put("/admin/roadmaps/{roadmap_id}", tags=["Admin - Roadmaps"])
+async def update_roadmap(roadmap_id: str, roadmap: RoadmapUpdate):
+    """Update roadmap"""
+    return await roadmap_handlers.update_roadmap(roadmap_id, roadmap.dict(exclude_unset=True))
+
+@api_router.delete("/admin/roadmaps/{roadmap_id}", tags=["Admin - Roadmaps"])
+async def delete_roadmap(roadmap_id: str):
+    """Delete roadmap"""
+    success = await roadmap_handlers.delete_roadmap(roadmap_id)
+    return {"success": success, "message": "Roadmap deleted" if success else "Roadmap not found"}
+
+@api_router.post("/admin/roadmaps/{roadmap_id}/toggle-publish", tags=["Admin - Roadmaps"])
+async def toggle_roadmap_publish(roadmap_id: str):
+    """Toggle publish status of a roadmap"""
+    return await roadmap_handlers.toggle_publish(roadmap_id)
+
+@api_router.post("/admin/roadmaps/{roadmap_id}/nodes", tags=["Admin - Roadmaps"])
+async def add_roadmap_node(roadmap_id: str, node: RoadmapNode):
+    """Add a node to roadmap"""
+    return await roadmap_handlers.add_node(roadmap_id, node.dict())
+
+@api_router.put("/admin/roadmaps/{roadmap_id}/nodes/{node_id}", tags=["Admin - Roadmaps"])
+async def update_roadmap_node(roadmap_id: str, node_id: str, node: RoadmapNode):
+    """Update a specific node in roadmap"""
+    return await roadmap_handlers.update_node(roadmap_id, node_id, node.dict())
+
+@api_router.delete("/admin/roadmaps/{roadmap_id}/nodes/{node_id}", tags=["Admin - Roadmaps"])
+async def delete_roadmap_node(roadmap_id: str, node_id: str):
+    """Delete a node from roadmap"""
+    return await roadmap_handlers.delete_node(roadmap_id, node_id)
+
+# =============================================================================
 # USER ROUTES - JOBS (Public facing)
 # =============================================================================
 
