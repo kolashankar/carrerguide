@@ -324,7 +324,7 @@ agent_communication:
       ✅ ERROR HANDLING: Proper validation and HTTP status codes
       ✅ HEALTH CHECKS: Backend healthy, MongoDB connected
       
-      BACKEND URL: https://career-backend.preview.emergentagent.com/api
+      BACKEND URL: https://jobadmin-portal.preview.emergentagent.com/api
       
       🔥 KEY ACHIEVEMENTS:
       - Tested 18+ API endpoints across Jobs, Internships, Scholarships
