@@ -438,7 +438,9 @@ class CareerGuideAPITester:
             if response.status_code in [200, 201]:
                 ai_job = response.json()
                 print(f"AI Generated job: {ai_job}")
-                if 'id' in ai_job:
+                if '_id' in ai_job:
+                    self.created_jobs.append(ai_job['_id'])
+                elif 'id' in ai_job:
                     self.created_jobs.append(ai_job['id'])
             else:
                 print(f"AI Job Generation Error (Expected): {response.text}")
