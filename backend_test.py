@@ -556,7 +556,9 @@ class CareerGuideAPITester:
                     print("✅ All required fields populated in AI generated article")
                 
                 # Store the created article ID for cleanup
-                if '_id' in ai_article:
+                if 'data' in ai_article and 'id' in ai_article['data']:
+                    self.created_articles.append(ai_article['data']['id'])
+                elif '_id' in ai_article:
                     self.created_articles.append(ai_article['_id'])
                 elif 'id' in ai_article:
                     self.created_articles.append(ai_article['id'])
