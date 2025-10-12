@@ -12,16 +12,23 @@ from api.models.schemas.jobs.fields.validators.custom.job_model import JobCreate
 from api.models.schemas.internships.fields.validators.custom.internship_model import InternshipCreate, InternshipUpdate, InternshipResponse
 from api.models.schemas.scholarships.fields.validators.custom.scholarship_model import ScholarshipCreate, ScholarshipUpdate, ScholarshipResponse
 from api.models.schemas.articles.fields.validators.custom.article_model import ArticleCreate, ArticleUpdate, ArticleResponse
+from api.models.schemas.dsa.topics.fields.validators.custom.topic_model import DSATopicCreate, DSATopicUpdate, DSATopicResponse
+from api.models.schemas.dsa.questions.fields.validators.custom.question_model import DSAQuestionCreate, DSAQuestionUpdate, DSAQuestionResponse
+from api.models.schemas.dsa.sheets.fields.validators.custom.sheet_model import DSASheetCreate, DSASheetUpdate, DSASheetResponse
 
 # Import handlers
 from api.routes.admin.jobs.management.crud.operations.handlers.job_handlers import JobHandlers
 from api.routes.admin.internships.management.crud.operations.handlers.internship_handlers import InternshipHandlers
 from api.routes.admin.scholarships.management.crud.operations.handlers.scholarship_handlers import ScholarshipHandlers
 from api.routes.admin.articles.management.crud.operations.handlers.article_handlers import ArticleHandlers
+from api.routes.admin.dsa.topics.management.crud.operations.handlers.topic_handlers import DSATopicHandlers
+from api.routes.admin.dsa.questions.management.crud.operations.handlers.question_handlers import DSAQuestionHandlers
+from api.routes.admin.dsa.sheets.management.crud.operations.handlers.sheet_handlers import DSASheetHandlers
 
 # Import AI generators
 from api.utils.ai.gemini.generators.jobs.prompts.generator import GeminiJobGenerator
 from api.utils.ai.gemini.generators.articles.prompts.generator import GeminiArticleGenerator
+from api.utils.ai.gemini.generators.dsa.questions.prompts.generator import GeminiDSAGenerator
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
