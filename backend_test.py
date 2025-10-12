@@ -4,8 +4,7 @@ Comprehensive Backend Testing for DSA Corner Module
 Tests all DSA Topics, Questions, and Sheets endpoints with AI generation
 """
 
-import asyncio
-import aiohttp
+import requests
 import json
 import sys
 from typing import Dict, List, Any, Optional
@@ -16,7 +15,7 @@ BACKEND_URL = "https://jobadmin-portal.preview.emergentagent.com/api"
 
 class DSABackendTester:
     def __init__(self):
-        self.session = None
+        self.session = requests.Session()
         self.base_url = BACKEND_URL
         self.test_results = {
             "topics": {"passed": 0, "failed": 0, "errors": []},
@@ -31,15 +30,7 @@ class DSABackendTester:
             "sheets": []
         }
 
-    async def __aenter__(self):
-        self.session = aiohttp.ClientSession()
-        return self
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        if self.session:
-            await self.session.close()
-
-    async def make_request(self, method: str, endpoint: str, data: Dict = None, params: Dict = None) -> Dict:
+    def make_request(self, method: str, endpoint: str, data: Dict = None, params: Dict = None) -> Dict:
         """Make HTTP request and return response"""
         url = f"{self.base_url}{endpoint}"
         
