@@ -289,10 +289,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Jobs list page with search, filter, sort"
-    - "Jobs create page (manual form)"
-    - "Jobs create with AI generation"
-    - "Jobs edit page"
+    - "Articles CRUD API endpoints (Learning Module)"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
