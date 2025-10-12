@@ -352,6 +352,315 @@ class CareerGuideAPITester:
         
         return True
     
+    def test_articles_crud(self):
+        """Test Articles CRUD operations"""
+        print("\n=== TESTING ARTICLES CRUD OPERATIONS ===")
+        
+        # Test data for article creation
+        article_data = {
+            "title": "How to Ace Technical Interviews",
+            "content": "# How to Ace Technical Interviews\n\nTechnical interviews can be challenging, but with proper preparation, you can succeed...",
+            "excerpt": "Learn the essential strategies and tips to excel in technical interviews and land your dream job.",
+            "author": "Career Expert",
+            "tags": ["interview-tips", "career-advice", "technical-skills"],
+            "category": "interview-tips",
+            "cover_image": "https://example.com/interview-tips.jpg",
+            "read_time": 8,
+            "is_published": True
+        }
+        
+        # 1. Create Article
+        try:
+            response = self.session.post(f"{BASE_URL}/admin/articles", json=article_data)
+            print(f"POST /admin/articles - Status: {response.status_code}")
+            if response.status_code in [200, 201]:
+                article_response = response.json()
+                print(f"Created article: {article_response}")
+                if '_id' in article_response:
+                    article_id = article_response['_id']
+                    self.created_articles.append(article_id)
+                    print(f"Article created with ID: {article_id}")
+                elif 'id' in article_response:
+                    article_id = article_response['id']
+                    self.created_articles.append(article_id)
+                    print(f"Article created with ID: {article_id}")
+                else:
+                    print("Warning: No ID returned in article creation response")
+                    return False
+            else:
+                print(f"Error creating article: {response.text}")
+                return False
+        except Exception as e:
+            print(f"POST /admin/articles - Error: {str(e)}")
+            return False
+        
+        # 2. Get All Articles
+        try:
+            response = self.session.get(f"{BASE_URL}/admin/articles")
+            print(f"GET /admin/articles - Status: {response.status_code}")
+            if response.status_code == 200:
+                articles = response.json()
+                print(f"Retrieved {len(articles.get('articles', []))} articles")
+            else:
+                print(f"Error getting articles: {response.text}")
+                return False
+        except Exception as e:
+            print(f"GET /admin/articles - Error: {str(e)}")
+            return False
+        
+        # 3. Get Article by ID
+        if self.created_articles:
+            try:
+                article_id = self.created_articles[0]
+                response = self.session.get(f"{BASE_URL}/admin/articles/{article_id}")
+                print(f"GET /admin/articles/{article_id} - Status: {response.status_code}")
+                if response.status_code == 200:
+                    article = response.json()
+                    print(f"Retrieved article: {article.get('title', 'Unknown')}")
+                else:
+                    print(f"Error getting article by ID: {response.text}")
+                    return False
+            except Exception as e:
+                print(f"GET /admin/articles/{article_id} - Error: {str(e)}")
+                return False
+        
+        # 4. Update Article
+        if self.created_articles:
+            try:
+                article_id = self.created_articles[0]
+                update_data = {"title": "Updated: How to Ace Technical Interviews", "read_time": 10}
+                response = self.session.put(f"{BASE_URL}/admin/articles/{article_id}", json=update_data)
+                print(f"PUT /admin/articles/{article_id} - Status: {response.status_code}")
+                if response.status_code == 200:
+                    updated_article = response.json()
+                    print(f"Updated article: {updated_article}")
+                else:
+                    print(f"Error updating article: {response.text}")
+                    return False
+            except Exception as e:
+                print(f"PUT /admin/articles/{article_id} - Error: {str(e)}")
+                return False
+        
+        # 5. Toggle Publish Status
+        if self.created_articles:
+            try:
+                article_id = self.created_articles[0]
+                response = self.session.post(f"{BASE_URL}/admin/articles/{article_id}/toggle-publish")
+                print(f"POST /admin/articles/{article_id}/toggle-publish - Status: {response.status_code}")
+                if response.status_code == 200:
+                    toggled_article = response.json()
+                    print(f"Toggled article publish status: {toggled_article}")
+                else:
+                    print(f"Error toggling article publish status: {response.text}")
+                    return False
+            except Exception as e:
+                print(f"POST /admin/articles/{article_id}/toggle-publish - Error: {str(e)}")
+                return False
+        
+        # 6. Test Article Filtering and Search
+        try:
+            # Test search by title
+            response = self.session.get(f"{BASE_URL}/admin/articles?search=Interview")
+            print(f"GET /admin/articles?search=Interview - Status: {response.status_code}")
+            if response.status_code == 200:
+                articles = response.json()
+                print(f"Search results: {len(articles.get('articles', []))} articles")
+            else:
+                print(f"Error searching articles: {response.text}")
+                return False
+        except Exception as e:
+            print(f"GET /admin/articles (search) - Error: {str(e)}")
+            return False
+        
+        try:
+            # Test filter by category
+            response = self.session.get(f"{BASE_URL}/admin/articles?category=interview-tips")
+            print(f"GET /admin/articles?category=interview-tips - Status: {response.status_code}")
+            if response.status_code == 200:
+                articles = response.json()
+                print(f"Category filtered articles: {len(articles.get('articles', []))}")
+            else:
+                print(f"Error filtering articles by category: {response.text}")
+                return False
+        except Exception as e:
+            print(f"GET /admin/articles (category filter) - Error: {str(e)}")
+            return False
+        
+        try:
+            # Test filter by tags
+            response = self.session.get(f"{BASE_URL}/admin/articles?tags=interview-tips,career-advice")
+            print(f"GET /admin/articles?tags=interview-tips,career-advice - Status: {response.status_code}")
+            if response.status_code == 200:
+                articles = response.json()
+                print(f"Tag filtered articles: {len(articles.get('articles', []))}")
+            else:
+                print(f"Error filtering articles by tags: {response.text}")
+                return False
+        except Exception as e:
+            print(f"GET /admin/articles (tags filter) - Error: {str(e)}")
+            return False
+        
+        try:
+            # Test filter by is_published
+            response = self.session.get(f"{BASE_URL}/admin/articles?is_published=true")
+            print(f"GET /admin/articles?is_published=true - Status: {response.status_code}")
+            if response.status_code == 200:
+                articles = response.json()
+                print(f"Published articles: {len(articles.get('articles', []))}")
+            else:
+                print(f"Error filtering articles by publish status: {response.text}")
+                return False
+        except Exception as e:
+            print(f"GET /admin/articles (publish filter) - Error: {str(e)}")
+            return False
+        
+        return True
+    
+    def test_articles_ai_generation(self):
+        """Test Articles AI generation with Gemini"""
+        print("\n=== TESTING ARTICLES AI GENERATION ===")
+        
+        try:
+            params = {
+                "title": "How to Ace Technical Interviews",
+                "category": "interview-tips",
+                "author": "Admin",
+                "target_audience": "software engineers",
+                "key_points": "preparation,practice,common questions"
+            }
+            response = self.session.post(f"{BASE_URL}/admin/articles/generate-ai", params=params)
+            print(f"POST /admin/articles/generate-ai - Status: {response.status_code}")
+            if response.status_code in [200, 201]:
+                ai_article = response.json()
+                print(f"AI Generated article: {ai_article.get('title', 'Unknown')}")
+                
+                # Verify AI generated content
+                content = ai_article.get('content', '')
+                if len(content) >= 1500:
+                    print(f"✅ AI generated comprehensive content ({len(content)} characters)")
+                else:
+                    print(f"⚠️ AI generated content is shorter than expected ({len(content)} characters)")
+                
+                # Check if all required fields are populated
+                required_fields = ['title', 'content', 'excerpt', 'author', 'tags', 'category', 'read_time']
+                missing_fields = [field for field in required_fields if not ai_article.get(field)]
+                if missing_fields:
+                    print(f"⚠️ Missing fields in AI generated article: {missing_fields}")
+                else:
+                    print("✅ All required fields populated in AI generated article")
+                
+                # Store the created article ID for cleanup
+                if '_id' in ai_article:
+                    self.created_articles.append(ai_article['_id'])
+                elif 'id' in ai_article:
+                    self.created_articles.append(ai_article['id'])
+                
+                return True
+            else:
+                print(f"AI Article Generation Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"POST /admin/articles/generate-ai - Error: {str(e)}")
+            return False
+    
+    def test_user_articles_apis(self):
+        """Test User Articles Public APIs"""
+        print("\n=== TESTING USER ARTICLES APIs ===")
+        
+        # Test User Articles API (should only show published articles)
+        try:
+            response = self.session.get(f"{BASE_URL}/user/articles")
+            print(f"GET /user/articles - Status: {response.status_code}")
+            if response.status_code == 200:
+                articles = response.json()
+                print(f"Public articles: {len(articles.get('articles', []))}")
+                # Check if only published articles are returned
+                for article in articles.get('articles', []):
+                    if not article.get('is_published', True):
+                        print(f"WARNING: Unpublished article found in public API: {article.get('id')}")
+            else:
+                print(f"Error getting public articles: {response.text}")
+                return False
+        except Exception as e:
+            print(f"GET /user/articles - Error: {str(e)}")
+            return False
+        
+        # Test User Article by ID (should increment views_count)
+        if self.created_articles:
+            try:
+                article_id = self.created_articles[0]
+                
+                # Get initial view count
+                response = self.session.get(f"{BASE_URL}/admin/articles/{article_id}")
+                initial_views = 0
+                if response.status_code == 200:
+                    initial_views = response.json().get('views_count', 0)
+                
+                # Access article via user endpoint
+                response = self.session.get(f"{BASE_URL}/user/articles/{article_id}")
+                print(f"GET /user/articles/{article_id} - Status: {response.status_code}")
+                if response.status_code == 200:
+                    article = response.json()
+                    print(f"Public article detail: {article.get('title', 'Unknown')}")
+                    
+                    # Check if views count was incremented
+                    current_views = article.get('views_count', 0)
+                    if current_views > initial_views:
+                        print(f"✅ Views count incremented: {initial_views} -> {current_views}")
+                    else:
+                        print(f"⚠️ Views count not incremented: {initial_views} -> {current_views}")
+                else:
+                    print(f"Error getting public article by ID: {response.text}")
+                    return False
+            except Exception as e:
+                print(f"GET /user/articles/{article_id} - Error: {str(e)}")
+                return False
+        
+        return True
+    
+    def test_articles_validation(self):
+        """Test Articles validation"""
+        print("\n=== TESTING ARTICLES VALIDATION ===")
+        
+        # Test missing required fields
+        try:
+            invalid_article = {"title": "Test Article"}  # Missing required fields
+            response = self.session.post(f"{BASE_URL}/admin/articles", json=invalid_article)
+            print(f"POST /admin/articles (invalid data) - Status: {response.status_code}")
+            if response.status_code in [400, 422]:
+                print("✅ Proper validation for missing required fields")
+            else:
+                print(f"⚠️ Expected validation error, got: {response.status_code}")
+                print(f"Response: {response.text}")
+        except Exception as e:
+            print(f"POST /admin/articles (validation) - Error: {str(e)}")
+        
+        # Test invalid article ID
+        try:
+            response = self.session.get(f"{BASE_URL}/admin/articles/invalid-id-123")
+            print(f"GET /admin/articles/invalid-id-123 - Status: {response.status_code}")
+            if response.status_code == 404:
+                print("✅ Proper error handling for invalid article ID")
+            else:
+                print(f"⚠️ Expected 404 for invalid ID, got: {response.status_code}")
+        except Exception as e:
+            print(f"GET /admin/articles/invalid-id - Error: {str(e)}")
+        
+        # Test update with empty data
+        if self.created_articles:
+            try:
+                article_id = self.created_articles[0]
+                response = self.session.put(f"{BASE_URL}/admin/articles/{article_id}", json={})
+                print(f"PUT /admin/articles/{article_id} (empty data) - Status: {response.status_code}")
+                if response.status_code == 200:
+                    print("✅ Update with empty data handled correctly")
+                else:
+                    print(f"⚠️ Unexpected response for empty update: {response.status_code}")
+            except Exception as e:
+                print(f"PUT /admin/articles (empty data) - Error: {str(e)}")
+        
+        return True
+    
     def test_user_public_apis(self):
         """Test User Public APIs - should only show active items"""
         print("\n=== TESTING USER PUBLIC APIs ===")
