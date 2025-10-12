@@ -34,6 +34,8 @@ from api.routes.admin.dsa.questions.management.crud.operations.handlers.question
 from api.routes.admin.dsa.sheets.management.crud.operations.handlers.sheet_handlers import DSASheetHandlers
 from api.routes.admin.dsa.companies.management.crud.operations.handlers.company_handlers import CompanyHandlers
 from api.routes.admin.roadmaps.management.crud.operations.handlers.roadmap_handlers import RoadmapHandlers
+from api.routes.auth.management.operations.handlers.auth_handlers import AuthHandlers
+from api.routes.career_tools.management.operations.handlers.career_tools_handlers import CareerToolsHandlers
 
 # Import AI generators
 from api.utils.ai.gemini.generators.jobs.prompts.generator import GeminiJobGenerator
