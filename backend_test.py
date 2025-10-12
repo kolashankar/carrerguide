@@ -483,7 +483,9 @@ class CareerGuideAPITester:
             if response.status_code in [200, 201]:
                 ai_scholarship = response.json()
                 print(f"AI Generated scholarship: {ai_scholarship}")
-                if 'id' in ai_scholarship:
+                if '_id' in ai_scholarship:
+                    self.created_scholarships.append(ai_scholarship['_id'])
+                elif 'id' in ai_scholarship:
                     self.created_scholarships.append(ai_scholarship['id'])
             else:
                 print(f"AI Scholarship Generation Error (Expected): {response.text}")
