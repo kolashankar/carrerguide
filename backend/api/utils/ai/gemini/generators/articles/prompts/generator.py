@@ -5,7 +5,7 @@ import re
 class GeminiArticleGenerator:
     def __init__(self, api_key: str):
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel('gemini-pro')
+        self.model = genai.GenerativeModel('gemini-flash-latest')
     
     async def generate_article(self, prompt_data: dict) -> dict:
         """
