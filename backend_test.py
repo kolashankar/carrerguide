@@ -612,7 +612,9 @@ class CareerGuideAPITester:
                 response = self.session.get(f"{BASE_URL}/admin/articles/{article_id}")
                 initial_views = 0
                 if response.status_code == 200:
-                    initial_views = response.json().get('views_count', 0)
+                    article_data = response.json()
+                    article_info = article_data.get('data', article_data) if 'data' in article_data else article_data
+                    initial_views = article_info.get('views_count', 0)
                 
                 # Access article via user endpoint
                 response = self.session.get(f"{BASE_URL}/user/articles/{article_id}")
