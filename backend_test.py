@@ -619,10 +619,11 @@ class CareerGuideAPITester:
                 print(f"GET /user/articles/{article_id} - Status: {response.status_code}")
                 if response.status_code == 200:
                     article = response.json()
-                    print(f"Public article detail: {article.get('title', 'Unknown')}")
+                    article_data = article.get('data', article) if 'data' in article else article
+                    print(f"Public article detail: {article_data.get('title', 'Unknown')}")
                     
                     # Check if views count was incremented
-                    current_views = article.get('views_count', 0)
+                    current_views = article_data.get('views_count', 0)
                     if current_views > initial_views:
                         print(f"✅ Views count incremented: {initial_views} -> {current_views}")
                     else:
