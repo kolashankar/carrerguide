@@ -1,1 +1,9 @@
-{}
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/page": "app/page.js",
+  "/dashboard/roadmaps/list/page": "app/dashboard/roadmaps/list/page.js",
+  "/dashboard/dsa/dashboard/page": "app/dashboard/dsa/dashboard/page.js",
+  "/dashboard/roadmaps/create/page": "app/dashboard/roadmaps/create/page.js",
+  "/dashboard/admins/list/page": "app/dashboard/admins/list/page.js",
+  "/dashboard/users/list/page": "app/dashboard/users/list/page.js"
+}
