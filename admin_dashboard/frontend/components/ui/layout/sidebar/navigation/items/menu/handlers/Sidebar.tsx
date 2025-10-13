@@ -25,10 +25,16 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     { name: 'Jobs', path: '/dashboard/jobs/list', icon: '💼' },
     { name: 'Internships', path: '/dashboard/internships/list', icon: '🎓' },
     { name: 'Scholarships', path: '/dashboard/scholarships/list', icon: '🏆' },
+    { name: 'Learning', path: '/dashboard/learning/articles/list', icon: '📚' },
+    { name: 'DSA Corner', path: '/dashboard/dsa/dashboard', icon: '💻' },
     { name: 'Roadmaps', path: '/dashboard/roadmaps/list', icon: '🗺️' },
     { name: 'Career Tools', path: '/dashboard/career-tools/templates', icon: '🛠️' },
+    { name: 'Notifications', path: '/dashboard/notifications/list', icon: '🔔' },
+    { name: 'Content Approval', path: '/dashboard/content-approval', icon: '✅' },
+    { name: 'Users', path: '/dashboard/users/list', icon: '👥' },
+    { name: 'Admins', path: '/dashboard/admins/list', icon: '👨‍💼' },
     { name: 'Bulk Operations', path: '/dashboard/bulk-operations', icon: '📦' },
-    { name: 'Learning', path: '/dashboard/learning', icon: '📚', disabled: true },
+    { name: 'Settings', path: '/dashboard/settings', icon: '⚙️' },
   ]
 
   return (
