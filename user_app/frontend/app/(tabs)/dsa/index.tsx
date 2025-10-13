@@ -1,11 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { getDSAStats, DSAStats } from '../../../lib/dsaProgress';
 
 export default function DSAScreen() {
   const router = useRouter();
+  const [stats, setStats] = useState<DSAStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  const loadStats = async () => {
+    try {
+      const dsaStats = await getDSAStats();
+      setStats(dsaStats);
+    } catch (error) {
+      console.error('Error loading DSA stats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const sections = [
     {
