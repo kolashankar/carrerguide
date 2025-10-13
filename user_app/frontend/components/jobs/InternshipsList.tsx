@@ -184,6 +184,7 @@ export default function InternshipsList() {
             <TouchableOpacity
               key={internship._id}
               className="bg-dark-200 rounded-lg p-4 mb-3"
+              onPress={() => router.push(`/(tabs)/jobs/internship-${internship._id}`)}
             >
               <View className="flex-row justify-between items-start mb-2">
                 <View className="flex-1">
