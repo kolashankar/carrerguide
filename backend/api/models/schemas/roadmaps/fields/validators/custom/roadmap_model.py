@@ -79,6 +79,7 @@ class Roadmap(BaseModel):
     author: str = Field(default="Admin", description="Author name")
     difficulty_level: str = Field(default="beginner", description="Difficulty: beginner, intermediate, advanced")
     estimated_duration: Optional[str] = Field(None, description="Total estimated duration (e.g., '3 months')")
+    reading_time: Optional[str] = Field(None, description="Auto-calculated total reading time based on content (e.g., '45 mins')")
     tags: List[str] = Field(default=[], description="Tags for categorization")
     
     # Engagement
