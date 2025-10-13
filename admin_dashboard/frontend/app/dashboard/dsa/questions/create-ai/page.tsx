@@ -2,17 +2,17 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import axios from 'axios'
-import { Sparkles, ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
+import { dsaApi } from '@/lib/api/client/config/interceptors/auth/token/dsaApi'
+import toast from 'react-hot-toast'
 
 export default function CreateQuestionAI() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     topic: '',
-    difficulty: 'medium',
-    focus: 'algorithms'
+    difficulty: 'Medium',
+    companies: '',
+    focus_area: '',
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,75 +20,105 @@ export default function CreateQuestionAI() {
     setLoading(true)
 
     try {
-      await axios.post('/api/admin/dsa/questions/generate-ai', formData)
-      alert('Question generated successfully!')
-      router.push('/dashboard/dsa/questions/list')
+      const response = await dsaApi.questions.generateAI(formData)
+      toast.success('Question generated successfully')
+      
+      if (response.data._id) {
+        router.push(`/dashboard/dsa/questions/edit/${response.data._id}`)
+      } else {
+        router.push('/dashboard/dsa/questions/list')
+      }
     } catch (error: any) {
-      console.error('Error generating question:', error)
-      alert(error.response?.data?.detail || 'Failed to generate question')
+      toast.error(error.response?.data?.detail || 'Failed to generate question')
+      console.error(error)
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center gap-4 mb-6">
-        <Link href="/dashboard/dsa/questions/list" className="p-2 hover:bg-gray-100 rounded-lg">
-          <ArrowLeft size={24} />
-        </Link>
-        <h1 className="text-3xl font-bold text-gray-800">AI Generate DSA Question</h1>
-      </div>
+    <div className="p-6 max-w-2xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">Generate DSA Question with AI</h1>
 
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow max-w-2xl">
-        <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
+        <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Topic *</label>
+            <label className="block text-sm font-medium mb-2">Topic *</label>
             <input
               type="text"
+              required
               value={formData.topic}
               onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
-              placeholder="e.g., Binary Trees, Dynamic Programming"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-              required
+              placeholder="e.g. Binary Search, Dynamic Programming"
+              className="w-full px-4 py-2 border rounded-lg"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
+            <label className="block text-sm font-medium mb-2">Difficulty *</label>
             <select
+              required
               value={formData.difficulty}
               onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-4 py-2 border rounded-lg"
             >
-              <option value="easy">Easy</option>
-              <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
+              <option value="Easy">Easy</option>
+              <option value="Medium">Medium</option>
+              <option value="Hard">Hard</option>
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Focus Area</label>
-            <select
-              value={formData.focus}
-              onChange={(e) => setFormData({ ...formData, focus: e.target.value })}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-            >
-              <option value="algorithms">Algorithms</option>
-              <option value="data-structures">Data Structures</option>
-              <option value="system-design">System Design</option>
-              <option value="problem-solving">Problem Solving</option>
-            </select>
+            <label className="block text-sm font-medium mb-2">Companies (comma separated)</label>
+            <input
+              type="text"
+              value={formData.companies}
+              onChange={(e) => setFormData({ ...formData, companies: e.target.value })}
+              placeholder="e.g. Google, Amazon, Microsoft"
+              className="w-full px-4 py-2 border rounded-lg"
+            />
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            <Sparkles size={20} />
-            {loading ? 'Generating...' : 'Generate Question with AI'}
-          </button>
+          <div>
+            <label className="block text-sm font-medium mb-2">Focus Area (optional)</label>
+            <textarea
+              value={formData.focus_area}
+              onChange={(e) => setFormData({ ...formData, focus_area: e.target.value })}
+              placeholder="e.g. Focus on edge cases, optimization techniques"
+              className="w-full px-4 py-2 border rounded-lg"
+              rows={3}
+            />
+          </div>
+
+          <div className="bg-purple-50 p-4 rounded-lg">
+            <p className="text-sm text-purple-800">
+              <strong>AI Generation:</strong> The AI will create a comprehensive DSA question including problem statement, solution approach, code in multiple languages, hints, and complexity analysis.
+            </p>
+          </div>
+
+          <div className="flex gap-4 pt-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <span className="animate-spin">⚙️</span>
+                  Generating...
+                </>
+              ) : (
+                <>✨ Generate with AI</>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </form>
     </div>

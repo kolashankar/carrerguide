@@ -2,39 +2,31 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import axios from 'axios'
-import { Trash2, Edit, Plus, Search, Sparkles } from 'lucide-react'
-
-interface Question {
-  _id: string
-  title: string
-  difficulty: string
-  topics: string[]
-  companies: string[]
-  submission_count: number
-  acceptance_rate: number
-}
+import { dsaApi } from '@/lib/api/client/config/interceptors/auth/token/dsaApi'
+import toast from 'react-hot-toast'
 
 export default function DSAQuestionsList() {
-  const [questions, setQuestions] = useState<Question[]>([])
+  const [questions, setQuestions] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [filterDifficulty, setFilterDifficulty] = useState('')
+  const [difficultyFilter, setDifficultyFilter] = useState('')
 
   useEffect(() => {
     fetchQuestions()
-  }, [searchTerm, filterDifficulty])
+  }, [searchTerm, difficultyFilter])
 
   const fetchQuestions = async () => {
     try {
-      const params = new URLSearchParams()
-      if (searchTerm) params.append('search', searchTerm)
-      if (filterDifficulty) params.append('difficulty', filterDifficulty)
-
-      const response = await axios.get(`/api/admin/dsa/questions?${params.toString()}`)
-      setQuestions(response.data.data || [])
-    } catch (error) {
-      console.error('Error fetching questions:', error)
+      setLoading(true)
+      const params: any = {}
+      if (searchTerm) params.search = searchTerm
+      if (difficultyFilter) params.difficulty = difficultyFilter
+      
+      const response = await dsaApi.questions.getAll(params)
+      setQuestions(response.data.questions || [])
+    } catch (error: any) {
+      toast.error('Failed to fetch questions')
+      console.error(error)
     } finally {
       setLoading(false)
     }
@@ -42,13 +34,14 @@ export default function DSAQuestionsList() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this question?')) return
-
+    
     try {
-      await axios.delete(`/api/admin/dsa/questions/${id}`)
+      await dsaApi.questions.delete(id)
+      toast.success('Question deleted successfully')
       fetchQuestions()
-    } catch (error) {
-      console.error('Error deleting question:', error)
-      alert('Failed to delete question')
+    } catch (error: any) {
+      toast.error('Failed to delete question')
+      console.error(error)
     }
   }
 
@@ -61,98 +54,91 @@ export default function DSAQuestionsList() {
     }
   }
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-64"><div className="text-lg text-gray-600">Loading questions...</div></div>
-  }
-
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">DSA Questions</h1>
+        <h1 className="text-3xl font-bold">DSA Questions</h1>
         <div className="flex gap-2">
-          <Link href="/dashboard/dsa/questions/create-ai" className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 flex items-center gap-2">
-            <Sparkles size={20} />
-            AI Generate
-          </Link>
-          <Link href="/dashboard/dsa/questions/create" className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2">
-            <Plus size={20} />
+          <Link
+            href="/dashboard/dsa/questions/create"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          >
             Create Question
+          </Link>
+          <Link
+            href="/dashboard/dsa/questions/create-ai"
+            className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+          >
+            Generate with AI
           </Link>
         </div>
       </div>
 
+      {/* Filters */}
       <div className="bg-white p-4 rounded-lg shadow mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-            <input
-              type="text"
-              placeholder="Search questions..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
+          <input
+            type="text"
+            placeholder="Search questions..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="px-4 py-2 border rounded-lg"
+          />
           <select
-            value={filterDifficulty}
-            onChange={(e) => setFilterDifficulty(e.target.value)}
-            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={difficultyFilter}
+            onChange={(e) => setDifficultyFilter(e.target.value)}
+            className="px-4 py-2 border rounded-lg"
           >
             <option value="">All Difficulties</option>
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
           </select>
         </div>
       </div>
 
-      <div className="grid gap-4">
-        {questions.length === 0 ? (
-          <div className="bg-white p-8 rounded-lg shadow text-center text-gray-500">
-            No questions found. Create your first question!
-          </div>
-        ) : (
-          questions.map((question) => (
-            <div key={question._id} className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
-              <div className="flex justify-between items-start mb-3">
+      {loading ? (
+        <div className="text-center py-12">Loading...</div>
+      ) : questions.length === 0 ? (
+        <div className="text-center py-12 text-gray-500">No questions found</div>
+      ) : (
+        <div className="grid gap-4">
+          {questions.map((question) => (
+            <div key={question._id} className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
+              <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-gray-800 mb-2">{question.title}</h3>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getDifficultyColor(question.difficulty)}`}>
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="text-xl font-bold">{question.title}</h3>
+                    <span className={`px-2 py-1 rounded text-xs ${getDifficultyColor(question.difficulty)}`}>
                       {question.difficulty}
                     </span>
-                    {question.topics.slice(0, 3).map((topic, idx) => (
-                      <span key={idx} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-                        {topic}
-                      </span>
-                    ))}
                   </div>
-                  {question.companies.length > 0 && (
-                    <div className="text-sm text-gray-600">
-                      Companies: {question.companies.slice(0, 3).join(', ')}
-                      {question.companies.length > 3 && ` +${question.companies.length - 3} more`}
-                    </div>
-                  )}
+                  <p className="text-gray-600 mb-3 line-clamp-2">{question.description}</p>
+                  <div className="flex gap-4 text-sm text-gray-500">
+                    <span>Topics: {question.topics?.length || 0}</span>
+                    <span>Companies: {question.companies?.length || 0}</span>
+                    <span>Solutions: {question.code_solutions?.length || 0}</span>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <Link href={`/dashboard/dsa/questions/edit/${question._id}`} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
-                    <Edit size={18} />
+                <div className="flex flex-col gap-2 ml-4">
+                  <Link
+                    href={`/dashboard/dsa/questions/edit/${question._id}`}
+                    className="text-blue-600 hover:underline text-sm"
+                  >
+                    Edit
                   </Link>
-                  <button onClick={() => handleDelete(question._id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
-                    <Trash2 size={18} />
+                  <button
+                    onClick={() => handleDelete(question._id)}
+                    className="text-red-600 hover:underline text-sm"
+                  >
+                    Delete
                   </button>
                 </div>
               </div>
-
-              <div className="flex gap-4 text-sm text-gray-500">
-                <span>{question.submission_count} submissions</span>
-                <span>{question.acceptance_rate}% acceptance</span>
-              </div>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
