@@ -16,6 +16,7 @@
     "@uiw/react-md-editor": "^4.0.8",
     "autoprefixer": "10.4.17",
     "axios": "^1.7.9",
+    "date-fns": "^4.1.0",
     "jspdf": "^3.0.3",
     "lucide-react": "^0.545.0",
     "next": "15.5.4",
