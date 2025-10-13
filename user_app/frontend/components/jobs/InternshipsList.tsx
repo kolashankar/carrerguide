@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,6 +7,10 @@ import api from '../../lib/api';
 import SearchBar from '../common/SearchBar';
 import LoadingSpinner from '../common/LoadingSpinner';
 import EmptyState from '../common/EmptyState';
+import CategoryChips from '../common/CategoryChips';
+import InternshipsFilterModal, { InternshipFilters } from './InternshipsFilterModal';
+import SortModal, { SortOption } from '../common/SortModal';
+import { toggleBookmark, isBookmarked } from '../../lib/bookmarks';
 
 interface Internship {
   _id: string;
@@ -22,20 +26,95 @@ interface Internship {
   is_active: boolean;
 }
 
+const CATEGORIES = [
+  'All',
+  'Technology',
+  'Marketing',
+  'Design',
+  'Finance',
+  'Engineering',
+  'Business',
+  'Research',
+];
+
+const SORT_OPTIONS: SortOption[] = [
+  { label: 'Most Recent', value: 'recent' },
+  { label: 'Stipend: High to Low', value: 'stipend_desc' },
+  { label: 'Stipend: Low to High', value: 'stipend_asc' },
+  { label: 'Duration', value: 'duration' },
+];
+
 export default function InternshipsList() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [showFilters, setShowFilters] = useState(false);
+  const [showSort, setShowSort] = useState(false);
+  const [sortBy, setSortBy] = useState('recent');
+  const [bookmarkedInternships, setBookmarkedInternships] = useState<Set<string>>(new Set());
+  const [filters, setFilters] = useState<InternshipFilters>({
+    internshipTypes: [],
+    durations: [],
+    isPaid: 'all',
+    locationTypes: [],
+    stipendMin: 0,
+    stipendMax: 5000,
+    location: '',
+  });
   const router = useRouter();
 
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
-    queryKey: ['internships', searchQuery],
+    queryKey: ['internships', searchQuery, selectedCategory, filters, sortBy],
     queryFn: async () => {
       const params: any = {};
       if (searchQuery) params.search = searchQuery;
-      
+      if (selectedCategory !== 'All') params.category = selectedCategory;
+      if (filters.internshipTypes.length > 0)
+        params.internship_type = filters.internshipTypes.join(',');
+      if (filters.location) params.location = filters.location;
+      if (filters.stipendMin > 0) params.stipend_min = filters.stipendMin;
+      if (filters.stipendMax < 5000) params.stipend_max = filters.stipendMax;
+      if (sortBy) params.sort = sortBy;
+
       const response = await api.get('/user/internships', { params });
       return response.data.internships || [];
     },
   });
+
+  useEffect(() => {
+    loadBookmarks();
+  }, [data]);
+
+  const loadBookmarks = async () => {
+    const bookmarkedIds = new Set<string>();
+    if (data) {
+      for (const internship of data) {
+        if (await isBookmarked(internship._id)) {
+          bookmarkedIds.add(internship._id);
+        }
+      }
+      setBookmarkedInternships(bookmarkedIds);
+    }
+  };
+
+  const handleBookmark = async (internship: Internship, e: any) => {
+    e.stopPropagation();
+    const success = await toggleBookmark(internship._id, 'internship', internship);
+    if (success) {
+      setBookmarkedInternships((prev) => {
+        const newSet = new Set(prev);
+        if (newSet.has(internship._id)) {
+          newSet.delete(internship._id);
+        } else {
+          newSet.add(internship._id);
+        }
+        return newSet;
+      });
+    }
+  };
+
+  const handleApplyFilters = (newFilters: InternshipFilters) => {
+    setFilters(newFilters);
+  };
 
   if (isLoading) {
     return <LoadingSpinner message="Loading internships..." />;
@@ -53,10 +132,35 @@ export default function InternshipsList() {
 
   return (
     <View className="flex-1">
-      <SearchBar
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        placeholder="Search internships..."
+      <View className="px-4">
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search internships..."
+        />
+      </View>
+
+      <View className="flex-row px-4 py-2">
+        <TouchableOpacity
+          className="flex-row items-center bg-dark-200 px-4 py-2 rounded-lg mr-2"
+          onPress={() => setShowFilters(true)}
+        >
+          <Ionicons name="options-outline" size={18} color="#fff" />
+          <Text className="text-white ml-2 font-semibold">Filters</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          className="flex-row items-center bg-dark-200 px-4 py-2 rounded-lg"
+          onPress={() => setShowSort(true)}
+        >
+          <Ionicons name="swap-vertical-outline" size={18} color="#fff" />
+          <Text className="text-white ml-2 font-semibold">Sort</Text>
+        </TouchableOpacity>
+      </View>
+
+      <CategoryChips
+        categories={CATEGORIES}
+        selectedCategory={selectedCategory}
+        onSelectCategory={setSelectedCategory}
       />
 
       <ScrollView
@@ -88,10 +192,25 @@ export default function InternshipsList() {
                   </Text>
                   <Text className="text-gray-400 text-sm mt-1">{internship.company}</Text>
                 </View>
-                <View className="bg-green-600 px-3 py-1 rounded-full">
-                  <Text className="text-white text-xs font-semibold">
-                    {internship.internship_type}
-                  </Text>
+                <View className="flex-row items-center">
+                  <View className="bg-green-600 px-3 py-1 rounded-full mr-2">
+                    <Text className="text-white text-xs font-semibold">
+                      {internship.internship_type}
+                    </Text>
+                  </View>
+                  <TouchableOpacity onPress={(e) => handleBookmark(internship, e)}>
+                    <Ionicons
+                      name={
+                        bookmarkedInternships.has(internship._id)
+                          ? 'bookmark'
+                          : 'bookmark-outline'
+                      }
+                      size={24}
+                      color={
+                        bookmarkedInternships.has(internship._id) ? '#3b82f6' : '#9ca3af'
+                      }
+                    />
+                  </TouchableOpacity>
                 </View>
               </View>
 
@@ -128,6 +247,21 @@ export default function InternshipsList() {
           ))
         )}
       </ScrollView>
+
+      <InternshipsFilterModal
+        visible={showFilters}
+        onClose={() => setShowFilters(false)}
+        onApply={handleApplyFilters}
+        currentFilters={filters}
+      />
+
+      <SortModal
+        visible={showSort}
+        onClose={() => setShowSort(false)}
+        onSelect={setSortBy}
+        currentSort={sortBy}
+        options={SORT_OPTIONS}
+      />
     </View>
   );
 }
