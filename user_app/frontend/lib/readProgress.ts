@@ -70,22 +70,6 @@ export const markAsRead = async (articleId: string): Promise<boolean> => {
   return await updateReadProgress(articleId, 100);
 };
 
-// Get in-progress articles (not completed)
-export const getInProgressArticles = async (): Promise<ReadProgress[]> => {
-  const allProgress = await getAllReadProgress();
-  return allProgress
-    .filter((p) => !p.completed && p.progress > 0)
-    .sort((a, b) => new Date(b.lastReadAt).getTime() - new Date(a.lastReadAt).getTime());
-};
-
-// Get completed articles
-export const getCompletedArticles = async (): Promise<ReadProgress[]> => {
-  const allProgress = await getAllReadProgress();
-  return allProgress
-    .filter((p) => p.completed)
-    .sort((a, b) => new Date(b.lastReadAt).getTime() - new Date(a.lastReadAt).getTime());
-};
-
 // Clear article progress
 export const clearArticleProgress = async (articleId: string): Promise<boolean> => {
   try {
@@ -111,7 +95,7 @@ const convertToArticleProgress = (rp: ReadProgress, articleData?: any): ArticleP
   };
 };
 
-// Enhanced get in-progress articles with full info
+// Get in-progress articles with full info
 export const getInProgressArticles = async (): Promise<ArticleProgress[]> => {
   const allProgress = await getAllReadProgress();
   return allProgress
@@ -120,7 +104,7 @@ export const getInProgressArticles = async (): Promise<ArticleProgress[]> => {
     .sort((a, b) => b.lastReadAt - a.lastReadAt);
 };
 
-// Enhanced get completed articles with full info
+// Get completed articles with full info
 export const getCompletedArticles = async (): Promise<ArticleProgress[]> => {
   const allProgress = await getAllReadProgress();
   return allProgress
