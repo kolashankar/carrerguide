@@ -65,23 +65,30 @@ export default function DSAScreen() {
       </View>
 
       <ScrollView className="flex-1 px-4">
-        {/* Dashboard Stats - Placeholder */}
+        {/* Dashboard Stats */}
         <View className="bg-gradient-to-r from-primary-600 to-primary-800 rounded-lg p-6 mb-6">
           <Text className="text-white text-xl font-bold mb-2">Your Progress</Text>
           <View className="flex-row justify-between mt-4">
             <View>
-              <Text className="text-white text-3xl font-bold">0</Text>
+              <Text className="text-white text-3xl font-bold">{stats?.totalSolved || 0}</Text>
               <Text className="text-gray-200 text-sm">Solved</Text>
             </View>
             <View>
-              <Text className="text-white text-3xl font-bold">0%</Text>
-              <Text className="text-gray-200 text-sm">Accuracy</Text>
+              <Text className="text-white text-3xl font-bold">
+                {stats?.totalSolved ? Math.round((stats.totalSolved / (stats.totalSolved + 100)) * 100) : 0}%
+              </Text>
+              <Text className="text-gray-200 text-sm">Progress</Text>
             </View>
             <View>
-              <Text className="text-white text-3xl font-bold">0</Text>
+              <Text className="text-white text-3xl font-bold">{stats?.streak || 0}</Text>
               <Text className="text-gray-200 text-sm">Streak</Text>
             </View>
           </View>
+          {stats?.lastSolvedDate && (
+            <Text className="text-gray-200 text-xs mt-3">
+              Last solved: {new Date(stats.lastSolvedDate).toLocaleDateString()}
+            </Text>
+          )}
         </View>
 
         {/* Sections */}
