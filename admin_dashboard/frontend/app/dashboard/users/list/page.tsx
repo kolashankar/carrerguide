@@ -2,171 +2,170 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import axios from 'axios'
-import { Ban, CheckCircle, Eye, Search, UserCheck } from 'lucide-react'
-
-interface User {
-  _id: string
-  name: string
-  email: string
-  phone: string
-  is_active: boolean
-  is_banned: boolean
-  last_login: string
-  created_at: string
-  job_applications_count: number
-}
+import { usersApi } from '@/lib/api/client/config/interceptors/auth/token/usersApi'
+import toast from 'react-hot-toast'
 
 export default function UsersList() {
-  const [users, setUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [filterStatus, setFilterStatus] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('all')
 
   useEffect(() => {
     fetchUsers()
-  }, [searchTerm, filterStatus])
+  }, [searchTerm, statusFilter])
 
   const fetchUsers = async () => {
     try {
-      const params = new URLSearchParams()
-      if (searchTerm) params.append('search', searchTerm)
-      if (filterStatus !== 'all') params.append('status', filterStatus)
-
-      const response = await axios.get(`/api/admin/users?${params.toString()}`)
-      setUsers(response.data.data || [])
-    } catch (error) {
-      console.error('Error fetching users:', error)
+      setLoading(true)
+      const params: any = {}
+      if (searchTerm) params.search = searchTerm
+      if (statusFilter !== 'all') params.is_banned = statusFilter === 'banned'
+      
+      const response = await usersApi.getAll(params)
+      setUsers(response.data.users || [])
+    } catch (error: any) {
+      toast.error('Failed to fetch users')
+      console.error(error)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleBanToggle = async (userId: string, currentBanStatus: boolean) => {
-    const action = currentBanStatus ? 'unban' : 'ban'
-    if (!confirm(`Are you sure you want to ${action} this user?`)) return
-
+  const handleBan = async (id: string) => {
+    const reason = prompt('Enter ban reason:')
+    if (!reason) return
+    
     try {
-      await axios.post(`/api/admin/users/${userId}/${action}`)
+      await usersApi.ban(id, reason)
+      toast.success('User banned successfully')
       fetchUsers()
-      alert(`User ${action}ned successfully!`)
-    } catch (error) {
-      console.error(`Error ${action}ning user:`, error)
-      alert(`Failed to ${action} user`)
+    } catch (error: any) {
+      toast.error('Failed to ban user')
     }
   }
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-64"><div className="text-lg text-gray-600">Loading users...</div></div>
+  const handleUnban = async (id: string) => {
+    try {
+      await usersApi.unban(id)
+      toast.success('User unbanned successfully')
+      fetchUsers()
+    } catch (error: any) {
+      toast.error('Failed to unban user')
+    }
   }
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">User Management</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">User Management</h1>
+        <Link
+          href="/dashboard/users/segments"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+          User Segments
+        </Link>
+      </div>
 
+      {/* Filters */}
       <div className="bg-white p-4 rounded-lg shadow mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-            <input
-              type="text"
-              placeholder="Search users by name or email..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
+          <input
+            type="text"
+            placeholder="Search users by name or email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="px-4 py-2 border rounded-lg"
+          />
           <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="px-4 py-2 border rounded-lg"
           >
             <option value="all">All Users</option>
             <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
             <option value="banned">Banned</option>
           </select>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {users.length === 0 ? (
+      {loading ? (
+        <div className="text-center py-12">Loading...</div>
+      ) : users.length === 0 ? (
+        <div className="text-center py-12 text-gray-500">No users found</div>
+      ) : (
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-gray-50">
               <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
-                  No users found.
-                </td>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Joined</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
               </tr>
-            ) : (
-              users.map((user) => (
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {users.map((user) => (
                 <tr key={user._id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
-                        {user.name.charAt(0).toUpperCase()}
+                      <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                        {user.name?.charAt(0).toUpperCase()}
                       </div>
-                      <div className="ml-4">
+                      <div className="ml-3">
                         <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                        <div className="text-sm text-gray-500">ID: {user._id.substring(0, 8)}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{user.email}</div>
-                    <div className="text-sm text-gray-500">{user.phone || 'N/A'}</div>
+                  <td className="px-6 py-4 text-sm text-gray-900">{user.email}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    {new Date(user.created_at).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {user.is_banned ? (
-                      <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                        Banned
-                      </span>
-                    ) : user.is_active ? (
-                      <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                        Active
-                      </span>
-                    ) : (
-                      <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                        Inactive
-                      </span>
-                    )}
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-1 text-xs rounded-full ${
+                      user.is_banned ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                    }`}>
+                      {user.is_banned ? 'Banned' : 'Active'}
+                    </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div>Applications: {user.job_applications_count || 0}</div>
-                    <div>Last Login: {user.last_login ? new Date(user.last_login).toLocaleDateString() : 'Never'}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <td className="px-6 py-4 text-sm">
                     <div className="flex gap-2">
                       <Link
                         href={`/dashboard/users/${user._id}`}
-                        className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg"
+                        className="text-blue-600 hover:underline"
                       >
-                        <Eye size={18} />
+                        View
                       </Link>
-                      <button
-                        onClick={() => handleBanToggle(user._id, user.is_banned)}
-                        className={`p-2 rounded-lg ${user.is_banned ? 'text-green-600 hover:bg-green-50' : 'text-red-600 hover:bg-red-50'}`}
+                      <Link
+                        href={`/dashboard/users/${user._id}/activity`}
+                        className="text-green-600 hover:underline"
                       >
-                        {user.is_banned ? <CheckCircle size={18} /> : <Ban size={18} />}
-                      </button>
+                        Activity
+                      </Link>
+                      {user.is_banned ? (
+                        <button
+                          onClick={() => handleUnban(user._id)}
+                          className="text-orange-600 hover:underline"
+                        >
+                          Unban
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleBan(user._id)}
+                          className="text-red-600 hover:underline"
+                        >
+                          Ban
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   )
 }
