@@ -7,6 +7,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from bson import ObjectId
 from datetime import datetime
 from typing import List, Dict, Any, Optional
+import re
 
 
 class RoadmapHandlers:
@@ -15,6 +16,45 @@ class RoadmapHandlers:
     def __init__(self, db: AsyncIOMotorDatabase):
         self.db = db
         self.collection = db.roadmaps
+    
+    def _calculate_reading_time(self, nodes: List[Dict[str, Any]]) -> str:
+        """
+        Calculate total reading time based on node content
+        Average reading speed: 200 words per minute
+        """
+        total_words = 0
+        
+        for node in nodes:
+            # Count words from content field
+            content = node.get("content", "")
+            if content:
+                # Remove markdown syntax and count words
+                clean_content = re.sub(r'[#*_`\[\]()]', '', content)
+                words = len(clean_content.split())
+                total_words += words
+            
+            # Count words from description field
+            description = node.get("description", "")
+            if description:
+                words = len(description.split())
+                total_words += words
+        
+        # Calculate reading time (200 words per minute)
+        if total_words == 0:
+            return "0 mins"
+        
+        minutes = total_words // 200
+        if minutes == 0:
+            return "1 min"
+        elif minutes < 60:
+            return f"{minutes} mins"
+        else:
+            hours = minutes // 60
+            remaining_mins = minutes % 60
+            if remaining_mins == 0:
+                return f"{hours} hr{'s' if hours > 1 else ''}"
+            else:
+                return f"{hours} hr{'s' if hours > 1 else ''} {remaining_mins} mins"
     
     async def create_roadmap(self, roadmap_data: Dict[str, Any]) -> Dict[str, Any]:
         """Create a new roadmap"""
