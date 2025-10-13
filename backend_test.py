@@ -24,19 +24,33 @@ class BackendTester:
     def __init__(self):
         self.session = None
         self.admin_token = None
-        self.user_token = None
-        self.test_results = {
-            "dsa_companies": [],
-            "roadmaps": [],
-            "authentication": [],
-            "career_tools": []
+        self.test_results = []
+        
+    async def __aenter__(self):
+        self.session = aiohttp.ClientSession()
+        return self
+        
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        if self.session:
+            await self.session.close()
+    
+    def log_result(self, test_name: str, success: bool, details: str = "", response_data: Any = None):
+        """Log test result"""
+        result = {
+            "test": test_name,
+            "success": success,
+            "details": details,
+            "response_data": response_data,
+            "timestamp": time.time()
         }
-        self.created_resources = {
-            "companies": [],
-            "roadmaps": [],
-            "admin_users": [],
-            "app_users": []
-        }
+        self.test_results.append(result)
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status}: {test_name}")
+        if details:
+            print(f"   Details: {details}")
+        if not success and response_data:
+            print(f"   Response: {response_data}")
+        print()
 
     async def setup_session(self):
         """Setup HTTP session"""
