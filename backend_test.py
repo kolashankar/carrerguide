@@ -52,18 +52,8 @@ class BackendTester:
             print(f"   Response: {response_data}")
         print()
 
-    async def setup_session(self):
-        """Setup HTTP session"""
-        self.session = aiohttp.ClientSession()
-
-    async def cleanup_session(self):
-        """Cleanup HTTP session"""
-        if self.session:
-            await self.session.close()
-
-    async def make_request(self, method: str, endpoint: str, data: Dict = None, 
-                          headers: Dict = None, params: Dict = None) -> Dict:
-        """Make HTTP request to backend"""
+    async def make_request(self, method: str, endpoint: str, data: Dict = None, headers: Dict = None) -> tuple:
+        """Make HTTP request and return (success, response_data, status_code)"""
         url = f"{BACKEND_URL}{endpoint}"
         
         default_headers = {"Content-Type": "application/json"}
@@ -72,43 +62,43 @@ class BackendTester:
             
         try:
             async with self.session.request(
-                method, url, 
+                method, 
+                url, 
                 json=data if data else None,
-                headers=default_headers,
-                params=params
+                headers=default_headers
             ) as response:
-                response_text = await response.text()
                 try:
-                    response_data = json.loads(response_text) if response_text else {}
-                except json.JSONDecodeError:
-                    response_data = {"raw_response": response_text}
+                    response_data = await response.json()
+                except:
+                    response_data = await response.text()
                 
-                return {
-                    "status_code": response.status,
-                    "data": response_data,
-                    "success": 200 <= response.status < 300
-                }
+                return response.status < 400, response_data, response.status
+                
         except Exception as e:
-            return {
-                "status_code": 0,
-                "data": {"error": str(e)},
-                "success": False
-            }
+            return False, str(e), 0
 
-    def log_test_result(self, module: str, test_name: str, success: bool, 
-                       details: str, response_data: Dict = None):
-        """Log test result"""
-        result = {
-            "test": test_name,
-            "success": success,
-            "details": details,
-            "timestamp": datetime.now().isoformat(),
-            "response_data": response_data
-        }
-        self.test_results[module].append(result)
+    async def login_super_admin(self) -> bool:
+        """Login as super admin and get token"""
+        print("🔐 LOGGING IN AS SUPER ADMIN...")
         
-        status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status} [{module.upper()}] {test_name}: {details}")
+        login_data = {
+            "email": SUPER_ADMIN_EMAIL,
+            "password": SUPER_ADMIN_PASSWORD
+        }
+        
+        success, response, status = await self.make_request("POST", "/auth/admin/login", login_data)
+        
+        if success and isinstance(response, dict) and response.get("success"):
+            self.admin_token = response.get("token")
+            self.log_result("Super Admin Login", True, f"Token obtained: {self.admin_token[:20]}...")
+            return True
+        else:
+            self.log_result("Super Admin Login", False, f"Status: {status}", response)
+            return False
+
+    def get_auth_headers(self) -> Dict:
+        """Get authorization headers"""
+        return {"Authorization": f"Bearer {self.admin_token}"}
 
     # =============================================================================
     # AUTHENTICATION SYSTEM TESTS
