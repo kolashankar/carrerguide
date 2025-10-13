@@ -88,3 +88,19 @@ export const toggleBookmark = async (
     return await addBookmark(id, type, data);
   }
 };
+
+// Get all bookmarks (alias for getBookmarks for consistency)
+export const getAllBookmarks = async (): Promise<Array<{
+  id: string;
+  type: Bookmark['type'];
+  data: any;
+  savedAt: number;
+}>> => {
+  const bookmarks = await getBookmarks();
+  return bookmarks.map(b => ({
+    id: b.id,
+    type: b.type,
+    data: b.data,
+    savedAt: new Date(b.bookmarkedAt).getTime(),
+  }));
+};
