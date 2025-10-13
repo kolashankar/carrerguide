@@ -11,6 +11,8 @@ config.cacheStores = [
   new FileStore({ root: path.join(root, 'cache') }),
 ];
 
+// NativeWind CSS support
+const { withNativeWind } = require('nativewind/metro');
 
 // // Exclude unnecessary directories from file watching
 // config.watchFolders = [__dirname];
@@ -22,4 +24,4 @@ config.cacheStores = [
 // Reduce the number of workers to decrease resource usage
 config.maxWorkers = 2;
 
-module.exports = config;
+module.exports = withNativeWind(config, { input: './global.css' });
