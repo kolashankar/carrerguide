@@ -777,10 +777,12 @@ async def delete_roadmap_node(roadmap_id: str, node_id: str):
 # AUTHENTICATION ROUTES
 # =============================================================================
 
-@api_router.post("/auth/admin/register", tags=["Authentication"])
-async def register_admin(admin_data: AdminRegister):
-    """Register a new admin user"""
-    return await auth_handlers.register_admin(admin_data.dict())
+# Admin registration disabled - use default admin (kolashankar113@gmail.com / Shankar@113)
+# Sub-admins can be created by super admin through the admin panel
+# @api_router.post("/auth/admin/register", tags=["Authentication"])
+# async def register_admin(admin_data: AdminRegister):
+#     """Register a new admin user"""
+#     return await auth_handlers.register_admin(admin_data.dict())
 
 @api_router.post("/auth/admin/login", tags=["Authentication"])
 async def login_admin(login_data: LoginRequest):
