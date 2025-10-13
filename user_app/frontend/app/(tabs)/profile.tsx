@@ -57,10 +57,13 @@ export default function ProfileScreen() {
             <Ionicons name="chevron-forward" size={24} color="#9ca3af" />
           </TouchableOpacity>
 
-          <TouchableOpacity className="bg-dark-200 px-6 py-4 rounded-lg mb-2 flex-row items-center justify-between">
+          <TouchableOpacity 
+            className="bg-dark-200 px-6 py-4 rounded-lg mb-2 flex-row items-center justify-between"
+            onPress={() => router.push('/(tabs)/profile/reading-history')}
+          >
             <View className="flex-row items-center">
               <Ionicons name="time-outline" size={24} color="#9ca3af" />
-              <Text className="text-white ml-4 text-base">Learning Progress</Text>
+              <Text className="text-white ml-4 text-base">Reading History</Text>
             </View>
             <Ionicons name="chevron-forward" size={24} color="#9ca3af" />
           </TouchableOpacity>
