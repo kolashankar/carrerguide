@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Testing for CareerGuide API
-Testing 4 newly implemented modules:
-1. DSA Companies Module
-2. Roadmaps Module (Visual Node-Based)
-3. Authentication System
-4. Career Tools Module (Auth Required)
+Backend API Testing for CareerGuide Admin Dashboard
+Testing Priority 1: Roadmaps with Reading Time Auto-Calculation
+Testing Priority 2: Sub-Admin Management (Super Admin Only)  
+Testing Priority 3: DSA Companies Module
 """
 
 import asyncio
@@ -13,10 +11,14 @@ import aiohttp
 import json
 import uuid
 from typing import Dict, Any, Optional
-from datetime import datetime
+import time
 
 # Backend URL from environment
 BACKEND_URL = "https://jobportal-dash-2.preview.emergentagent.com/api"
+
+# Super Admin Credentials
+SUPER_ADMIN_EMAIL = "kolashankar113@gmail.com"
+SUPER_ADMIN_PASSWORD = "Shankar@113"
 
 class BackendTester:
     def __init__(self):
