@@ -2,47 +2,33 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import axios from 'axios'
-import { Trash2, Edit, Eye, Plus, Search, Filter } from 'lucide-react'
-
-interface Article {
-  _id: string
-  title: string
-  excerpt: string
-  author: string
-  category: string
-  tags: string[]
-  cover_image?: string
-  read_time: number
-  is_published: boolean
-  views_count: number
-  created_at: string
-}
+import { articlesApi, Article } from '@/lib/api/client/config/interceptors/auth/token/articlesApi'
+import toast from 'react-hot-toast'
 
 export default function ArticlesList() {
   const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [filterCategory, setFilterCategory] = useState('')
-  const [filterPublished, setFilterPublished] = useState('')
-
-  const categories = ['Technology', 'Career', 'Interview', 'Programming', 'Design', 'Business']
+  const [categoryFilter, setCategoryFilter] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
 
   useEffect(() => {
     fetchArticles()
-  }, [searchTerm, filterCategory, filterPublished])
+  }, [searchTerm, categoryFilter, statusFilter])
 
   const fetchArticles = async () => {
     try {
-      const params = new URLSearchParams()
-      if (searchTerm) params.append('search', searchTerm)
-      if (filterCategory) params.append('category', filterCategory)
-      if (filterPublished) params.append('is_published', filterPublished)
-
-      const response = await axios.get(`/api/admin/articles?${params.toString()}`)
-      setArticles(response.data.data || [])
-    } catch (error) {
-      console.error('Error fetching articles:', error)
+      setLoading(true)
+      const params: any = {}
+      if (searchTerm) params.search = searchTerm
+      if (categoryFilter) params.category = categoryFilter
+      if (statusFilter !== 'all') params.is_published = statusFilter === 'published'
+      
+      const response = await articlesApi.getAll(params)
+      setArticles(response.data.articles || [])
+    } catch (error: any) {
+      toast.error('Failed to fetch articles')
+      console.error(error)
     } finally {
       setLoading(false)
     }
@@ -50,52 +36,44 @@ export default function ArticlesList() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this article?')) return
-
+    
     try {
-      await axios.delete(`/api/admin/articles/${id}`)
+      await articlesApi.delete(id)
+      toast.success('Article deleted successfully')
       fetchArticles()
-    } catch (error) {
-      console.error('Error deleting article:', error)
-      alert('Failed to delete article')
+    } catch (error: any) {
+      toast.error('Failed to delete article')
+      console.error(error)
     }
   }
 
   const handleTogglePublish = async (id: string) => {
     try {
-      await axios.post(`/api/admin/articles/${id}/toggle-publish`)
+      await articlesApi.togglePublish(id)
+      toast.success('Article status updated')
       fetchArticles()
-    } catch (error) {
-      console.error('Error toggling publish status:', error)
-      alert('Failed to update publish status')
+    } catch (error: any) {
+      toast.error('Failed to update article')
+      console.error(error)
     }
-  }
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-lg text-gray-600">Loading articles...</div>
-      </div>
-    )
   }
 
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Articles</h1>
+        <h1 className="text-3xl font-bold">Articles</h1>
         <div className="flex gap-2">
           <Link
-            href="/dashboard/learning/articles/create-ai"
-            className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 flex items-center gap-2"
+            href="/dashboard/learning/articles/create"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
-            <Plus size={20} />
-            AI Generate
+            Create Article
           </Link>
           <Link
-            href="/dashboard/learning/articles/create"
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2"
+            href="/dashboard/learning/articles/create-ai"
+            className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
           >
-            <Plus size={20} />
-            Create Article
+            Generate with AI
           </Link>
         </div>
       </div>
@@ -103,123 +81,97 @@ export default function ArticlesList() {
       {/* Filters */}
       <div className="bg-white p-4 rounded-lg shadow mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-            <input
-              type="text"
-              placeholder="Search articles..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
+          <input
+            type="text"
+            placeholder="Search articles..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="px-4 py-2 border rounded-lg"
+          />
           <select
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="px-4 py-2 border rounded-lg"
           >
             <option value="">All Categories</option>
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
+            <option value="Career Guidance">Career Guidance</option>
+            <option value="Interview Tips">Interview Tips</option>
+            <option value="Technology">Technology</option>
+            <option value="Skill Development">Skill Development</option>
           </select>
-
           <select
-            value={filterPublished}
-            onChange={(e) => setFilterPublished(e.target.value)}
-            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="px-4 py-2 border rounded-lg"
           >
-            <option value="">All Status</option>
-            <option value="true">Published</option>
-            <option value="false">Draft</option>
+            <option value="all">All Status</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
           </select>
         </div>
       </div>
 
       {/* Articles List */}
-      <div className="grid gap-4">
-        {articles.length === 0 ? (
-          <div className="bg-white p-8 rounded-lg shadow text-center text-gray-500">
-            No articles found. Create your first article!
-          </div>
-        ) : (
-          articles.map((article) => (
-            <div key={article._id} className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
-              <div className="flex gap-4">
-                {article.cover_image && (
-                  <img
-                    src={article.cover_image}
-                    alt={article.title}
-                    className="w-32 h-32 object-cover rounded-lg"
-                  />
-                )}
+      {loading ? (
+        <div className="text-center py-12">Loading...</div>
+      ) : articles.length === 0 ? (
+        <div className="text-center py-12 text-gray-500">No articles found</div>
+      ) : (
+        <div className="grid gap-4">
+          {articles.map((article) => (
+            <div key={article._id} className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
+              <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="text-xl font-semibold text-gray-800 mb-1">{article.title}</h3>
-                      <p className="text-gray-600 text-sm mb-2">{article.excerpt}</p>
-                    </div>
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        article.is_published
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}
-                    >
+                  <h3 className="text-xl font-bold mb-2">{article.title}</h3>
+                  <p className="text-gray-600 mb-3">{article.excerpt}</p>
+                  <div className="flex gap-4 text-sm text-gray-500">
+                    <span>Author: {article.author}</span>
+                    <span>Category: {article.category}</span>
+                    <span>Read Time: {article.read_time || 0} min</span>
+                    <span>Views: {article.views_count || 0}</span>
+                    <span className={`px-2 py-1 rounded ${article.is_published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                       {article.is_published ? 'Published' : 'Draft'}
                     </span>
                   </div>
-
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-                      {article.category}
-                    </span>
-                    {article.tags.slice(0, 3).map((tag, idx) => (
-                      <span key={idx} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
-                        #{tag}
+                  <div className="flex gap-2 mt-2">
+                    {article.tags.map((tag) => (
+                      <span key={tag} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                        {tag}
                       </span>
                     ))}
                   </div>
-
-                  <div className="flex justify-between items-center">
-                    <div className="text-sm text-gray-500">
-                      <span>By {article.author}</span> • 
-                      <span> {article.read_time} min read</span> • 
-                      <span> {article.views_count} views</span>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleTogglePublish(article._id)}
-                        className={`px-3 py-1 rounded-lg text-sm ${
-                          article.is_published
-                            ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
-                            : 'bg-green-100 text-green-800 hover:bg-green-200'
-                        }`}
-                      >
-                        {article.is_published ? 'Unpublish' : 'Publish'}
-                      </button>
-                      <Link
-                        href={`/dashboard/learning/articles/edit/${article._id}`}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
-                      >
-                        <Edit size={18} />
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(article._id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </div>
+                </div>
+                <div className="flex flex-col gap-2 ml-4">
+                  <Link
+                    href={`/dashboard/learning/articles/${article._id}`}
+                    className="text-blue-600 hover:underline text-sm"
+                  >
+                    Preview
+                  </Link>
+                  <Link
+                    href={`/dashboard/learning/articles/edit/${article._id}`}
+                    className="text-green-600 hover:underline text-sm"
+                  >
+                    Edit
+                  </Link>
+                  <button
+                    onClick={() => handleTogglePublish(article._id!)}
+                    className="text-orange-600 hover:underline text-sm"
+                  >
+                    {article.is_published ? 'Unpublish' : 'Publish'}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(article._id!)}
+                    className="text-red-600 hover:underline text-sm"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

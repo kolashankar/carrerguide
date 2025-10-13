@@ -2,12 +2,10 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import axios from 'axios'
 import dynamic from 'next/dynamic'
-import { Save, ArrowLeft, Upload } from 'lucide-react'
-import Link from 'next/link'
+import { articlesApi } from '@/lib/api/client/config/interceptors/auth/token/articlesApi'
+import toast from 'react-hot-toast'
 
-// Dynamic import to avoid SSR issues with react-quill
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false })
 import 'react-quill/dist/quill.snow.css'
 
@@ -16,237 +14,160 @@ export default function CreateArticle() {
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     title: '',
-    excerpt: '',
     content: '',
+    excerpt: '',
     author: '',
-    category: 'Technology',
     tags: '',
+    category: '',
     cover_image: '',
     read_time: 5,
-    is_published: false
+    is_published: false,
   })
-
-  const categories = ['Technology', 'Career', 'Interview', 'Programming', 'Design', 'Business', 'Data Science', 'AI/ML']
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
 
     try {
-      const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
-      
       const payload = {
         ...formData,
-        tags: tagsArray,
-        read_time: parseInt(formData.read_time.toString())
+        tags: formData.tags.split(',').map(t => t.trim()).filter(t => t),
       }
-
-      await axios.post('/api/admin/articles', payload)
-      alert('Article created successfully!')
+      
+      await articlesApi.create(payload)
+      toast.success('Article created successfully')
       router.push('/dashboard/learning/articles/list')
     } catch (error: any) {
-      console.error('Error creating article:', error)
-      alert(error.response?.data?.detail || 'Failed to create article')
+      toast.error(error.response?.data?.detail || 'Failed to create article')
+      console.error(error)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setFormData({ ...formData, cover_image: reader.result as string })
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-
-  const quillModules = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      [{ 'indent': '-1'}, { 'indent': '+1' }],
-      ['link', 'image', 'code-block'],
-      [{ 'align': [] }],
-      ['clean']
-    ]
-  }
-
   return (
-    <div className="p-6">
-      <div className="flex items-center gap-4 mb-6">
-        <Link
-          href="/dashboard/learning/articles/list"
-          className="p-2 hover:bg-gray-100 rounded-lg"
-        >
-          <ArrowLeft size={24} />
-        </Link>
-        <h1 className="text-3xl font-bold text-gray-800">Create Article</h1>
-      </div>
+    <div className="p-6 max-w-5xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">Create Article</h1>
 
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {/* Title */}
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Title *
-            </label>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-2">Title *</label>
             <input
               type="text"
+              required
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+              className="w-full px-4 py-2 border rounded-lg"
             />
           </div>
 
-          {/* Excerpt */}
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Excerpt *
-            </label>
-            <textarea
-              value={formData.excerpt}
-              onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-              rows={3}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          {/* Author */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Author *
-            </label>
+            <label className="block text-sm font-medium mb-2">Author *</label>
             <input
               type="text"
+              required
               value={formData.author}
               onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+              className="w-full px-4 py-2 border rounded-lg"
             />
           </div>
 
-          {/* Category */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Category *
-            </label>
+            <label className="block text-sm font-medium mb-2">Category *</label>
             <select
+              required
               value={formData.category}
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border rounded-lg"
             >
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
+              <option value="">Select Category</option>
+              <option value="Career Guidance">Career Guidance</option>
+              <option value="Interview Tips">Interview Tips</option>
+              <option value="Technology">Technology</option>
+              <option value="Skill Development">Skill Development</option>
             </select>
           </div>
 
-          {/* Tags */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Tags (comma-separated)
-            </label>
+            <label className="block text-sm font-medium mb-2">Excerpt *</label>
+            <textarea
+              required
+              value={formData.excerpt}
+              onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+              className="w-full px-4 py-2 border rounded-lg"
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Content *</label>
+            <ReactQuill
+              theme="snow"
+              value={formData.content}
+              onChange={(value) => setFormData({ ...formData, content: value })}
+              className="bg-white"
+              style={{ height: '400px', marginBottom: '50px' }}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Tags (comma separated)</label>
             <input
               type="text"
               value={formData.tags}
               onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-              placeholder="react, javascript, tutorial"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g. career, tips, development"
+              className="w-full px-4 py-2 border rounded-lg"
             />
           </div>
 
-          {/* Read Time */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Read Time (minutes)
-            </label>
+            <label className="block text-sm font-medium mb-2">Cover Image URL</label>
+            <input
+              type="url"
+              value={formData.cover_image}
+              onChange={(e) => setFormData({ ...formData, cover_image: e.target.value })}
+              className="w-full px-4 py-2 border rounded-lg"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Read Time (minutes)</label>
             <input
               type="number"
               value={formData.read_time}
-              onChange={(e) => setFormData({ ...formData, read_time: parseInt(e.target.value) || 0 })}
-              min="1"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => setFormData({ ...formData, read_time: parseInt(e.target.value) })}
+              className="w-full px-4 py-2 border rounded-lg"
             />
           </div>
 
-          {/* Cover Image */}
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Cover Image
-            </label>
-            <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg cursor-pointer">
-                <Upload size={20} />
-                <span>Upload Image</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-              </label>
-              {formData.cover_image && (
-                <img
-                  src={formData.cover_image}
-                  alt="Cover preview"
-                  className="h-20 w-32 object-cover rounded-lg"
-                />
-              )}
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Content *
-            </label>
-            <div className="bg-white border rounded-lg">
-              <ReactQuill
-                value={formData.content}
-                onChange={(value) => setFormData({ ...formData, content: value })}
-                modules={quillModules}
-                className="h-96"
-              />
-            </div>
-          </div>
-
-          {/* Published Status */}
-          <div className="md:col-span-2 flex items-center gap-2 mt-16">
+          <div className="flex items-center">
             <input
               type="checkbox"
-              id="is_published"
               checked={formData.is_published}
               onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
-              className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+              className="mr-2"
             />
-            <label htmlFor="is_published" className="text-sm font-medium text-gray-700">
-              Publish immediately
-            </label>
+            <label className="text-sm font-medium">Publish immediately</label>
           </div>
-        </div>
 
-        {/* Submit Button */}
-        <div className="flex justify-end gap-4">
-          <Link
-            href="/dashboard/learning/articles/list"
-            className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-          >
-            Cancel
-          </Link>
-          <button
-            type="submit"
-            disabled={loading}
-            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2"
-          >
-            <Save size={20} />
-            {loading ? 'Creating...' : 'Create Article'}
-          </button>
+          <div className="flex gap-4 pt-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+              {loading ? 'Creating...' : 'Create Article'}
+            </button>
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </form>
     </div>
