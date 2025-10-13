@@ -14,7 +14,7 @@ from typing import Dict, Any, Optional
 import time
 
 # Backend URL from environment
-BACKEND_URL = "https://jobportal-dash-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://admin-careertools.preview.emergentagent.com/api"
 
 # Super Admin Credentials
 SUPER_ADMIN_EMAIL = "kolashankar113@gmail.com"

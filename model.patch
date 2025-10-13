@@ -29,7 +29,7 @@ index e1f8db3..e69de29 100644
 -+from datetime import datetime
 -+
 -+# Backend URL from environment
--+BACKEND_URL = "https://jobportal-dash-2.preview.emergentagent.com/api"
+-+BACKEND_URL = "https://admin-careertools.preview.emergentagent.com/api"
 -+
 -+class BackendTester:
 -+    def __init__(self):
@@ -743,7 +743,7 @@ index e1f8db3..e69de29 100644
 -+from datetime import datetime
 -+
 -+# Backend URL from environment
--+BACKEND_URL = "https://jobportal-dash-2.preview.emergentagent.com/api"
+-+BACKEND_URL = "https://admin-careertools.preview.emergentagent.com/api"
 -+
 -+class ComprehensiveBackendTester:
 -+    def __init__(self):
@@ -1634,7 +1634,7 @@ index e1f8db3..e69de29 100644
 -----+import requests
 -----+import json
 -----+
------+BACKEND_URL = "https://jobportal-dash-2.preview.emergentagent.com/api"
+-----+BACKEND_URL = "https://admin-careertools.preview.emergentagent.com/api"
 -----+
 -----+def test_dsa_endpoints():
 -----+    print("🚀 Starting DSA Corner Backend Testing")
@@ -2083,7 +2083,7 @@ index e1f8db3..e69de29 100644
 -----+from datetime import datetime
 -----+
 -----+# Backend URL from environment
------+BACKEND_URL = "https://jobportal-dash-2.preview.emergentagent.com/api"
+-----+BACKEND_URL = "https://admin-careertools.preview.emergentagent.com/api"
 -----+
 -----+class DSABackendTester:
 -----+    def __init__(self):
@@ -2675,7 +2675,7 @@ index e1f8db3..e69de29 100644
 -----+import requests
 -----+import json
 -----+
------+BACKEND_URL = "https://jobportal-dash-2.preview.emergentagent.com/api"
+-----+BACKEND_URL = "https://admin-careertools.preview.emergentagent.com/api"
 -----+
 -----+def test_ai_generation():
 -----+    print("🤖 Testing AI Generation Features")
@@ -2959,7 +2959,7 @@ index e1f8db3..e69de29 100644
 ---------+      ✅ ERROR HANDLING: Proper validation and HTTP status codes
 ---------+      ✅ HEALTH CHECKS: Backend healthy, MongoDB connected
 ---------+      
----------+      BACKEND URL: https://jobportal-dash-2.preview.emergentagent.com/api
+---------+      BACKEND URL: https://admin-careertools.preview.emergentagent.com/api
 ---------+      
 ---------+      🔥 KEY ACHIEVEMENTS:
 ---------+      - Tested 18+ API endpoints across Jobs, Internships, Scholarships
@@ -3048,7 +3048,7 @@ index e1f8db3..e69de29 100644
 -----+import requests
 -----+import json
 -----+
------+BACKEND_URL = "https://jobportal-dash-2.preview.emergentagent.com/api"
+-----+BACKEND_URL = "https://admin-careertools.preview.emergentagent.com/api"
 -----+
 -----+def test_dsa_endpoints():
 -----+    print("🚀 Starting DSA Corner Backend Testing")
@@ -3516,7 +3516,7 @@ index e1f8db3..e69de29 100644
 -----+      - All filtering and search functionality operational
 -----+      - All statistics endpoints functional
 -----+      
------+      BACKEND URL: https://jobportal-dash-2.preview.emergentagent.com/api
+-----+      BACKEND URL: https://admin-careertools.preview.emergentagent.com/api
 -----+      
 -----+      🚀 DSA CORNER MODULE IS PRODUCTION READY! All backend functionality tested and verified.
 -----\ No newline at end of file
@@ -3574,7 +3574,7 @@ index e1f8db3..e69de29 100644
 -----      ✅ ERROR HANDLING: Proper validation and HTTP status codes
 -----      ✅ HEALTH CHECKS: Backend healthy, MongoDB connected
 -----      
------      BACKEND URL: https://jobportal-dash-2.preview.emergentagent.com/api
+-----      BACKEND URL: https://admin-careertools.preview.emergentagent.com/api
 -----      
 -----      🔥 KEY ACHIEVEMENTS:
 -----      - Tested 18+ API endpoints across Jobs, Internships, Scholarships
@@ -3791,7 +3791,7 @@ index e1f8db3..e69de29 100644
 -----      - All filtering and search functionality operational
 -----      - All statistics endpoints functional
 -----      
------      BACKEND URL: https://jobportal-dash-2.preview.emergentagent.com/api
+-----      BACKEND URL: https://admin-careertools.preview.emergentagent.com/api
 ----       
 -----      🚀 DSA CORNER MODULE IS PRODUCTION READY! All backend functionality tested and verified.
 ----\ No newline at end of file
