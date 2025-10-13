@@ -18,7 +18,7 @@ from typing import Dict, Any, Optional, List
 from datetime import datetime
 
 # Backend URL from environment
-BACKEND_URL = "https://jobapp-backend.preview.emergentagent.com/api"
+BACKEND_URL = "https://jobadmin-portal-1.preview.emergentagent.com/api"
 
 class BackendTester:
     def __init__(self):
