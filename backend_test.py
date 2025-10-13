@@ -14,7 +14,7 @@ from typing import Dict, Any, Optional
 import time
 
 # Backend URL from environment
-BACKEND_URL = "https://admin-careermate.preview.emergentagent.com/api"
+BACKEND_URL = "https://careertools-admin.preview.emergentagent.com/api"
 
 # Super Admin Credentials
 SUPER_ADMIN_EMAIL = "kolashankar113@gmail.com"
