@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { authApi } from '@/lib/api/client/config/interceptors/auth/token/authApi'
-import Link from 'next/link'
+import toast from 'react-hot-toast'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -24,11 +24,11 @@ export default function LoginPage() {
       localStorage.setItem('token', response.token)
       localStorage.setItem('user', JSON.stringify(response.user))
       
-      alert('Login successful!')
+      toast.success('Login successful! Welcome back.')
       router.push('/dashboard/analytics')
     } catch (error: any) {
       console.error('Error logging in:', error)
-      alert(error.response?.data?.detail || 'Invalid credentials')
+      toast.error(error.response?.data?.detail || 'Invalid credentials. Please check your email and password.')
     } finally {
       setLoading(false)
     }
@@ -81,19 +81,10 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-6 text-center">
-          <p className="text-gray-600">
-            Don't have an account?{' '}
-            <Link href="/register" className="text-blue-500 hover:text-blue-600 font-semibold">
-              Register
-            </Link>
+        <div className="mt-8 pt-6 border-t border-gray-200 text-center">
+          <p className="text-sm text-gray-500">
+            For security reasons, only administrators with valid credentials can access this dashboard.
           </p>
-        </div>
-
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <Link href="/" className="text-sm text-gray-500 hover:text-gray-700 flex items-center justify-center">
-            ← Back to Home
-          </Link>
         </div>
       </div>
     </div>
