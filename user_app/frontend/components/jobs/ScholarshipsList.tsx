@@ -179,6 +179,7 @@ export default function ScholarshipsList() {
             <TouchableOpacity
               key={scholarship._id}
               className="bg-dark-200 rounded-lg p-4 mb-3"
+              onPress={() => router.push(`/(tabs)/jobs/scholarship-${scholarship._id}`)}
             >
               <View className="flex-row justify-between items-start mb-2">
                 <View className="flex-1">
