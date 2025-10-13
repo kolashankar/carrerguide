@@ -137,6 +137,10 @@ class RoadmapHandlers:
         try:
             update_data["updated_at"] = datetime.utcnow()
             
+            # Recalculate reading time if nodes are updated
+            if "nodes" in update_data and update_data["nodes"]:
+                update_data["reading_time"] = self._calculate_reading_time(update_data["nodes"])
+            
             result = await self.collection.find_one_and_update(
                 {"_id": ObjectId(roadmap_id)},
                 {"$set": update_data},
