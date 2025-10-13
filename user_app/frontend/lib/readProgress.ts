@@ -85,3 +85,46 @@ export const getCompletedArticles = async (): Promise<ReadProgress[]> => {
     .filter((p) => p.completed)
     .sort((a, b) => new Date(b.lastReadAt).getTime() - new Date(a.lastReadAt).getTime());
 };
+
+// Clear article progress
+export const clearArticleProgress = async (articleId: string): Promise<boolean> => {
+  try {
+    const allProgress = await getAllReadProgress();
+    const filtered = allProgress.filter((p) => p.articleId !== articleId);
+    await AsyncStorage.setItem(READ_PROGRESS_KEY, JSON.stringify(filtered));
+    return true;
+  } catch (error) {
+    console.error('Error clearing article progress:', error);
+    return false;
+  }
+};
+
+// Convert ReadProgress to ArticleProgress format for reading history
+const convertToArticleProgress = (rp: ReadProgress, articleData?: any): ArticleProgress => {
+  return {
+    articleId: rp.articleId,
+    articleTitle: articleData?.title || 'Article',
+    articleAuthor: articleData?.author,
+    scrollProgress: rp.progress / 100,
+    lastReadAt: new Date(rp.lastReadAt).getTime(),
+    completedAt: rp.completed ? new Date(rp.lastReadAt).getTime() : undefined,
+  };
+};
+
+// Enhanced get in-progress articles with full info
+export const getInProgressArticles = async (): Promise<ArticleProgress[]> => {
+  const allProgress = await getAllReadProgress();
+  return allProgress
+    .filter((p) => !p.completed && p.progress > 0)
+    .map(p => convertToArticleProgress(p))
+    .sort((a, b) => b.lastReadAt - a.lastReadAt);
+};
+
+// Enhanced get completed articles with full info
+export const getCompletedArticles = async (): Promise<ArticleProgress[]> => {
+  const allProgress = await getAllReadProgress();
+  return allProgress
+    .filter((p) => p.completed)
+    .map(p => convertToArticleProgress(p))
+    .sort((a, b) => b.lastReadAt - a.lastReadAt);
+};
