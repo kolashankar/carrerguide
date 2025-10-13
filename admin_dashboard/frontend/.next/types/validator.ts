@@ -126,6 +126,24 @@ type LayoutConfig<Route extends LayoutRoutes = LayoutRoutes> = {
   type __Unused = __Check
 }
 
+// Validate ../../app/dashboard/dsa/companies/create/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/dashboard/dsa/companies/create">> = Specific
+  const handler = {} as typeof import("../../app/dashboard/dsa/companies/create/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/dashboard/dsa/companies/edit/[id]/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/dashboard/dsa/companies/edit/[id]">> = Specific
+  const handler = {} as typeof import("../../app/dashboard/dsa/companies/edit/[id]/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../app/dashboard/dsa/companies/list/page.tsx
 {
   type __IsExpected<Specific extends AppPageConfig<"/dashboard/dsa/companies/list">> = Specific
@@ -162,10 +180,46 @@ type LayoutConfig<Route extends LayoutRoutes = LayoutRoutes> = {
   type __Unused = __Check
 }
 
+// Validate ../../app/dashboard/dsa/questions/edit/[id]/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/dashboard/dsa/questions/edit/[id]">> = Specific
+  const handler = {} as typeof import("../../app/dashboard/dsa/questions/edit/[id]/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../app/dashboard/dsa/questions/list/page.tsx
 {
   type __IsExpected<Specific extends AppPageConfig<"/dashboard/dsa/questions/list">> = Specific
   const handler = {} as typeof import("../../app/dashboard/dsa/questions/list/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/dashboard/dsa/sheets/create-ai/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/dashboard/dsa/sheets/create-ai">> = Specific
+  const handler = {} as typeof import("../../app/dashboard/dsa/sheets/create-ai/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/dashboard/dsa/sheets/create/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/dashboard/dsa/sheets/create">> = Specific
+  const handler = {} as typeof import("../../app/dashboard/dsa/sheets/create/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/dashboard/dsa/sheets/edit/[id]/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/dashboard/dsa/sheets/edit/[id]">> = Specific
+  const handler = {} as typeof import("../../app/dashboard/dsa/sheets/edit/[id]/page.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check
@@ -508,15 +562,6 @@ type LayoutConfig<Route extends LayoutRoutes = LayoutRoutes> = {
 {
   type __IsExpected<Specific extends AppPageConfig<"/privacy-policy">> = Specific
   const handler = {} as typeof import("../../app/privacy-policy/page.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-// Validate ../../app/register/page.tsx
-{
-  type __IsExpected<Specific extends AppPageConfig<"/register">> = Specific
-  const handler = {} as typeof import("../../app/register/page.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check
