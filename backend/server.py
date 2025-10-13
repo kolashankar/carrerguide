@@ -6,7 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Any
 
 # Import models
 from api.models.schemas.jobs.fields.validators.custom.job_model import JobCreate, JobUpdate, JobResponse
