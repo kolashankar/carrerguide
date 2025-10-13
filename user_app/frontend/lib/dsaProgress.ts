@@ -204,3 +204,66 @@ export const getDSAStats = async (): Promise<DSAStats> => {
     };
   }
 };
+
+// Get question status
+export const getQuestionStatus = async (
+  questionId: string
+): Promise<'unsolved' | 'attempted' | 'solved'> => {
+  const progress = await getQuestionProgress(questionId);
+  return progress?.status || 'unsolved';
+};
+
+// Record question submission
+export const recordQuestionSubmission = async (
+  questionId: string,
+  questionTitle: string,
+  status: 'attempted' | 'solved'
+): Promise<boolean> => {
+  return await updateQuestionProgress(questionId, status);
+};
+
+// Toggle question completion in sheet
+export const toggleSheetQuestion = async (
+  sheetId: string,
+  questionId: string,
+  totalQuestions: number
+): Promise<boolean> => {
+  try {
+    const sheetProgress = await getSheetProgress(sheetId);
+    
+    if (sheetProgress) {
+      const index = sheetProgress.completedQuestions.indexOf(questionId);
+      if (index > -1) {
+        // Remove from completed
+        sheetProgress.completedQuestions.splice(index, 1);
+      } else {
+        // Add to completed
+        sheetProgress.completedQuestions.push(questionId);
+      }
+      sheetProgress.lastUpdatedAt = new Date().toISOString();
+      
+      const allProgress = await getAllSheetProgress();
+      const sheetIndex = allProgress.findIndex((p) => p.sheetId === sheetId);
+      if (sheetIndex > -1) {
+        allProgress[sheetIndex] = sheetProgress;
+        await AsyncStorage.setItem(`${DSA_PROGRESS_KEY}_sheets`, JSON.stringify(allProgress));
+      }
+    } else {
+      return await updateSheetProgress(sheetId, questionId, totalQuestions);
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error toggling sheet question:', error);
+    return false;
+  }
+};
+
+// Check if question is completed in a sheet
+export const isQuestionCompletedInSheet = async (
+  sheetId: string,
+  questionId: string
+): Promise<boolean> => {
+  const sheetProgress = await getSheetProgress(sheetId);
+  return sheetProgress?.completedQuestions.includes(questionId) || false;
+};
