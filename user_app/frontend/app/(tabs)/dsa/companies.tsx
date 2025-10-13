@@ -90,6 +90,7 @@ export default function CompaniesScreen() {
             <TouchableOpacity
               key={company._id}
               className="bg-dark-200 rounded-lg p-4 mb-3 flex-row items-center"
+              onPress={() => router.push(`/dsa/company-${company._id}`)}
             >
               <View className="bg-white w-12 h-12 rounded-lg items-center justify-center mr-4">
                 <Text className="text-2xl">{company.logo}</Text>
