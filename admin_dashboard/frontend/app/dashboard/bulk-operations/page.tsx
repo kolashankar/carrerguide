@@ -1,163 +1,184 @@
 'use client'
 
 import { useState } from 'react'
-import { bulkApi } from '@/lib/api/client/config/interceptors/auth/token/analyticsApi'
-import DashboardLayout from '@/components/ui/layout/sidebar/navigation/items/menu/handlers/DashboardLayout'
+import { bulkApi } from '@/lib/api/client/config/interceptors/auth/token/bulkApi'
+import toast from 'react-hot-toast'
 
-export default function BulkOperationsPage() {
+export default function BulkOperations() {
+  const [activeTab, setActiveTab] = useState('jobs')
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
-  const [importType, setImportType] = useState<'jobs' | 'internships'>('jobs')
 
-  const handleExport = async (type: 'jobs' | 'internships') => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0])
+    }
+  }
+
+  const handleImport = async () => {
+    if (!selectedFile) {
+      toast.error('Please select a file first')
+      return
+    }
+
     try {
       setLoading(true)
-      const blob = type === 'jobs' ? await bulkApi.exportJobs() : await bulkApi.exportInternships()
-      
-      // Create download link
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `${type}_export_${Date.now()}.csv`
-      document.body.appendChild(a)
-      a.click()
-      window.URL.revokeObjectURL(url)
-      document.body.removeChild(a)
-      
-      alert(`${type} exported successfully!`)
-    } catch (error) {
-      console.error('Error exporting:', error)
-      alert(`Failed to export ${type}`)
+      if (activeTab === 'jobs') {
+        await bulkApi.importJobs(selectedFile)
+      } else {
+        await bulkApi.importInternships(selectedFile)
+      }
+      toast.success('Import completed successfully')
+      setSelectedFile(null)
+    } catch (error: any) {
+      toast.error(error.response?.data?.detail || 'Import failed')
+      console.error(error)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
+  const handleExport = async () => {
     try {
       setLoading(true)
-      const result = importType === 'jobs' 
-        ? await bulkApi.importJobs(file)
-        : await bulkApi.importInternships(file)
+      let response
+      if (activeTab === 'jobs') {
+        response = await bulkApi.exportJobs()
+      } else {
+        response = await bulkApi.exportInternships()
+      }
       
-      alert(`Import completed!\nImported: ${result.imported}\nFailed: ${result.failed}${result.errors.length > 0 ? '\n\nErrors:\n' + result.errors.join('\n') : ''}`)
+      // Create download link
+      const blob = new Blob([response.data], { type: 'text/csv' })
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${activeTab}_export_${Date.now()}.csv`
+      a.click()
+      toast.success('Export completed successfully')
     } catch (error: any) {
-      console.error('Error importing:', error)
-      alert(error.response?.data?.detail || `Failed to import ${importType}`)
+      toast.error('Export failed')
+      console.error(error)
     } finally {
       setLoading(false)
-      e.target.value = '' // Reset file input
     }
   }
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Bulk Operations</h1>
-          <p className="text-gray-600 mt-1">Import and export data in bulk</p>
-        </div>
+    <div className="p-6">
+      <h1 className="text-3xl font-bold mb-6">Bulk Operations</h1>
 
-        {/* Export Section */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
-            <span className="text-2xl mr-2">📥</span> Export Data
-          </h2>
-          <p className="text-gray-600 mb-6">Download your data as CSV files</p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <button
-              onClick={() => handleExport('jobs')}
-              disabled={loading}
-              className="bg-blue-500 text-white px-6 py-4 rounded-lg hover:bg-blue-600 transition disabled:bg-gray-400 font-semibold flex items-center justify-center"
-            >
-              <span className="mr-2">💼</span> Export Jobs
-            </button>
-            <button
-              onClick={() => handleExport('internships')}
-              disabled={loading}
-              className="bg-green-500 text-white px-6 py-4 rounded-lg hover:bg-green-600 transition disabled:bg-gray-400 font-semibold flex items-center justify-center"
-            >
-              <span className="mr-2">🎓</span> Export Internships
-            </button>
-          </div>
-        </div>
+      {/* Tabs */}
+      <div className="flex gap-4 mb-6">
+        <button
+          onClick={() => setActiveTab('jobs')}
+          className={`px-6 py-2 rounded-lg font-medium ${
+            activeTab === 'jobs'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+        >
+          Jobs
+        </button>
+        <button
+          onClick={() => setActiveTab('internships')}
+          className={`px-6 py-2 rounded-lg font-medium ${
+            activeTab === 'internships'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+        >
+          Internships
+        </button>
+      </div>
 
-        {/* Import Section */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
-            <span className="text-2xl mr-2">📤</span> Import Data
-          </h2>
-          <p className="text-gray-600 mb-6">Upload CSV files to import data</p>
+      {/* Import/Export Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        {/* Import */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-xl font-bold mb-4">⬇️ Import {activeTab}</h2>
+          <p className="text-sm text-gray-600 mb-4">
+            Upload a CSV file to bulk import {activeTab}. The CSV should have all required fields.
+          </p>
           
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select Import Type
-              </label>
-              <select
-                value={importType}
-                onChange={(e) => setImportType(e.target.value as 'jobs' | 'internships')}
-                className="w-full md:w-1/2 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="jobs">Jobs</option>
-                <option value="internships">Internships</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Upload CSV File
-              </label>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
               <input
                 type="file"
                 accept=".csv"
-                onChange={handleImport}
-                disabled={loading}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                onChange={handleFileSelect}
+                className="hidden"
+                id="file-upload"
               />
-              <p className="text-sm text-gray-500 mt-2">
-                💡 Make sure your CSV file has the correct column headers
-              </p>
+              <label
+                htmlFor="file-upload"
+                className="cursor-pointer text-blue-600 hover:underline"
+              >
+                {selectedFile ? selectedFile.name : 'Click to select CSV file'}
+              </label>
             </div>
+
+            <button
+              onClick={handleImport}
+              disabled={!selectedFile || loading}
+              className="w-full bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50"
+            >
+              {loading ? 'Importing...' : `Import ${activeTab}`}
+            </button>
           </div>
         </div>
 
-        {/* CSV Format Info */}
-        <div className="bg-blue-50 rounded-lg p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-3">📝 CSV Format Guidelines</h3>
-          <div className="space-y-3 text-sm text-gray-700">
-            <div>
-              <strong>Jobs CSV Headers:</strong>
-              <p className="font-mono text-xs bg-white p-2 rounded mt-1">
-                title, company, location, description, job_type, category, experience_level, salary_min, salary_max, skills, qualifications, responsibilities, benefits
+        {/* Export */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-xl font-bold mb-4">⬆️ Export {activeTab}</h2>
+          <p className="text-sm text-gray-600 mb-4">
+            Download all {activeTab} as a CSV file. You can edit and re-import the file.
+          </p>
+          
+          <div className="space-y-4">
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <p className="text-sm text-blue-800">
+                The export will include all fields and can be used as a template for imports.
               </p>
             </div>
-            <div>
-              <strong>Internships CSV Headers:</strong>
-              <p className="font-mono text-xs bg-white p-2 rounded mt-1">
-                title, company, location, description, internship_type, category, duration, stipend_amount, skills, qualifications, learning_outcomes, requirements
-              </p>
-            </div>
-            <p className="text-xs text-gray-600 mt-3">
-              ⚠️ For array fields (skills, qualifications, etc.), separate items with semicolons (;)
-            </p>
+
+            <button
+              onClick={handleExport}
+              disabled={loading}
+              className="w-full bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+              {loading ? 'Exporting...' : `Export ${activeTab} to CSV`}
+            </button>
           </div>
         </div>
-
-        {loading && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 shadow-lg">
-              <div className="flex items-center space-x-3">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                <span className="text-gray-700 font-semibold">Processing...</span>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
-    </DashboardLayout>
+
+      {/* Bulk Actions */}
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h2 className="text-xl font-bold mb-4">Bulk Actions</h2>
+        <p className="text-sm text-gray-600 mb-4">
+          Perform actions on multiple {activeTab} at once. Select items from the list page to enable bulk actions.
+        </p>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <button className="p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 text-center">
+            <div className="text-2xl mb-2">✅</div>
+            <div className="text-sm font-medium">Activate Selected</div>
+          </button>
+          <button className="p-4 border-2 border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 text-center">
+            <div className="text-2xl mb-2">⏸️</div>
+            <div className="text-sm font-medium">Deactivate Selected</div>
+          </button>
+          <button className="p-4 border-2 border-gray-300 rounded-lg hover:border-red-500 hover:bg-red-50 text-center">
+            <div className="text-2xl mb-2">🗑️</div>
+            <div className="text-sm font-medium">Delete Selected</div>
+          </button>
+          <button className="p-4 border-2 border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 text-center">
+            <div className="text-2xl mb-2">📝</div>
+            <div className="text-sm font-medium">Edit Fields</div>
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }
