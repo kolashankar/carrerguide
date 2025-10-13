@@ -46,10 +46,13 @@ export default function ProfileScreen() {
 
         {/* Menu Items */}
         <View className="px-4">
-          <TouchableOpacity className="bg-dark-200 px-6 py-4 rounded-lg mb-2 flex-row items-center justify-between">
+          <TouchableOpacity 
+            className="bg-dark-200 px-6 py-4 rounded-lg mb-2 flex-row items-center justify-between"
+            onPress={() => router.push('/(tabs)/profile/bookmarks')}
+          >
             <View className="flex-row items-center">
               <Ionicons name="bookmark-outline" size={24} color="#9ca3af" />
-              <Text className="text-white ml-4 text-base">Saved Jobs</Text>
+              <Text className="text-white ml-4 text-base">Bookmarks</Text>
             </View>
             <Ionicons name="chevron-forward" size={24} color="#9ca3af" />
           </TouchableOpacity>
