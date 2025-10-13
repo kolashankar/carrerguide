@@ -1,8 +1,15 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { TouchableOpacity, Linking } from 'react-native';
 
 export default function TabsLayout() {
+  const openWhatsAppCommunity = () => {
+    // Replace with your actual WhatsApp community link
+    const whatsappURL = 'https://chat.whatsapp.com/YOUR_COMMUNITY_INVITE_LINK';
+    Linking.openURL(whatsappURL).catch(err => console.error('Error opening WhatsApp:', err));
+  };
+
   return (
     <Tabs
       screenOptions={{
@@ -18,7 +25,7 @@ export default function TabsLayout() {
           height: 60,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: '600',
         },
       }}
@@ -66,6 +73,37 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings" size={size} color={color} />
+          ),
+        }}
+      />
+      {/* WhatsApp Community - Opens external link */}
+      <Tabs.Screen
+        name="whatsapp"
+        options={{
+          title: 'WhatsApp',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="logo-whatsapp" size={size} color="#25D366" />
+          ),
+          tabBarButton: (props) => (
+            <TouchableOpacity
+              {...props}
+              onPress={openWhatsAppCommunity}
+            />
+          ),
+        }}
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+            openWhatsAppCommunity();
+          },
         }}
       />
     </Tabs>
