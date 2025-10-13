@@ -9,6 +9,15 @@ export interface ReadProgress {
   completed: boolean;
 }
 
+export interface ArticleProgress {
+  articleId: string;
+  articleTitle: string;
+  articleAuthor?: string;
+  scrollProgress?: number; // 0-1
+  lastReadAt: number;
+  completedAt?: number;
+}
+
 // Get all read progress
 export const getAllReadProgress = async (): Promise<ReadProgress[]> => {
   try {
