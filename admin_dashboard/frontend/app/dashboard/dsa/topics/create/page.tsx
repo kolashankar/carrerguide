@@ -2,9 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import axios from 'axios'
-import { Save, ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
+import { dsaApi } from '@/lib/api/client/config/interceptors/auth/token/dsaApi'
+import toast from 'react-hot-toast'
 
 export default function CreateTopic() {
   const router = useRouter()
@@ -13,9 +12,8 @@ export default function CreateTopic() {
     name: '',
     description: '',
     icon: '📚',
-    color: '#3B82F6',
-    parent_topic: '',
-    is_active: true
+    color: '#3b82f6',
+    is_active: true,
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,107 +21,108 @@ export default function CreateTopic() {
     setLoading(true)
 
     try {
-      await axios.post('/api/admin/dsa/topics', formData)
-      alert('Topic created successfully!')
+      await dsaApi.topics.create(formData)
+      toast.success('Topic created successfully')
       router.push('/dashboard/dsa/topics/list')
     } catch (error: any) {
-      console.error('Error creating topic:', error)
-      alert(error.response?.data?.detail || 'Failed to create topic')
+      toast.error(error.response?.data?.detail || 'Failed to create topic')
+      console.error(error)
     } finally {
       setLoading(false)
     }
   }
 
-  const iconOptions = ['📚', '💻', '🔢', '🌳', '📊', '🔍', '🧩', '⚡', '🎯', '🚀']
-  const colorOptions = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16']
+  const commonIcons = ['📚', '📊', '🔍', '🧠', '💻', '🎯', '⚙️', '🔒', '🌳', '📊']
 
   return (
-    <div className="p-6">
-      <div className="flex items-center gap-4 mb-6">
-        <Link href="/dashboard/dsa/topics/list" className="p-2 hover:bg-gray-100 rounded-lg">
-          <ArrowLeft size={24} />
-        </Link>
-        <h1 className="text-3xl font-bold text-gray-800">Create DSA Topic</h1>
-      </div>
+    <div className="p-6 max-w-2xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">Create DSA Topic</h1>
 
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow max-w-2xl">
-        <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
+        <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Name *</label>
+            <label className="block text-sm font-medium mb-2">Name *</label>
             <input
               type="text"
+              required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+              className="w-full px-4 py-2 border rounded-lg"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
+            <label className="block text-sm font-medium mb-2">Description *</label>
             <textarea
+              required
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className="w-full px-4 py-2 border rounded-lg"
               rows={4}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Icon</label>
-            <div className="grid grid-cols-5 gap-2">
-              {iconOptions.map((icon) => (
+            <label className="block text-sm font-medium mb-2">Icon</label>
+            <div className="flex gap-2 mb-2">
+              {commonIcons.map((icon) => (
                 <button
                   key={icon}
                   type="button"
                   onClick={() => setFormData({ ...formData, icon })}
-                  className={`p-4 text-3xl rounded-lg border-2 hover:bg-gray-50 ${
-                    formData.icon === icon ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                  className={`text-2xl p-2 rounded border ${
+                    formData.icon === icon ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
                   }`}
                 >
                   {icon}
                 </button>
               ))}
             </div>
+            <input
+              type="text"
+              value={formData.icon}
+              onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+              className="w-full px-4 py-2 border rounded-lg"
+              placeholder="Or enter custom emoji"
+            />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Color</label>
-            <div className="grid grid-cols-8 gap-2">
-              {colorOptions.map((color) => (
-                <button
-                  key={color}
-                  type="button"
-                  onClick={() => setFormData({ ...formData, color })}
-                  className={`w-12 h-12 rounded-lg border-2 ${
-                    formData.color === color ? 'border-gray-800 ring-2 ring-offset-2 ring-gray-800' : 'border-gray-200'
-                  }`}
-                  style={{ backgroundColor: color }}
-                />
-              ))}
-            </div>
+            <label className="block text-sm font-medium mb-2">Color</label>
+            <input
+              type="color"
+              value={formData.color}
+              onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+              className="w-full h-12 border rounded-lg"
+            />
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center">
             <input
               type="checkbox"
-              id="is_active"
               checked={formData.is_active}
               onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-              className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+              className="mr-2"
             />
-            <label htmlFor="is_active" className="text-sm font-medium text-gray-700">Active</label>
+            <label className="text-sm font-medium">Active</label>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            <Save size={20} />
-            {loading ? 'Creating...' : 'Create Topic'}
-          </button>
+          <div className="flex gap-4 pt-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+              {loading ? 'Creating...' : 'Create Topic'}
+            </button>
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </form>
     </div>
