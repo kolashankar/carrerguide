@@ -63,6 +63,11 @@ class RoadmapHandlers:
         roadmap_data["views_count"] = 0
         roadmap_data["followers_count"] = 0
         
+        # Auto-calculate reading time based on node content
+        nodes = roadmap_data.get("nodes", [])
+        if nodes:
+            roadmap_data["reading_time"] = self._calculate_reading_time(nodes)
+        
         result = await self.collection.insert_one(roadmap_data)
         roadmap_data["_id"] = result.inserted_id
         return self._format_roadmap(roadmap_data)
