@@ -21,12 +21,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   const menuItems = [
     { name: 'Dashboard', path: '/', icon: '🏠' },
+    { name: 'Analytics', path: '/dashboard/analytics', icon: '📊' },
     { name: 'Jobs', path: '/dashboard/jobs/list', icon: '💼' },
     { name: 'Internships', path: '/dashboard/internships/list', icon: '🎓' },
     { name: 'Scholarships', path: '/dashboard/scholarships/list', icon: '🏆' },
+    { name: 'Roadmaps', path: '/dashboard/roadmaps/list', icon: '🗺️' },
+    { name: 'Career Tools', path: '/dashboard/career-tools/templates', icon: '🛠️' },
+    { name: 'Bulk Operations', path: '/dashboard/bulk-operations', icon: '📦' },
     { name: 'Learning', path: '/dashboard/learning', icon: '📚', disabled: true },
-    { name: 'Career Tools', path: '/dashboard/career-tools', icon: '🛠️', disabled: true },
-    { name: 'Analytics', path: '/dashboard/analytics', icon: '📊', disabled: true },
   ]
 
   return (
