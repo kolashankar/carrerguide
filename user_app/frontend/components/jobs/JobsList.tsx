@@ -7,6 +7,10 @@ import api from '../../lib/api';
 import SearchBar from '../common/SearchBar';
 import LoadingSpinner from '../common/LoadingSpinner';
 import EmptyState from '../common/EmptyState';
+import CategoryChips from '../common/CategoryChips';
+import JobsFilterModal, { JobFilters } from './JobsFilterModal';
+import SortModal, { SortOption } from '../common/SortModal';
+import { toggleBookmark, isBookmarked } from '../../lib/bookmarks';
 
 interface Job {
   _id: string;
@@ -22,25 +26,107 @@ interface Job {
   is_active: boolean;
 }
 
+const CATEGORIES = [
+  'All',
+  'Technology',
+  'Marketing',
+  'Sales',
+  'Finance',
+  'Healthcare',
+  'Education',
+  'Engineering',
+];
+
+const SORT_OPTIONS: SortOption[] = [
+  { label: 'Most Recent', value: 'recent' },
+  { label: 'Salary: High to Low', value: 'salary_desc' },
+  { label: 'Salary: Low to High', value: 'salary_asc' },
+  { label: 'Company Name: A-Z', value: 'company_asc' },
+];
+
 export default function JobsList() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterCategory, setFilterCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [showFilters, setShowFilters] = useState(false);
+  const [showSort, setShowSort] = useState(false);
+  const [sortBy, setSortBy] = useState('recent');
+  const [bookmarkedJobs, setBookmarkedJobs] = useState<Set<string>>(new Set());
+  const [filters, setFilters] = useState<JobFilters>({
+    jobTypes: [],
+    experienceLevels: [],
+    salaryMin: 0,
+    salaryMax: 200000,
+    location: '',
+    postedDate: '',
+  });
   const router = useRouter();
 
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
-    queryKey: ['jobs', searchQuery, filterCategory],
+    queryKey: ['jobs', searchQuery, selectedCategory, filters, sortBy],
     queryFn: async () => {
       const params: any = {};
       if (searchQuery) params.search = searchQuery;
-      if (filterCategory) params.category = filterCategory;
-      
+      if (selectedCategory !== 'All') params.category = selectedCategory;
+      if (filters.jobTypes.length > 0) params.job_type = filters.jobTypes.join(',');
+      if (filters.experienceLevels.length > 0)
+        params.experience_level = filters.experienceLevels.join(',');
+      if (filters.location) params.location = filters.location;
+      if (filters.salaryMin > 0) params.salary_min = filters.salaryMin;
+      if (filters.salaryMax < 200000) params.salary_max = filters.salaryMax;
+      if (sortBy) params.sort = sortBy;
+
       const response = await api.get('/user/jobs', { params });
       return response.data.jobs || [];
     },
   });
 
+  // Load bookmarks on mount
+  useEffect(() => {
+    loadBookmarks();
+  }, []);
+
+  const loadBookmarks = async () => {
+    const bookmarkedIds = new Set<string>();
+    if (data) {
+      for (const job of data) {
+        if (await isBookmarked(job._id)) {
+          bookmarkedIds.add(job._id);
+        }
+      }
+      setBookmarkedJobs(bookmarkedIds);
+    }
+  };
+
   const handleJobPress = (jobId: string) => {
     router.push(`/(tabs)/jobs/${jobId}`);
+  };
+
+  const handleBookmark = async (job: Job, e: any) => {
+    e.stopPropagation();
+    const success = await toggleBookmark(job._id, 'job', job);
+    if (success) {
+      setBookmarkedJobs((prev) => {
+        const newSet = new Set(prev);
+        if (newSet.has(job._id)) {
+          newSet.delete(job._id);
+        } else {
+          newSet.add(job._id);
+        }
+        return newSet;
+      });
+    }
+  };
+
+  const handleApplyFilters = (newFilters: JobFilters) => {
+    setFilters(newFilters);
+  };
+
+  const handleCategorySelect = (category: string) => {
+    setSelectedCategory(category);
+  };
+
+  const handleSortSelect = (sort: string) => {
+    setSortBy(sort);
   };
 
   if (isLoading) {
@@ -59,10 +145,38 @@ export default function JobsList() {
 
   return (
     <View className="flex-1">
-      <SearchBar
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        placeholder="Search jobs by title..."
+      {/* Search Bar */}
+      <View className="px-4">
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search jobs by title..."
+        />
+      </View>
+
+      {/* Filter and Sort Buttons */}
+      <View className="flex-row px-4 py-2">
+        <TouchableOpacity
+          className="flex-row items-center bg-dark-200 px-4 py-2 rounded-lg mr-2"
+          onPress={() => setShowFilters(true)}
+        >
+          <Ionicons name="options-outline" size={18} color="#fff" />
+          <Text className="text-white ml-2 font-semibold">Filters</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          className="flex-row items-center bg-dark-200 px-4 py-2 rounded-lg"
+          onPress={() => setShowSort(true)}
+        >
+          <Ionicons name="swap-vertical-outline" size={18} color="#fff" />
+          <Text className="text-white ml-2 font-semibold">Sort</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Category Chips */}
+      <CategoryChips
+        categories={CATEGORIES}
+        selectedCategory={selectedCategory}
+        onSelectCategory={handleCategorySelect}
       />
 
       <ScrollView
@@ -95,8 +209,17 @@ export default function JobsList() {
                   </Text>
                   <Text className="text-gray-400 text-sm mt-1">{job.company}</Text>
                 </View>
-                <View className="bg-primary-600 px-3 py-1 rounded-full">
-                  <Text className="text-white text-xs font-semibold">{job.job_type}</Text>
+                <View className="flex-row items-center">
+                  <View className="bg-primary-600 px-3 py-1 rounded-full mr-2">
+                    <Text className="text-white text-xs font-semibold">{job.job_type}</Text>
+                  </View>
+                  <TouchableOpacity onPress={(e) => handleBookmark(job, e)}>
+                    <Ionicons
+                      name={bookmarkedJobs.has(job._id) ? 'bookmark' : 'bookmark-outline'}
+                      size={24}
+                      color={bookmarkedJobs.has(job._id) ? '#3b82f6' : '#9ca3af'}
+                    />
+                  </TouchableOpacity>
                 </View>
               </View>
 
@@ -133,6 +256,23 @@ export default function JobsList() {
           ))
         )}
       </ScrollView>
+
+      {/* Filter Modal */}
+      <JobsFilterModal
+        visible={showFilters}
+        onClose={() => setShowFilters(false)}
+        onApply={handleApplyFilters}
+        currentFilters={filters}
+      />
+
+      {/* Sort Modal */}
+      <SortModal
+        visible={showSort}
+        onClose={() => setShowSort(false)}
+        onSelect={handleSortSelect}
+        currentSort={sortBy}
+        options={SORT_OPTIONS}
+      />
     </View>
   );
 }
