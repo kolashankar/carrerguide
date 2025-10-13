@@ -307,3 +307,179 @@ class AuthHandlers:
             return {"success": True, "message": "Password changed successfully"}
         except Exception as e:
             return {"success": False, "message": str(e)}
+
+
+    # =============================================================================
+    # SUB-ADMIN MANAGEMENT (Super Admin Only)
+    # =============================================================================
+    
+    async def create_sub_admin(self, admin_data: Dict[str, Any], creator_role: str) -> Dict[str, Any]:
+        """Create a new sub-admin (only super_admin can do this)"""
+        # Only super admins can create sub-admins
+        if creator_role != "super_admin":
+            return {"success": False, "message": "Only super admins can create sub-admins"}
+        
+        # Check if admin already exists
+        existing_admin = await self.admin_collection.find_one({
+            "$or": [
+                {"email": admin_data["email"]},
+                {"username": admin_data["username"]}
+            ]
+        })
+        
+        if existing_admin:
+            return {"success": False, "message": "Admin with this email or username already exists"}
+        
+        # Hash password
+        password = admin_data.pop("password")
+        admin_data["password_hash"] = self.hash_password(password)
+        
+        # Set timestamps and defaults
+        admin_data["created_at"] = datetime.utcnow()
+        admin_data["updated_at"] = datetime.utcnow()
+        admin_data["last_login"] = None
+        admin_data["is_active"] = True
+        admin_data["role"] = admin_data.get("role", "sub_admin")  # Default to sub_admin
+        
+        # Insert admin
+        result = await self.admin_collection.insert_one(admin_data)
+        
+        return {
+            "success": True,
+            "message": "Sub-admin created successfully",
+            "admin_id": str(result.inserted_id),
+            "email": admin_data["email"],
+            "username": admin_data["username"],
+            "role": admin_data["role"]
+        }
+    
+    async def get_all_admins(
+        self,
+        skip: int = 0,
+        limit: int = 50,
+        role: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Get list of all admins"""
+        query = {}
+        if role:
+            query["role"] = role
+        
+        total = await self.admin_collection.count_documents(query)
+        cursor = self.admin_collection.find(query).skip(skip).limit(limit).sort("created_at", -1)
+        admins = await cursor.to_list(length=limit)
+        
+        # Format admins
+        formatted_admins = []
+        for admin in admins:
+            admin["id"] = str(admin.pop("_id"))
+            admin.pop("password_hash", None)
+            if "created_at" in admin and admin["created_at"]:
+                admin["created_at"] = admin["created_at"].isoformat()
+            if "updated_at" in admin and admin["updated_at"]:
+                admin["updated_at"] = admin["updated_at"].isoformat()
+            if "last_login" in admin and admin["last_login"]:
+                admin["last_login"] = admin["last_login"].isoformat()
+            formatted_admins.append(admin)
+        
+        return {
+            "success": True,
+            "admins": formatted_admins,
+            "total": total,
+            "page": (skip // limit) + 1,
+            "limit": limit
+        }
+    
+    async def get_admin_by_id(self, admin_id: str) -> Optional[Dict[str, Any]]:
+        """Get single admin by ID"""
+        try:
+            admin = await self.admin_collection.find_one({"_id": ObjectId(admin_id)})
+            if admin:
+                admin["id"] = str(admin.pop("_id"))
+                admin.pop("password_hash", None)
+                if "created_at" in admin and admin["created_at"]:
+                    admin["created_at"] = admin["created_at"].isoformat()
+                if "updated_at" in admin and admin["updated_at"]:
+                    admin["updated_at"] = admin["updated_at"].isoformat()
+                if "last_login" in admin and admin["last_login"]:
+                    admin["last_login"] = admin["last_login"].isoformat()
+                return admin
+            return None
+        except Exception:
+            return None
+    
+    async def update_admin(self, admin_id: str, update_data: Dict[str, Any], updater_role: str) -> Dict[str, Any]:
+        """Update admin details (only super_admin can do this)"""
+        if updater_role != "super_admin":
+            return {"success": False, "message": "Only super admins can update admin details"}
+        
+        try:
+            update_data["updated_at"] = datetime.utcnow()
+            
+            # Don't allow changing password through this endpoint
+            update_data.pop("password", None)
+            update_data.pop("password_hash", None)
+            
+            result = await self.admin_collection.find_one_and_update(
+                {"_id": ObjectId(admin_id)},
+                {"$set": update_data},
+                return_document=True
+            )
+            
+            if result:
+                result["id"] = str(result.pop("_id"))
+                result.pop("password_hash", None)
+                return {"success": True, "admin": result}
+            
+            return {"success": False, "message": "Admin not found"}
+        except Exception as e:
+            return {"success": False, "message": str(e)}
+    
+    async def delete_admin(self, admin_id: str, deleter_role: str) -> Dict[str, Any]:
+        """Delete admin (only super_admin can do this)"""
+        if deleter_role != "super_admin":
+            return {"success": False, "message": "Only super admins can delete admins"}
+        
+        try:
+            # Check if trying to delete super admin
+            admin = await self.admin_collection.find_one({"_id": ObjectId(admin_id)})
+            if not admin:
+                return {"success": False, "message": "Admin not found"}
+            
+            if admin.get("role") == "super_admin":
+                return {"success": False, "message": "Cannot delete super admin"}
+            
+            result = await self.admin_collection.delete_one({"_id": ObjectId(admin_id)})
+            return {
+                "success": result.deleted_count > 0,
+                "message": "Admin deleted successfully" if result.deleted_count > 0 else "Admin not found"
+            }
+        except Exception as e:
+            return {"success": False, "message": str(e)}
+    
+    async def toggle_admin_status(self, admin_id: str, toggler_role: str) -> Dict[str, Any]:
+        """Toggle admin active status (only super_admin can do this)"""
+        if toggler_role != "super_admin":
+            return {"success": False, "message": "Only super admins can toggle admin status"}
+        
+        try:
+            admin = await self.admin_collection.find_one({"_id": ObjectId(admin_id)})
+            if not admin:
+                return {"success": False, "message": "Admin not found"}
+            
+            if admin.get("role") == "super_admin":
+                return {"success": False, "message": "Cannot toggle super admin status"}
+            
+            new_status = not admin.get("is_active", True)
+            
+            await self.admin_collection.update_one(
+                {"_id": ObjectId(admin_id)},
+                {"$set": {"is_active": new_status, "updated_at": datetime.utcnow()}}
+            )
+            
+            return {
+                "success": True,
+                "is_active": new_status,
+                "message": f"Admin {'activated' if new_status else 'deactivated'} successfully"
+            }
+        except Exception as e:
+            return {"success": False, "message": str(e)}
