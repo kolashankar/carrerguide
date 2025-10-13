@@ -68,6 +68,17 @@ export default function ProfileScreen() {
             <Ionicons name="chevron-forward" size={24} color="#9ca3af" />
           </TouchableOpacity>
 
+          <TouchableOpacity 
+            className="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4 rounded-lg mb-2 flex-row items-center justify-between"
+            onPress={() => router.push('/(tabs)/profile/career-tools')}
+          >
+            <View className="flex-row items-center">
+              <Ionicons name="sparkles" size={24} color="#fff" />
+              <Text className="text-white ml-4 text-base font-semibold">Career Tools (AI)</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={24} color="#fff" />
+          </TouchableOpacity>
+
           <TouchableOpacity className="bg-dark-200 px-6 py-4 rounded-lg mb-2 flex-row items-center justify-between">
             <View className="flex-row items-center">
               <Ionicons name="settings-outline" size={24} color="#9ca3af" />
