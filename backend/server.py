@@ -822,6 +822,68 @@ async def change_password(password_data: ChangePasswordRequest, current_user = D
     )
 
 # =============================================================================
+# SUB-ADMIN MANAGEMENT ROUTES (Super Admin Only)
+# =============================================================================
+
+@api_router.post("/admin/sub-admins", tags=["Admin Management"])
+async def create_sub_admin(admin_data: AdminRegister, current_user = Depends(get_current_user)):
+    """Create a new sub-admin (Super Admin only)"""
+    if current_user.get("user_type") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return await auth_handlers.create_sub_admin(admin_data.dict(), current_user.get("role", "admin"))
+
+@api_router.get("/admin/sub-admins", tags=["Admin Management"])
+async def get_all_admins(
+    skip: int = 0,
+    limit: int = 50,
+    role: Optional[str] = None,
+    current_user = Depends(get_current_user)
+):
+    """Get list of all admins (Super Admin only)"""
+    if current_user.get("user_type") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    if current_user.get("role") != "super_admin":
+        raise HTTPException(status_code=403, detail="Super admin access required")
+    return await auth_handlers.get_all_admins(skip, limit, role)
+
+@api_router.get("/admin/sub-admins/{admin_id}", tags=["Admin Management"])
+async def get_admin_by_id(admin_id: str, current_user = Depends(get_current_user)):
+    """Get single admin by ID (Super Admin only)"""
+    if current_user.get("user_type") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    if current_user.get("role") != "super_admin":
+        raise HTTPException(status_code=403, detail="Super admin access required")
+    admin = await auth_handlers.get_admin_by_id(admin_id)
+    if not admin:
+        raise HTTPException(status_code=404, detail="Admin not found")
+    return {"success": True, "admin": admin}
+
+@api_router.put("/admin/sub-admins/{admin_id}", tags=["Admin Management"])
+async def update_admin(
+    admin_id: str,
+    update_data: Dict[str, Any],
+    current_user = Depends(get_current_user)
+):
+    """Update admin details (Super Admin only)"""
+    if current_user.get("user_type") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return await auth_handlers.update_admin(admin_id, update_data, current_user.get("role", "admin"))
+
+@api_router.delete("/admin/sub-admins/{admin_id}", tags=["Admin Management"])
+async def delete_admin(admin_id: str, current_user = Depends(get_current_user)):
+    """Delete admin (Super Admin only)"""
+    if current_user.get("user_type") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return await auth_handlers.delete_admin(admin_id, current_user.get("role", "admin"))
+
+@api_router.post("/admin/sub-admins/{admin_id}/toggle-status", tags=["Admin Management"])
+async def toggle_admin_status(admin_id: str, current_user = Depends(get_current_user)):
+    """Toggle admin active status (Super Admin only)"""
+    if current_user.get("user_type") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return await auth_handlers.toggle_admin_status(admin_id, current_user.get("role", "admin"))
+
+# =============================================================================
 # CAREER TOOLS ROUTES (Auth Required)
 # =============================================================================
 
