@@ -11,7 +11,7 @@ from typing import Dict, List, Any, Optional
 from datetime import datetime
 
 # Backend URL from environment
-BACKEND_URL = "https://dsa-manager.preview.emergentagent.com/api"
+BACKEND_URL = "https://career-assist-6.preview.emergentagent.com/api"
 
 class DSABackendTester:
     def __init__(self):
