@@ -5,10 +5,12 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/Button';
-import { Menu, X, User, LogOut, Briefcase, BookOpen, Code, MapIcon, Wrench } from 'lucide-react';
+import { Menu, X, User, LogOut, Briefcase, BookOpen, Code, MapIcon, Wrench, Search, Settings, MessageCircle, ChevronDown } from 'lucide-react';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [careerToolsOpen, setCareerToolsOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -18,7 +20,14 @@ export function Header() {
     { name: 'Learning', href: '/learning', icon: BookOpen },
     { name: 'DSA Corner', href: '/dsa', icon: Code },
     { name: 'Roadmaps', href: '/roadmaps', icon: MapIcon },
-    { name: 'Career Tools', href: '/career-tools', icon: Wrench },
+  ];
+
+  const careerTools = [
+    { name: 'Resume Review', href: '/career-tools/resume-review' },
+    { name: 'Cover Letter', href: '/career-tools/cover-letter' },
+    { name: 'ATS Hack', href: '/career-tools/ats-hack' },
+    { name: 'Cold Email', href: '/career-tools/cold-email' },
+    { name: 'Usage History', href: '/career-tools/history' },
   ];
 
   const handleLogout = () => {
