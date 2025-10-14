@@ -6,7 +6,7 @@ Final DSA Backend Testing - Including AI Generation
 import requests
 import json
 
-BACKEND_URL = "https://jobadmin-portal-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://dsa-manager.preview.emergentagent.com/api"
 
 def test_ai_generation():
     print("🤖 Testing AI Generation Features")
