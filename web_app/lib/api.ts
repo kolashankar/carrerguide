@@ -123,6 +123,72 @@ class ApiClient {
     const response = await this.client.get(`/user/articles/${id}`);
     return response.data;
   }
+
+  // DSA Topics APIs
+  async getDSATopics(params?: any) {
+    const response = await this.client.get('/user/dsa/topics', { params });
+    return response.data;
+  }
+
+  async getDSATopicById(id: string) {
+    const response = await this.client.get(`/user/dsa/topics/${id}`);
+    return response.data;
+  }
+
+  // DSA Questions APIs
+  async getDSAQuestions(params?: any) {
+    const response = await this.client.get('/user/dsa/questions', { params });
+    return response.data;
+  }
+
+  async getDSAQuestionById(id: string) {
+    const response = await this.client.get(`/user/dsa/questions/${id}`);
+    return response.data;
+  }
+
+  async submitDSAQuestion(id: string, data: any) {
+    const response = await this.client.post(`/user/dsa/questions/${id}/submit`, data);
+    return response.data;
+  }
+
+  // DSA Sheets APIs
+  async getDSASheets(params?: any) {
+    const response = await this.client.get('/user/dsa/sheets', { params });
+    return response.data;
+  }
+
+  async getDSASheetById(id: string) {
+    const response = await this.client.get(`/user/dsa/sheets/${id}`);
+    return response.data;
+  }
+
+  // DSA Companies APIs
+  async getDSACompanies(params?: any) {
+    const response = await this.client.get('/user/dsa/companies', { params });
+    return response.data;
+  }
+
+  async getDSACompanyById(id: string) {
+    const response = await this.client.get(`/user/dsa/companies/${id}`);
+    return response.data;
+  }
+
+  // DSA Dashboard APIs
+  async getDSADashboard() {
+    const response = await this.client.get('/user/dsa/dashboard');
+    return response.data;
+  }
+
+  // Roadmaps APIs
+  async getRoadmaps(params?: any) {
+    const response = await this.client.get('/user/roadmaps', { params });
+    return response.data;
+  }
+
+  async getRoadmapById(id: string) {
+    const response = await this.client.get(`/user/roadmaps/${id}`);
+    return response.data;
+  }
 }
 
 export const apiClient = new ApiClient();
