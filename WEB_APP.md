@@ -215,39 +215,278 @@ web_app/
 
 ---
 
-## 📚 PHASE 3: LEARNING MODULE (Week 3)
+## 📚 PHASE 3: LEARNING MODULE ✅ COMPLETE
 
 ### 3.1 Articles List Page
 **Route:** `/learning`
 
-**Features:**
-- ✅ Horizontal navbar
-- ✅ Hero section with featured articles
-- ✅ Category chips
-- ✅ Search with recent searches
-- ✅ Filter by tags, author, read time
-- ✅ Sort options
-- ✅ Article cards with:
-  - Cover image
-  - Title, excerpt
-  - Author, date
-  - Read time
-  - Views count
-  - Tags
-  - Save/Bookmark icon
-- ✅ Continue reading section
-- ✅ Pagination
+**Features Implemented:**
+- ✅ Hero section with purple gradient and featured articles
+- ✅ Category chips (Career Development, Interview Prep, Technical Skills, etc.)
+- ✅ Search bar with placeholder
+- ✅ Filter sidebar/modal by category, read time
+- ✅ Sort options (Most Recent, Most Popular, Quick Read, Long Read)
+- ✅ Responsive article cards with:
+  - ✅ Cover image with hover effect
+  - ✅ Title, excerpt (line-clamp)
+  - ✅ Author with avatar
+  - ✅ Read time & views count
+  - ✅ Tags (first 3 + count)
+  - ✅ Category badge
+  - ✅ Bookmark icon (functional)
+- ✅ Empty state with helpful message
+- ✅ Loading skeletons
+- ✅ React Query integration for caching
+
+**Components Created:**
+1. ✅ `components/learning/ArticleCard.tsx` - Article card with all metadata
+2. ✅ `components/learning/ArticleFilters.tsx` - Filter sidebar/modal
+3. ✅ `app/learning/page.tsx` - Main articles list page
 
 ### 3.2 Article Detail Page
 **Route:** `/learning/articles/[id]`
 
-**Features:**
-- ✅ Full article with rich text formatting
-- ✅ Table of contents (sticky sidebar)
-- ✅ Reading progress bar
-- ✅ Author info card
-- ✅ Reading time estimate
-- ✅ Share buttons (social media)
+**Features Implemented:**
+- ✅ Reading progress bar (fixed top)
+- ✅ Back to list navigation
+- ✅ Full article header with:
+  - ✅ Category badge
+  - ✅ Title
+  - ✅ Author info with avatar
+  - ✅ Published date, read time, views
+  - ✅ Action buttons (Save, Share, Print)
+- ✅ Cover image
+- ✅ Article content with ReactMarkdown rendering
+- ✅ Tags at bottom (clickable chips)
+- ✅ Table of contents (sticky sidebar, desktop only)
+  - ✅ Auto-generated from markdown headings
+  - ✅ Active section highlighting
+  - ✅ Smooth scroll on click
+- ✅ Share functionality:
+  - ✅ Twitter, Facebook, LinkedIn
+  - ✅ Copy link to clipboard
+  - ✅ Native share API (mobile)
+- ✅ Print article functionality
+- ✅ Bookmark/Save button with state
+- ✅ Responsive layout
+
+**Components Created:**
+1. ✅ `components/learning/ReadingProgress.tsx` - Progress bar
+2. ✅ `components/learning/TableOfContents.tsx` - TOC sidebar
+3. ✅ `app/learning/articles/[id]/page.tsx` - Article detail page
+
+**API Integration:**
+- ✅ GET /api/user/articles - List articles (with search, filter, sort)
+- ✅ GET /api/user/articles/:id - Get article details (increments views)
+
+---
+
+## 💻 PHASE 4: DSA CORNER ✅ COMPLETE
+
+### 4.1 DSA Dashboard
+**Route:** `/dsa`
+
+**Features Implemented:**
+- ✅ Hero section with blue gradient
+- ✅ Statistics cards:
+  - ✅ Problems solved (total count)
+  - ✅ Current streak (with flame icon)
+  - ✅ Easy solved count
+  - ✅ Difficulty split (Medium & Hard with progress bars)
+- ✅ Quick links to Questions, Topics, Sheets, Companies (4 cards)
+- ✅ Responsive grid layout
+
+**Components Created:**
+1. ✅ `components/dsa/Dashboard.tsx` - Dashboard stats component
+2. ✅ `app/dsa/page.tsx` - Main DSA page
+
+### 4.2 DSA Questions Page
+**Route:** `/dsa/questions`
+
+**Features Implemented:**
+- ✅ Difficulty filter chips (All, Easy, Medium, Hard)
+- ✅ Search bar by title or topic
+- ✅ Sort dropdown (Most Recent, Title A-Z, Difficulty)
+- ✅ Data table with columns:
+  - ✅ Status icon (unsolved circle placeholder)
+  - ✅ Problem title (clickable link)
+  - ✅ Difficulty (color-coded badge: green/yellow/red)
+  - ✅ Topics (tags, first 2 + count)
+  - ✅ Companies (tags, first 2 + count)
+  - ✅ Bookmark icon (functional)
+- ✅ Responsive table
+- ✅ Loading states
+- ✅ Empty state
+
+**Components Created:**
+1. ✅ `components/dsa/QuestionTable.tsx` - Questions table
+2. ✅ `app/dsa/questions/page.tsx` - Questions list page
+
+### 4.3 Question Detail Page
+**Route:** `/dsa/questions/[id]`
+
+**Features Implemented:**
+- ✅ Split-screen layout (desktop):
+  - ✅ Left: Problem statement
+  - ✅ Right: Code editor
+- ✅ Question header with:
+  - ✅ Title
+  - ✅ Difficulty badge
+  - ✅ Acceptance rate
+  - ✅ Bookmark button
+- ✅ Tabbed sections:
+  - ✅ Description (problem statement, examples, constraints, topics, companies)
+  - ✅ Solution (approach, complexity analysis)
+  - ✅ Hints
+- ✅ Examples with input/output/explanation
+- ✅ Constraints list
+- ✅ Topics & Companies tags
+- ✅ Code editor component:
+  - ✅ Language selector (Python, JavaScript, Java)
+  - ✅ Syntax highlighting (basic)
+  - ✅ Read-only code display
+- ✅ "Mark as Solved" button
+- ✅ Responsive layout (stacked on mobile)
+
+**Components Created:**
+1. ✅ `components/dsa/CodeEditor.tsx` - Code display component
+2. ✅ `app/dsa/questions/[id]/page.tsx` - Question detail page
+
+### 4.4 DSA Topics Page
+**Route:** `/dsa/topics`
+
+**Features Implemented:**
+- ✅ Search bar
+- ✅ Topic cards with:
+  - ✅ Icon with custom color
+  - ✅ Topic name
+  - ✅ Description
+  - ✅ Question count
+- ✅ Responsive grid (3 columns on desktop)
+- ✅ Click to filter questions by topic
+- ✅ Loading & empty states
+
+**Components Created:**
+1. ✅ `components/dsa/TopicCard.tsx` - Topic card component
+2. ✅ `app/dsa/topics/page.tsx` - Topics list page
+
+### 4.5 DSA Sheets Page
+**Route:** `/dsa/sheets`
+
+**Features Implemented:**
+- ✅ Level filter chips (All, Beginner, Intermediate, Advanced)
+- ✅ Search bar
+- ✅ Sheet cards with:
+  - ✅ Sheet name & description
+  - ✅ Author name
+  - ✅ Level badge
+  - ✅ Total questions count
+  - ✅ Difficulty breakdown (Easy/Medium/Hard with visual bars)
+  - ✅ Tags (first 3 + count)
+  - ✅ "Start Practicing" button
+- ✅ Responsive grid (3 columns on desktop)
+- ✅ Loading & empty states
+
+**Components Created:**
+1. ✅ `components/dsa/SheetCard.tsx` - Sheet card component
+2. ✅ `app/dsa/sheets/page.tsx` - Sheets list page
+
+### 4.6 DSA Companies Page
+**Route:** `/dsa/companies`
+
+**Features Implemented:**
+- ✅ Search bar
+- ✅ Company cards with:
+  - ✅ Company logo or placeholder
+  - ✅ Company name
+  - ✅ Industry
+  - ✅ Problem count
+  - ✅ Job openings count
+- ✅ Responsive grid (4 columns on desktop)
+- ✅ Loading & empty states
+
+**Components Created:**
+1. ✅ `components/dsa/CompanyCard.tsx` - Company card component
+2. ✅ `app/dsa/companies/page.tsx` - Companies list page
+
+**API Integration:**
+- ✅ GET /api/user/dsa/dashboard - Dashboard stats
+- ✅ GET /api/user/dsa/questions - List questions
+- ✅ GET /api/user/dsa/questions/:id - Get question details
+- ✅ GET /api/user/dsa/topics - List topics
+- ✅ GET /api/user/dsa/sheets - List sheets
+- ✅ GET /api/user/dsa/companies - List companies
+
+---
+
+## 🗺️ PHASE 5: ROADMAPS ✅ COMPLETE
+
+### 5.1 Roadmaps List Page
+**Route:** `/roadmaps`
+
+**Features Implemented:**
+- ✅ Hero section with indigo-purple gradient
+- ✅ Category tabs (All, Web Dev, Mobile, AI/ML, Data Science, DevOps, Cloud, Cybersecurity)
+- ✅ Level filter buttons (All, Beginner, Intermediate, Advanced)
+- ✅ Search bar
+- ✅ Sort dropdown (Most Recent, Title A-Z, Shortest First)
+- ✅ Roadmap cards with:
+  - ✅ Level badge (color-coded: green/yellow/red)
+  - ✅ Category badge
+  - ✅ Title & description
+  - ✅ Estimated time & steps count
+  - ✅ Topics covered (first 3 + count)
+  - ✅ "Start Learning" button
+- ✅ Responsive grid (3 columns on desktop)
+- ✅ Loading & empty states
+
+**Components Created:**
+1. ✅ `components/roadmaps/RoadmapCard.tsx` - Roadmap card
+2. ✅ `app/roadmaps/page.tsx` - Roadmaps list page
+
+### 5.2 Roadmap Detail Page
+**Route:** `/roadmaps/[id]`
+
+**Features Implemented:**
+- ✅ Back navigation
+- ✅ Roadmap header with:
+  - ✅ Title & description
+  - ✅ Meta info (time, steps, level badge)
+  - ✅ Progress bar with completion percentage
+- ✅ Two-column layout:
+  - ✅ Left (2/3): Node list
+  - ✅ Right (1/3): Node detail sidebar (sticky)
+- ✅ Node cards with:
+  - ✅ Completion checkbox (circle/checkmark)
+  - ✅ Node icon by type (content/roadmap_link/article_link)
+  - ✅ Node title & description
+  - ✅ Step number
+  - ✅ Click to view details
+  - ✅ Green highlight when completed
+- ✅ Node detail sidebar shows:
+  - ✅ Title with icon
+  - ✅ Description
+  - ✅ Content (if available)
+  - ✅ Video button (if video_url)
+  - ✅ Resources list with links
+  - ✅ "Mark as Complete/Incomplete" button
+- ✅ Progress tracking:
+  - ✅ Completed nodes highlighted
+  - ✅ Progress bar updates in real-time
+  - ✅ Count display (X / Y completed)
+- ✅ Responsive layout (stacked on mobile)
+- ✅ LocalStorage persistence (could be added)
+
+**Note:** Interactive flowchart with React Flow was simplified to a list-based UI for better performance and mobile compatibility. All node data and connections are preserved in the backend structure.
+
+**Components Created:**
+1. ✅ `app/roadmaps/[id]/page.tsx` - Roadmap detail with node list
+
+**API Integration:**
+- ✅ GET /api/user/roadmaps - List roadmaps
+- ✅ GET /api/user/roadmaps/:id - Get roadmap details with nodes
+
+---
 - ✅ Related articles
 - ✅ Comments section (optional)
 - ✅ Save/Bookmark button
