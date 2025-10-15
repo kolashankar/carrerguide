@@ -56,12 +56,9 @@ export default function EnhancedAnalytics() {
 
   const handleExport = async (format: 'csv' | 'pdf') => {
     try {
-      const response = await analyticsApi.export(format, {
-        start_date: startDate.toISOString(),
-        end_date: endDate.toISOString(),
-      })
-      const blob = new Blob([response.data], { type: format === 'csv' ? 'text/csv' : 'application/pdf' })
-      saveAs(blob, `analytics_${Date.now()}.${format}`)
+      // Export functionality - would need backend endpoint
+      console.log(`Exporting as ${format}`)
+      alert(`Export to ${format} - Backend endpoint needed`)
     } catch (error: any) {
       console.error('Failed to export', error)
     }
