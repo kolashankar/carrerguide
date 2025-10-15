@@ -6,7 +6,7 @@ Simple DSA Backend Testing Script
 import requests
 import json
 
-BACKEND_URL = "https://career-assist-6.preview.emergentagent.com/api"
+BACKEND_URL = "https://talentmatch-app.preview.emergentagent.com/api"
 
 def test_dsa_endpoints():
     print("🚀 Starting DSA Corner Backend Testing")
