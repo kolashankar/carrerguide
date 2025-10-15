@@ -45,10 +45,7 @@ export default function EnhancedAnalytics() {
   const fetchAnalytics = async () => {
     try {
       setLoading(true)
-      const response = await analyticsApi.getDashboard({
-        start_date: startDate.toISOString(),
-        end_date: endDate.toISOString(),
-      })
+      const response = await analyticsApi.getDashboard()
       setDashboardData(response.data)
     } catch (error: any) {
       console.error('Failed to fetch analytics', error)
