@@ -18,7 +18,7 @@ interface BookmarkState {
   isArticleBookmarked: (id: string) => boolean;
 }
 
-export const useBookmarkStore = create<BookmarkState>()()
+export const useBookmarkStore = create<BookmarkState>()(
   persist(
     (set, get) => ({
       jobs: [],
