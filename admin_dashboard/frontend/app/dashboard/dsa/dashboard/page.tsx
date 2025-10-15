@@ -88,7 +88,7 @@ export default function DSADashboard() {
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-gray-500 text-sm mb-2">Total Questions</h3>
-          <p className="text-3xl font-bold">{Object.values(stats.questionsDifficulty || {}).reduce((a: any, b: any) => a + b, 0)}</p>
+          <p className="text-3xl font-bold">{String(Object.values(stats.questionsDifficulty || {}).reduce((a: any, b: any) => a + b, 0))}</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-gray-500 text-sm mb-2">Total Sheets</h3>
