@@ -189,6 +189,17 @@ class ApiClient {
     const response = await this.client.get(`/user/roadmaps/${id}`);
     return response.data;
   }
+
+  // Scholarships APIs
+  async getScholarships(params?: any) {
+    const response = await this.client.get('/user/scholarships', { params });
+    return response.data;
+  }
+
+  async getScholarshipById(id: string) {
+    const response = await this.client.get(`/user/scholarships/${id}`);
+    return response.data;
+  }
 }
 
 export const apiClient = new ApiClient();
