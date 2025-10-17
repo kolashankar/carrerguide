@@ -1292,6 +1292,268 @@ async def get_user_article(article_id: str):
     return await article_handlers.get_article_by_id(article_id)
 
 # =============================================================================
+# USER - DSA ENDPOINTS
+# =============================================================================
+
+@api_router.get("/user/dsa/topics", tags=["User - DSA"])
+async def get_user_dsa_topics(
+    is_active: Optional[bool] = None,
+    search: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 100
+):
+    """Public endpoint to get DSA topics"""
+    filters = {}
+    if is_active is not None:
+        filters["is_active"] = is_active
+    if search:
+        filters["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"description": {"$regex": search, "$options": "i"}}
+        ]
+    
+    topics_cursor = dsa_topics_collection.find(filters).skip(skip).limit(limit)
+    topics = await topics_cursor.to_list(length=limit)
+    
+    for topic in topics:
+        topic["_id"] = str(topic["_id"])
+        if "created_at" in topic:
+            topic["created_at"] = topic["created_at"].isoformat()
+        if "updated_at" in topic:
+            topic["updated_at"] = topic["updated_at"].isoformat()
+    
+    return {"success": True, "data": topics}
+
+@api_router.get("/user/dsa/questions", tags=["User - DSA"])
+async def get_user_dsa_questions(
+    difficulty: Optional[str] = None,
+    topic: Optional[str] = None,
+    company: Optional[str] = None,
+    search: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 100
+):
+    """Public endpoint to get DSA questions"""
+    filters = {}
+    if difficulty:
+        filters["difficulty"] = difficulty
+    if topic:
+        filters["topics"] = topic
+    if company:
+        filters["companies"] = company
+    if search:
+        filters["$or"] = [
+            {"title": {"$regex": search, "$options": "i"}},
+            {"description": {"$regex": search, "$options": "i"}}
+        ]
+    
+    questions_cursor = dsa_questions_collection.find(filters).skip(skip).limit(limit)
+    questions = await questions_cursor.to_list(length=limit)
+    
+    for question in questions:
+        question["_id"] = str(question["_id"])
+        if "created_at" in question:
+            question["created_at"] = question["created_at"].isoformat()
+        if "updated_at" in question:
+            question["updated_at"] = question["updated_at"].isoformat()
+    
+    return {"success": True, "data": questions}
+
+@api_router.get("/user/dsa/questions/{question_id}", tags=["User - DSA"])
+async def get_user_dsa_question(question_id: str):
+    """Public endpoint to get a specific DSA question"""
+    if not ObjectId.is_valid(question_id):
+        raise HTTPException(status_code=400, detail="Invalid question ID")
+    
+    question = await dsa_questions_collection.find_one({"_id": ObjectId(question_id)})
+    if not question:
+        raise HTTPException(status_code=404, detail="Question not found")
+    
+    question["_id"] = str(question["_id"])
+    if "created_at" in question:
+        question["created_at"] = question["created_at"].isoformat()
+    if "updated_at" in question:
+        question["updated_at"] = question["updated_at"].isoformat()
+    
+    return {"success": True, "data": question}
+
+@api_router.get("/user/dsa/sheets", tags=["User - DSA"])
+async def get_user_dsa_sheets(
+    is_published: Optional[bool] = True,
+    level: Optional[str] = None,
+    search: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 100
+):
+    """Public endpoint to get DSA sheets (only published)"""
+    filters = {}
+    if is_published is not None:
+        filters["is_published"] = is_published
+    if level:
+        filters["level"] = level
+    if search:
+        filters["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"description": {"$regex": search, "$options": "i"}}
+        ]
+    
+    sheets_cursor = dsa_sheets_collection.find(filters).skip(skip).limit(limit)
+    sheets = await sheets_cursor.to_list(length=limit)
+    
+    for sheet in sheets:
+        sheet["_id"] = str(sheet["_id"])
+        if "created_at" in sheet:
+            sheet["created_at"] = sheet["created_at"].isoformat()
+        if "updated_at" in sheet:
+            sheet["updated_at"] = sheet["updated_at"].isoformat()
+    
+    return {"success": True, "data": sheets}
+
+@api_router.get("/user/dsa/companies", tags=["User - DSA"])
+async def get_user_dsa_companies(
+    is_active: Optional[bool] = None,
+    search: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 100
+):
+    """Public endpoint to get DSA companies"""
+    filters = {}
+    if is_active is not None:
+        filters["is_active"] = is_active
+    if search:
+        filters["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"industry": {"$regex": search, "$options": "i"}}
+        ]
+    
+    companies_cursor = dsa_companies_collection.find(filters).skip(skip).limit(limit)
+    companies = await companies_cursor.to_list(length=limit)
+    
+    for company in companies:
+        company["_id"] = str(company["_id"])
+        if "created_at" in company:
+            company["created_at"] = company["created_at"].isoformat()
+        if "updated_at" in company:
+            company["updated_at"] = company["updated_at"].isoformat()
+    
+    return {"success": True, "data": companies}
+
+@api_router.get("/user/dsa/companies/top", tags=["User - DSA"])
+async def get_user_top_dsa_companies(limit: int = 10):
+    """Public endpoint to get top DSA companies by problem count"""
+    companies_cursor = dsa_companies_collection.find({"is_active": True}).sort("problem_count", -1).limit(limit)
+    companies = await companies_cursor.to_list(length=limit)
+    
+    for company in companies:
+        company["_id"] = str(company["_id"])
+        if "created_at" in company:
+            company["created_at"] = company["created_at"].isoformat()
+        if "updated_at" in company:
+            company["updated_at"] = company["updated_at"].isoformat()
+    
+    return {"success": True, "data": companies}
+
+@api_router.get("/user/dsa/dashboard", tags=["User - DSA"])
+async def get_user_dsa_dashboard():
+    """Public endpoint to get DSA dashboard data"""
+    # Get counts
+    topics_count = await dsa_topics_collection.count_documents({"is_active": True})
+    questions_count = await dsa_questions_collection.count_documents({})
+    sheets_count = await dsa_sheets_collection.count_documents({"is_published": True})
+    companies_count = await dsa_companies_collection.count_documents({"is_active": True})
+    
+    # Get top topics by question count
+    top_topics_cursor = dsa_topics_collection.find({"is_active": True}).sort("question_count", -1).limit(5)
+    top_topics = await top_topics_cursor.to_list(length=5)
+    
+    # Get top companies
+    top_companies_cursor = dsa_companies_collection.find({"is_active": True}).sort("problem_count", -1).limit(5)
+    top_companies = await top_companies_cursor.to_list(length=5)
+    
+    for topic in top_topics:
+        topic["_id"] = str(topic["_id"])
+    
+    for company in top_companies:
+        company["_id"] = str(company["_id"])
+    
+    return {
+        "success": True,
+        "data": {
+            "stats": {
+                "total_topics": topics_count,
+                "total_questions": questions_count,
+                "total_sheets": sheets_count,
+                "total_companies": companies_count
+            },
+            "top_topics": top_topics,
+            "top_companies": top_companies
+        }
+    }
+
+# =============================================================================
+# USER - ROADMAPS ENDPOINTS
+# =============================================================================
+
+@api_router.get("/user/roadmaps", tags=["User - Roadmaps"])
+async def get_user_roadmaps(
+    is_published: Optional[bool] = True,
+    category: Optional[str] = None,
+    difficulty: Optional[str] = None,
+    search: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 100
+):
+    """Public endpoint to get roadmaps (only published)"""
+    filters = {}
+    if is_published is not None:
+        filters["is_published"] = is_published
+    if category:
+        filters["category"] = category
+    if difficulty:
+        filters["difficulty"] = difficulty
+    if search:
+        filters["$or"] = [
+            {"title": {"$regex": search, "$options": "i"}},
+            {"description": {"$regex": search, "$options": "i"}}
+        ]
+    
+    roadmaps_cursor = roadmaps_collection.find(filters).skip(skip).limit(limit)
+    roadmaps = await roadmaps_cursor.to_list(length=limit)
+    
+    for roadmap in roadmaps:
+        roadmap["_id"] = str(roadmap["_id"])
+        if "created_at" in roadmap:
+            roadmap["created_at"] = roadmap["created_at"].isoformat()
+        if "updated_at" in roadmap:
+            roadmap["updated_at"] = roadmap["updated_at"].isoformat()
+    
+    return {"success": True, "data": roadmaps}
+
+@api_router.get("/user/roadmaps/{roadmap_id}", tags=["User - Roadmaps"])
+async def get_user_roadmap(roadmap_id: str):
+    """Public endpoint to get a specific roadmap"""
+    if not ObjectId.is_valid(roadmap_id):
+        raise HTTPException(status_code=400, detail="Invalid roadmap ID")
+    
+    roadmap = await roadmaps_collection.find_one({"_id": ObjectId(roadmap_id), "is_published": True})
+    if not roadmap:
+        raise HTTPException(status_code=404, detail="Roadmap not found")
+    
+    # Increment view count
+    await roadmaps_collection.update_one(
+        {"_id": ObjectId(roadmap_id)},
+        {"$inc": {"views": 1}}
+    )
+    
+    roadmap["_id"] = str(roadmap["_id"])
+    if "created_at" in roadmap:
+        roadmap["created_at"] = roadmap["created_at"].isoformat()
+    if "updated_at" in roadmap:
+        roadmap["updated_at"] = roadmap["updated_at"].isoformat()
+    
+    return {"success": True, "data": roadmap}
+
+# =============================================================================
 # Health Check
 # =============================================================================
 
