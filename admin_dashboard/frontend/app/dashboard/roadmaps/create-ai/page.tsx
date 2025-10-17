@@ -13,6 +13,7 @@ export default function RoadmapCreateAIPage() {
     category: '',
     level: 'Beginner',
     focus_areas: [''],
+    estimated_duration: '3 months',
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,13 +24,21 @@ export default function RoadmapCreateAIPage() {
       const dataToSubmit = {
         title: formData.title,
         category: formData.category,
-        level: formData.level,
+        subcategory: formData.category, // Using category as subcategory for simplicity
+        difficulty_level: formData.level.toLowerCase(),
+        estimated_duration: formData.estimated_duration,
         focus_areas: formData.focus_areas.filter(area => area.trim() !== ''),
       }
 
-      await roadmapsApi.generateAI(dataToSubmit)
-      alert('Roadmap generated successfully with AI!')
-      router.push('/dashboard/roadmaps/list')
+      const response = await roadmapsApi.generateAI(dataToSubmit)
+      alert('Roadmap with flowchart generated successfully with AI! 🎉')
+      
+      // Redirect to edit page if we have the ID, otherwise to list
+      if (response.data._id) {
+        router.push(`/dashboard/roadmaps/edit/${response.data._id}`)
+      } else {
+        router.push('/dashboard/roadmaps/list')
+      }
     } catch (error: any) {
       console.error('Error generating roadmap:', error)
       alert(error.response?.data?.detail || 'Failed to generate roadmap with AI')
