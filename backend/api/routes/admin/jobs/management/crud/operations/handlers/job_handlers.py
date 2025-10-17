@@ -16,20 +16,36 @@ class JobHandlers:
         Create a new job listing
         """
         try:
+            # Ensure is_active is set (default to True if not provided)
+            if 'is_active' not in job_data:
+                job_data['is_active'] = True
+                
             job_data['created_at'] = datetime.utcnow()
             job_data['updated_at'] = datetime.utcnow()
+            
+            logger.info(f"Creating job: {job_data.get('title', 'Unknown')} at {job_data.get('company', 'Unknown')}")
             
             result = await self.collection.insert_one(job_data)
             
             if result.inserted_id:
                 created_job = await self.collection.find_one({"_id": result.inserted_id})
                 created_job['_id'] = str(created_job['_id'])
-                return created_job
+                
+                logger.info(f"Job created successfully with ID: {created_job['_id']}, is_active: {created_job.get('is_active')}")
+                
+                return {
+                    "success": True,
+                    "message": "Job created successfully",
+                    "data": created_job
+                }
             else:
+                logger.error("Failed to create job - no inserted_id returned")
                 raise HTTPException(status_code=500, detail="Failed to create job")
+        except HTTPException:
+            raise
         except Exception as e:
-            logger.error(f"Error creating job: {e}")
-            raise HTTPException(status_code=500, detail=str(e))
+            logger.error(f"Error creating job: {str(e)}", exc_info=True)
+            raise HTTPException(status_code=500, detail=f"Failed to create job: {str(e)}")
     
     async def get_job_by_id(self, job_id: str) -> dict:
         """
