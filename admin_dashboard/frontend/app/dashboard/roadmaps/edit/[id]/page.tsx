@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { roadmapsApi, type Roadmap, type RoadmapNode } from '@/lib/api/client/config/interceptors/auth/token/roadmapsApi'
 import DashboardLayout from '@/components/ui/layout/sidebar/navigation/items/menu/handlers/DashboardLayout'
+import dynamic from 'next/dynamic'
+
+const FlowchartEditor = dynamic(() => import('@/components/roadmaps/FlowchartEditor'), { ssr: false })
 
 export default function RoadmapEditPage() {
   const router = useRouter()
@@ -13,6 +16,8 @@ export default function RoadmapEditPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [roadmap, setRoadmap] = useState<Roadmap | null>(null)
+  const [nodes, setNodes] = useState<RoadmapNode[]>([])
+  const [tab, setTab] = useState<'info' | 'flowchart'>('info')
   const [formData, setFormData] = useState({
     title: '',
     description: '',
