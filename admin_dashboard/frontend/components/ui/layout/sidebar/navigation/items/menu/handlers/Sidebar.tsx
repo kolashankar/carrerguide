@@ -104,11 +104,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto p-4">
             <ul className="space-y-2">
-              {menuItems.map((item) => {
-                const isActive = pathname === item.path
+              {menuItems.map((item, index) => {
+                const isExpanded = expandedItems.includes(item.name)
+                const hasSubItems = item.subItems && item.subItems.length > 0
+                const isActive = pathname === item.path || (hasSubItems && item.subItems.some(sub => pathname === sub.path))
                 const isDisabled = item.disabled
+                
                 return (
-                  <li key={item.path}>
+                  <li key={item.name + index}>
                     {isDisabled ? (
                       <div
                         className={`
@@ -120,9 +123,56 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                         <span className="font-medium">{item.name}</span>
                         <span className="ml-auto text-xs">(Coming Soon)</span>
                       </div>
+                    ) : hasSubItems ? (
+                      <>
+                        <button
+                          onClick={() => toggleExpand(item.name)}
+                          className={`
+                            w-full flex items-center px-4 py-3 rounded-lg transition-colors
+                            ${isActive
+                              ? 'bg-blue-500 text-white'
+                              : 'text-gray-700 hover:bg-gray-100'
+                            }
+                          `}
+                        >
+                          <span className="text-2xl mr-3">{item.icon}</span>
+                          <span className="font-medium">{item.name}</span>
+                          <span className="ml-auto">
+                            {isExpanded ? (
+                              <ChevronDown className="w-4 h-4" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4" />
+                            )}
+                          </span>
+                        </button>
+                        {isExpanded && (
+                          <ul className="ml-8 mt-2 space-y-1">
+                            {item.subItems.map((subItem) => {
+                              const isSubActive = pathname === subItem.path
+                              return (
+                                <li key={subItem.path}>
+                                  <Link
+                                    href={subItem.path}
+                                    className={`
+                                      flex items-center px-4 py-2 rounded-lg transition-colors text-sm
+                                      ${isSubActive
+                                        ? 'bg-blue-100 text-blue-600 font-medium'
+                                        : 'text-gray-600 hover:bg-gray-50'
+                                      }
+                                    `}
+                                    onClick={() => onClose()}
+                                  >
+                                    {subItem.name}
+                                  </Link>
+                                </li>
+                              )
+                            })}
+                          </ul>
+                        )}
+                      </>
                     ) : (
                       <Link
-                        href={item.path}
+                        href={item.path!}
                         className={`
                           flex items-center px-4 py-3 rounded-lg transition-colors
                           ${isActive
