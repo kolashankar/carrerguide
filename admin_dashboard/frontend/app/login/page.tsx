@@ -20,15 +20,28 @@ export default function LoginPage() {
     try {
       const response = await authApi.adminLogin(formData)
       
-      // Store token and user data
-      localStorage.setItem('token', response.token)
-      localStorage.setItem('user', JSON.stringify(response.user))
+      if (!response.success) {
+        throw new Error('Login failed')
+      }
+      
+      // Store token and user data - handle backend response structure
+      const token = response.access_token
+      const user = {
+        id: response.user_id,
+        email: response.email,
+        name: response.full_name,
+        role: response.role || 'admin',
+        user_type: response.user_type,
+      }
+      
+      localStorage.setItem('token', token)
+      localStorage.setItem('user', JSON.stringify(user))
       
       toast.success('Login successful! Welcome back.')
       router.push('/dashboard')
     } catch (error: any) {
       console.error('Error logging in:', error)
-      toast.error(error.response?.data?.detail || 'Invalid credentials. Please check your email and password.')
+      toast.error(error.response?.data?.detail || error.response?.data?.message || 'Invalid credentials. Please check your email and password.')
     } finally {
       setLoading(false)
     }
