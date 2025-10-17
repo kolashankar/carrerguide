@@ -48,7 +48,19 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
         try {
           const response = await apiClient.register({ email, password, full_name });
-          const { token, user } = response;
+          
+          // Backend returns: { success, message, access_token, user_id, email, full_name, user_type }
+          if (!response.success) {
+            throw new Error(response.message || 'Registration failed');
+          }
+          
+          const token = response.access_token;
+          const user = {
+            id: response.user_id,
+            email: response.email,
+            full_name: response.full_name,
+            user_type: response.user_type || 'user',
+          };
           
           localStorage.setItem('token', token);
           localStorage.setItem('user', JSON.stringify(user));
