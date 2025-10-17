@@ -4,7 +4,7 @@
 
 ### ✅ **DEVELOPED FEATURES**
 
-#### **MODULE 1: Jobs Management** 💼
+### **MODULE 1: Jobs Management** 💼
 **Backend:** ✅ Complete & Tested
 **Frontend:** ✅ Complete
 - [x] Jobs List Page with pagination
