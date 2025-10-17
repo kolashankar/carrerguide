@@ -2,7 +2,7 @@
 
 ## 🔧 Latest Updates (Build Fixes - October 17, 2025)
 
-### Build Issues Resolved ✅
+## Build Issues Resolved ✅
 1. **web_app build errors:**
    - ✅ Fixed tsconfig.json path mapping from `"@/*": ["web_app/*"]` to `"@/*": ["./*"]`
    - ✅ Added missing `api` export alias in `/lib/api.ts` for backward compatibility
