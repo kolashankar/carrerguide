@@ -3,10 +3,33 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import apiClient from '@/lib/api/client/config/interceptors/auth/token/apiClient'
+
+interface DashboardStats {
+  jobs_count: number
+  internships_count: number
+  scholarships_count: number
+  articles_count: number
+  users_count: number
+  dsa_questions_count: number
+  dsa_topics_count: number
+  roadmaps_count: number
+}
 
 export default function DashboardPage() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
+  const [stats, setStats] = useState<DashboardStats>({
+    jobs_count: 0,
+    internships_count: 0,
+    scholarships_count: 0,
+    articles_count: 0,
+    users_count: 0,
+    dsa_questions_count: 0,
+    dsa_topics_count: 0,
+    roadmaps_count: 0,
+  })
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     // Check authentication
@@ -19,7 +42,48 @@ export default function DashboardPage() {
     }
     
     setUser(JSON.parse(userData))
+    fetchDashboardStats()
   }, [router])
+
+  const fetchDashboardStats = async () => {
+    try {
+      setLoading(true)
+      
+      // Fetch counts from various endpoints
+      const [
+        jobsRes,
+        internshipsRes,
+        scholarshipsRes,
+        articlesRes,
+        dsaQuestionsRes,
+        dsaTopicsRes,
+        roadmapsRes,
+      ] = await Promise.all([
+        apiClient.get('/admin/jobs'),
+        apiClient.get('/admin/internships'),
+        apiClient.get('/admin/scholarships'),
+        apiClient.get('/admin/articles'),
+        apiClient.get('/admin/dsa/questions'),
+        apiClient.get('/admin/dsa/topics'),
+        apiClient.get('/admin/roadmaps'),
+      ])
+
+      setStats({
+        jobs_count: jobsRes.data?.data?.length || 0,
+        internships_count: internshipsRes.data?.data?.length || 0,
+        scholarships_count: scholarshipsRes.data?.data?.length || 0,
+        articles_count: articlesRes.data?.data?.length || 0,
+        users_count: 0, // Will be fetched from analytics
+        dsa_questions_count: dsaQuestionsRes.data?.data?.length || 0,
+        dsa_topics_count: dsaTopicsRes.data?.data?.length || 0,
+        roadmaps_count: roadmapsRes.data?.data?.length || 0,
+      })
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const quickLinks = [
     { title: 'Analytics', href: '/dashboard/analytics', icon: '📊', color: 'bg-blue-100 text-blue-600' },
