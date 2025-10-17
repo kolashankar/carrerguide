@@ -37,6 +37,7 @@ export default function RoadmapEditPage() {
     try {
       const response = await roadmapsApi.getById(id)
       setRoadmap(response.roadmap)
+      setNodes(response.roadmap.nodes || [])
       setFormData({
         title: response.roadmap.title,
         description: response.roadmap.description,
@@ -55,6 +56,10 @@ export default function RoadmapEditPage() {
     }
   }
 
+  const handleFlowchartSave = (updatedNodes: RoadmapNode[]) => {
+    setNodes(updatedNodes)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
@@ -63,6 +68,7 @@ export default function RoadmapEditPage() {
       const dataToSubmit = {
         ...formData,
         tags: formData.tags.filter(tag => tag.trim() !== ''),
+        nodes: nodes,
       }
 
       await roadmapsApi.update(id, dataToSubmit)
