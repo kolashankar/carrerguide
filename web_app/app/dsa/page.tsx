@@ -157,25 +157,22 @@ export default function DSAPage() {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { name: 'Array', count: 1779 },
-                { name: 'String', count: 744 },
-                { name: 'Hash Table', count: 645 },
-                { name: 'Dynamic Programming', count: 546 },
-                { name: 'Math', count: 537 },
-                { name: 'Sorting', count: 420 },
-                { name: 'Greedy', count: 390 },
-                { name: 'Depth-First Search', count: 301 },
-              ].map((topic) => (
-                <Link
-                  key={topic.name}
-                  href={`/dsa/topics/${topic.name.toLowerCase().replace(/\s+/g, '-')}`}
-                  className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow border border-gray-100 hover:border-blue-500"
-                >
-                  <div className="font-semibold text-gray-900 mb-1">{topic.name}</div>
-                  <div className="text-sm text-gray-600">({topic.count})</div>
-                </Link>
-              ))}
+              {topTopics.length > 0 ? (
+                topTopics.map((topic: any) => (
+                  <Link
+                    key={topic._id}
+                    href={`/dsa/topics`}
+                    className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow border border-gray-100 hover:border-blue-500"
+                  >
+                    <div className="font-semibold text-gray-900 mb-1">{topic.name}</div>
+                    <div className="text-sm text-gray-600">({topic.question_count || 0} problems)</div>
+                  </Link>
+                ))
+              ) : (
+                <div className="col-span-4 text-center py-8 text-gray-500">
+                  No topics available yet. Admin needs to create DSA topics.
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -190,28 +187,35 @@ export default function DSAPage() {
             </Link>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {[
-              { name: 'Amazon', problems: 1113, logo: '🟠' },
-              { name: 'Google', problems: 969, logo: '🔵' },
-              { name: 'Microsoft', problems: 534, logo: '🟦' },
-              { name: 'Facebook', problems: 524, logo: '🔷' },
-              { name: 'Apple', problems: 389, logo: '⚫' },
-              { name: 'Adobe', problems: 347, logo: '🔴' },
-            ].map((company) => (
-              <Link
-                key={company.name}
-                href={`/dsa/companies/${company.name.toLowerCase()}`}
-                className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-all border border-gray-100 hover:border-blue-500 group"
-              >
-                <div className="text-4xl mb-3 text-center">{company.logo}</div>
-                <div className="text-center">
-                  <div className="font-bold text-gray-900 mb-1 group-hover:text-blue-600">{company.name}</div>
-                  <div className="text-sm text-gray-600">{company.problems} problems</div>
+          {isLoading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {[...Array(6)].map((_, i) => (
+                <Skeleton key={i} className="h-32" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {topCompanies.length > 0 ? (
+                topCompanies.map((company: any) => (
+                  <Link
+                    key={company._id}
+                    href={`/dsa/companies`}
+                    className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-all border border-gray-100 hover:border-blue-500 group"
+                  >
+                    <div className="text-4xl mb-3 text-center">{company.logo || '🏢'}</div>
+                    <div className="text-center">
+                      <div className="font-bold text-gray-900 mb-1 group-hover:text-blue-600">{company.name}</div>
+                      <div className="text-sm text-gray-600">{company.problem_count || 0} problems</div>
+                    </div>
+                  </Link>
+                ))
+              ) : (
+                <div className="col-span-6 text-center py-8 text-gray-500">
+                  No companies available yet. Admin needs to create DSA companies.
                 </div>
-              </Link>
-            ))}
-          </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Call to Action */}
