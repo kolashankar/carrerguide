@@ -1,0 +1,438 @@
+{
+  "version": 3,
+  "pages404": true,
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/dashboard/dsa/companies/edit/[id]",
+      "regex": "^/dashboard/dsa/companies/edit/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/dashboard/dsa/companies/edit/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/dashboard/dsa/questions/edit/[id]",
+      "regex": "^/dashboard/dsa/questions/edit/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/dashboard/dsa/questions/edit/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/dashboard/dsa/sheets/edit/[id]",
+      "regex": "^/dashboard/dsa/sheets/edit/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/dashboard/dsa/sheets/edit/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/dashboard/dsa/topics/edit/[id]",
+      "regex": "^/dashboard/dsa/topics/edit/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/dashboard/dsa/topics/edit/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/dashboard/internships/edit/[id]",
+      "regex": "^/dashboard/internships/edit/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/dashboard/internships/edit/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/dashboard/jobs/edit/[id]",
+      "regex": "^/dashboard/jobs/edit/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/dashboard/jobs/edit/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/dashboard/learning/articles/edit/[id]",
+      "regex": "^/dashboard/learning/articles/edit/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/dashboard/learning/articles/edit/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/dashboard/learning/articles/[id]",
+      "regex": "^/dashboard/learning/articles/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/dashboard/learning/articles/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/dashboard/roadmaps/edit/[id]",
+      "regex": "^/dashboard/roadmaps/edit/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/dashboard/roadmaps/edit/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/dashboard/roadmaps/visual-editor/[id]",
+      "regex": "^/dashboard/roadmaps/visual\\-editor/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/dashboard/roadmaps/visual\\-editor/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/dashboard/scholarships/edit/[id]",
+      "regex": "^/dashboard/scholarships/edit/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/dashboard/scholarships/edit/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/dashboard/users/[id]",
+      "regex": "^/dashboard/users/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/dashboard/users/(?<nxtPid>[^/]+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/dashboard/admins/list",
+      "regex": "^/dashboard/admins/list(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/admins/list(?:/)?$"
+    },
+    {
+      "page": "/dashboard/advanced",
+      "regex": "^/dashboard/advanced(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/advanced(?:/)?$"
+    },
+    {
+      "page": "/dashboard/advanced/system-health",
+      "regex": "^/dashboard/advanced/system\\-health(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/advanced/system\\-health(?:/)?$"
+    },
+    {
+      "page": "/dashboard/analytics",
+      "regex": "^/dashboard/analytics(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/analytics(?:/)?$"
+    },
+    {
+      "page": "/dashboard/bulk-operations",
+      "regex": "^/dashboard/bulk\\-operations(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/bulk\\-operations(?:/)?$"
+    },
+    {
+      "page": "/dashboard/career-tools/stats",
+      "regex": "^/dashboard/career\\-tools/stats(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/career\\-tools/stats(?:/)?$"
+    },
+    {
+      "page": "/dashboard/career-tools/templates",
+      "regex": "^/dashboard/career\\-tools/templates(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/career\\-tools/templates(?:/)?$"
+    },
+    {
+      "page": "/dashboard/content-approval",
+      "regex": "^/dashboard/content\\-approval(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/content\\-approval(?:/)?$"
+    },
+    {
+      "page": "/dashboard/content-management",
+      "regex": "^/dashboard/content\\-management(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/content\\-management(?:/)?$"
+    },
+    {
+      "page": "/dashboard/content-management/tags",
+      "regex": "^/dashboard/content\\-management/tags(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/content\\-management/tags(?:/)?$"
+    },
+    {
+      "page": "/dashboard/dsa/companies/create",
+      "regex": "^/dashboard/dsa/companies/create(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/dsa/companies/create(?:/)?$"
+    },
+    {
+      "page": "/dashboard/dsa/companies/list",
+      "regex": "^/dashboard/dsa/companies/list(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/dsa/companies/list(?:/)?$"
+    },
+    {
+      "page": "/dashboard/dsa/dashboard",
+      "regex": "^/dashboard/dsa/dashboard(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/dsa/dashboard(?:/)?$"
+    },
+    {
+      "page": "/dashboard/dsa/questions/create",
+      "regex": "^/dashboard/dsa/questions/create(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/dsa/questions/create(?:/)?$"
+    },
+    {
+      "page": "/dashboard/dsa/questions/create-ai",
+      "regex": "^/dashboard/dsa/questions/create\\-ai(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/dsa/questions/create\\-ai(?:/)?$"
+    },
+    {
+      "page": "/dashboard/dsa/questions/list",
+      "regex": "^/dashboard/dsa/questions/list(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/dsa/questions/list(?:/)?$"
+    },
+    {
+      "page": "/dashboard/dsa/sheets/create",
+      "regex": "^/dashboard/dsa/sheets/create(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/dsa/sheets/create(?:/)?$"
+    },
+    {
+      "page": "/dashboard/dsa/sheets/create-ai",
+      "regex": "^/dashboard/dsa/sheets/create\\-ai(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/dsa/sheets/create\\-ai(?:/)?$"
+    },
+    {
+      "page": "/dashboard/dsa/sheets/list",
+      "regex": "^/dashboard/dsa/sheets/list(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/dsa/sheets/list(?:/)?$"
+    },
+    {
+      "page": "/dashboard/dsa/topics/create",
+      "regex": "^/dashboard/dsa/topics/create(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/dsa/topics/create(?:/)?$"
+    },
+    {
+      "page": "/dashboard/dsa/topics/list",
+      "regex": "^/dashboard/dsa/topics/list(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/dsa/topics/list(?:/)?$"
+    },
+    {
+      "page": "/dashboard/internships/create",
+      "regex": "^/dashboard/internships/create(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/internships/create(?:/)?$"
+    },
+    {
+      "page": "/dashboard/internships/create-ai",
+      "regex": "^/dashboard/internships/create\\-ai(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/internships/create\\-ai(?:/)?$"
+    },
+    {
+      "page": "/dashboard/internships/list",
+      "regex": "^/dashboard/internships/list(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/internships/list(?:/)?$"
+    },
+    {
+      "page": "/dashboard/jobs/create",
+      "regex": "^/dashboard/jobs/create(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/jobs/create(?:/)?$"
+    },
+    {
+      "page": "/dashboard/jobs/create-ai",
+      "regex": "^/dashboard/jobs/create\\-ai(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/jobs/create\\-ai(?:/)?$"
+    },
+    {
+      "page": "/dashboard/jobs/list",
+      "regex": "^/dashboard/jobs/list(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/jobs/list(?:/)?$"
+    },
+    {
+      "page": "/dashboard/learning/articles/create",
+      "regex": "^/dashboard/learning/articles/create(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/learning/articles/create(?:/)?$"
+    },
+    {
+      "page": "/dashboard/learning/articles/create-ai",
+      "regex": "^/dashboard/learning/articles/create\\-ai(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/learning/articles/create\\-ai(?:/)?$"
+    },
+    {
+      "page": "/dashboard/learning/articles/list",
+      "regex": "^/dashboard/learning/articles/list(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/learning/articles/list(?:/)?$"
+    },
+    {
+      "page": "/dashboard/notifications/create",
+      "regex": "^/dashboard/notifications/create(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/notifications/create(?:/)?$"
+    },
+    {
+      "page": "/dashboard/notifications/list",
+      "regex": "^/dashboard/notifications/list(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/notifications/list(?:/)?$"
+    },
+    {
+      "page": "/dashboard/notifications/templates",
+      "regex": "^/dashboard/notifications/templates(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/notifications/templates(?:/)?$"
+    },
+    {
+      "page": "/dashboard/reports",
+      "regex": "^/dashboard/reports(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/reports(?:/)?$"
+    },
+    {
+      "page": "/dashboard/roadmaps/create",
+      "regex": "^/dashboard/roadmaps/create(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/roadmaps/create(?:/)?$"
+    },
+    {
+      "page": "/dashboard/roadmaps/create-ai",
+      "regex": "^/dashboard/roadmaps/create\\-ai(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/roadmaps/create\\-ai(?:/)?$"
+    },
+    {
+      "page": "/dashboard/roadmaps/list",
+      "regex": "^/dashboard/roadmaps/list(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/roadmaps/list(?:/)?$"
+    },
+    {
+      "page": "/dashboard/scholarships/create",
+      "regex": "^/dashboard/scholarships/create(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/scholarships/create(?:/)?$"
+    },
+    {
+      "page": "/dashboard/scholarships/create-ai",
+      "regex": "^/dashboard/scholarships/create\\-ai(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/scholarships/create\\-ai(?:/)?$"
+    },
+    {
+      "page": "/dashboard/scholarships/list",
+      "regex": "^/dashboard/scholarships/list(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/scholarships/list(?:/)?$"
+    },
+    {
+      "page": "/dashboard/settings",
+      "regex": "^/dashboard/settings(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/settings(?:/)?$"
+    },
+    {
+      "page": "/dashboard/settings/api-keys",
+      "regex": "^/dashboard/settings/api\\-keys(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/settings/api\\-keys(?:/)?$"
+    },
+    {
+      "page": "/dashboard/users/list",
+      "regex": "^/dashboard/users/list(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/users/list(?:/)?$"
+    },
+    {
+      "page": "/dashboard/users/segments",
+      "regex": "^/dashboard/users/segments(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/users/segments(?:/)?$"
+    },
+    {
+      "page": "/login",
+      "regex": "^/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/login(?:/)?$"
+    },
+    {
+      "page": "/privacy-policy",
+      "regex": "^/privacy\\-policy(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/privacy\\-policy(?:/)?$"
+    },
+    {
+      "page": "/support",
+      "regex": "^/support(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/support(?:/)?$"
+    },
+    {
+      "page": "/terms-of-service",
+      "regex": "^/terms\\-of\\-service(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/terms\\-of\\-service(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSuffix": ".prefetch.rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments"
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}
