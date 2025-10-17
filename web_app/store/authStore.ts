@@ -89,7 +89,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           const response = await apiClient.getProfile();
           set({
-            user: response.data,
+            user: response.user,
             token,
             isAuthenticated: true,
           });
