@@ -18,6 +18,7 @@ export function Header() {
     { href: '/learning', label: 'Learning' },
     { href: '/dsa', label: 'DSA' },
     { href: '/roadmaps', label: 'Roadmaps' },
+    { href: '/scholarships', label: 'Scholarships' },
     { href: '/career-tools', label: 'Career Tools' },
   ]
 
