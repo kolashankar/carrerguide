@@ -6,11 +6,22 @@ interface BookmarkState {
   internships: string[];
   scholarships: string[];
   articles: string[];
+  dsa: string[];
+  roadmaps: string[];
+  bookmarks: {
+    jobs: string[];
+    internships: string[];
+    scholarships: string[];
+    articles: string[];
+    dsa: string[];
+    roadmaps: string[];
+  };
   
   toggleJobBookmark: (id: string) => void;
   toggleInternshipBookmark: (id: string) => void;
   toggleScholarshipBookmark: (id: string) => void;
   toggleArticleBookmark: (id: string) => void;
+  removeBookmark: (type: string, id: string) => void;
   
   isJobBookmarked: (id: string) => boolean;
   isInternshipBookmarked: (id: string) => boolean;
