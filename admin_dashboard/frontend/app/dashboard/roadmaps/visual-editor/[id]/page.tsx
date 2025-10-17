@@ -35,7 +35,7 @@ export default function RoadmapVisualEditor() {
     try {
       setLoading(true)
       const response = await roadmapsApi.getById(id)
-      const data = response.data
+      const data = response.roadmap
       setRoadmap(data)
 
       // Convert backend nodes to ReactFlow nodes
