@@ -170,7 +170,8 @@ export default function RoadmapCreateAIPage() {
 
           <div className="bg-blue-50 p-4 rounded-lg">
             <p className="text-sm text-blue-800">
-              ✨ AI will generate a comprehensive roadmap with 15-25 interconnected nodes including topics, resources, and learning paths.
+              ✨ AI will generate a comprehensive roadmap with 15-25 interconnected nodes including topics, resources, and learning paths. 
+              The flowchart will automatically include node connections, positions, and different node types (content, roadmap links, article links).
             </p>
           </div>
 
