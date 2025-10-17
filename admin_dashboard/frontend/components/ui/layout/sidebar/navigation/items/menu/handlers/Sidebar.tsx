@@ -3,31 +3,65 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
+import { ChevronDown, ChevronRight } from 'lucide-react'
 
 interface SidebarProps {
   isOpen: boolean
   onClose: () => void
 }
 
-interface MenuItem {
+interface SubMenuItem {
   name: string
   path: string
+}
+
+interface MenuItem {
+  name: string
+  path?: string
   icon: string
   disabled?: boolean
+  subItems?: SubMenuItem[]
 }
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname()
+  const [expandedItems, setExpandedItems] = useState<string[]>([])
 
-  const menuItems = [
+  const toggleExpand = (itemName: string) => {
+    setExpandedItems(prev => 
+      prev.includes(itemName) 
+        ? prev.filter(name => name !== itemName)
+        : [...prev, itemName]
+    )
+  }
+
+  const menuItems: MenuItem[] = [
     { name: 'Dashboard', path: '/dashboard', icon: '🏠' },
     { name: 'Analytics', path: '/dashboard/analytics', icon: '📊' },
     { name: 'Jobs', path: '/dashboard/jobs/list', icon: '💼' },
     { name: 'Internships', path: '/dashboard/internships/list', icon: '🎓' },
     { name: 'Scholarships', path: '/dashboard/scholarships/list', icon: '🏆' },
     { name: 'Learning', path: '/dashboard/learning/articles/list', icon: '📚' },
-    { name: 'DSA Corner', path: '/dashboard/dsa/dashboard', icon: '💻' },
-    { name: 'Roadmaps', path: '/dashboard/roadmaps/list', icon: '🗺️' },
+    { 
+      name: 'DSA Corner', 
+      icon: '💻',
+      subItems: [
+        { name: 'Dashboard', path: '/dashboard/dsa/dashboard' },
+        { name: 'Questions', path: '/dashboard/dsa/questions/list' },
+        { name: 'Topics', path: '/dashboard/dsa/topics/list' },
+        { name: 'Sheets', path: '/dashboard/dsa/sheets/list' },
+        { name: 'Companies', path: '/dashboard/dsa/companies/list' },
+      ]
+    },
+    { 
+      name: 'Roadmaps', 
+      icon: '🗺️',
+      subItems: [
+        { name: 'All Roadmaps', path: '/dashboard/roadmaps/list' },
+        { name: 'Create Roadmap', path: '/dashboard/roadmaps/create' },
+        { name: 'Create with AI', path: '/dashboard/roadmaps/create-ai' },
+      ]
+    },
     { name: 'Career Tools', path: '/dashboard/career-tools/templates', icon: '🛠️' },
     { name: 'Notifications', path: '/dashboard/notifications/list', icon: '🔔' },
     { name: 'Content Approval', path: '/dashboard/content-approval', icon: '✅' },
