@@ -5,7 +5,7 @@
 
 ---
 
-## Changes Implemented
+### Changes Implemented
 
 ### 1. Admin Login Redirect Fix ✅
 
