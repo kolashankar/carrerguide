@@ -25,7 +25,7 @@ export default function LoginPage() {
       localStorage.setItem('user', JSON.stringify(response.user))
       
       toast.success('Login successful! Welcome back.')
-      router.push('/dashboard/analytics')
+      router.push('/dashboard')
     } catch (error: any) {
       console.error('Error logging in:', error)
       toast.error(error.response?.data?.detail || 'Invalid credentials. Please check your email and password.')
