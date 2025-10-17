@@ -106,8 +106,12 @@ class JobHandlers:
             if is_active is not None:
                 filter_query['is_active'] = is_active
             
+            logger.info(f"Fetching jobs with filters: {filter_query}, is_active filter: {is_active}")
+            
             # Get total count
             total = await self.collection.count_documents(filter_query)
+            
+            logger.info(f"Total jobs matching filters: {total}")
             
             # Get jobs with pagination and sorting
             cursor = self.collection.find(filter_query)
@@ -119,15 +123,19 @@ class JobHandlers:
             for job in jobs:
                 job['_id'] = str(job['_id'])
             
+            logger.info(f"Returning {len(jobs)} jobs (skip: {skip}, limit: {limit})")
+            
             return {
+                "success": True,
                 "total": total,
                 "skip": skip,
                 "limit": limit,
-                "jobs": jobs
+                "data": jobs,
+                "jobs": jobs  # Keep backward compatibility
             }
         except Exception as e:
-            logger.error(f"Error fetching jobs: {e}")
-            raise HTTPException(status_code=500, detail=str(e))
+            logger.error(f"Error fetching jobs: {str(e)}", exc_info=True)
+            raise HTTPException(status_code=500, detail=f"Failed to fetch jobs: {str(e)}")
     
     async def update_job(self, job_id: str, update_data: dict) -> dict:
         """
