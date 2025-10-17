@@ -4,6 +4,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { Header } from '@/components/common/Header';
 import Link from 'next/link';
 import { Code, BookOpen, FileText, Building, ArrowRight, TrendingUp } from 'lucide-react';
 
@@ -16,37 +17,20 @@ export default function DSAPage() {
     },
   });
 
-  // Fetch popular topics
-  const { data: topicsData } = useQuery({
-    queryKey: ['dsa-topics'],
-    queryFn: async () => {
-      const response = await fetch('/api/admin/dsa/topics?limit=8');
-      return response.json();
-    },
-  });
+  const dashboardData = data?.data || {};
+  const stats = dashboardData.stats || {};
+  const topTopics = dashboardData.top_topics || [];
+  const topCompanies = dashboardData.top_companies || [];
 
-  // Fetch top companies
-  const { data: companiesData } = useQuery({
-    queryKey: ['dsa-companies'],
-    queryFn: async () => {
-      const response = await fetch('/api/admin/dsa/companies/top?limit=6');
-      return response.json();
-    },
-  });
-
-  const stats = data?.data || {
-    problems_solved: 0,
-    current_streak: 0,
-    difficulty_breakdown: { easy: 0, medium: 0, hard: 0 },
-  };
-
-  const totalProblems = 3374; // As per reference
-  const totalTopics = 100;
-  const totalCompanies = 6;
-  const totalSheets = 24;
+  const totalProblems = stats.total_questions || 0;
+  const totalTopics = stats.total_topics || 0;
+  const totalCompanies = stats.total_companies || 0;
+  const totalSheets = stats.total_sheets || 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <Header />
+      <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20">
         <div className="container mx-auto px-4">
