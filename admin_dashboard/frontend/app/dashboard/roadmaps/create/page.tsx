@@ -24,8 +24,16 @@ export default function RoadmapCreatePage() {
     nodes: [] as RoadmapNode[],
   })
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleNextStep = (e: React.FormEvent) => {
     e.preventDefault()
+    setStep(2)
+  }
+
+  const handleFlowchartSave = (nodes: RoadmapNode[]) => {
+    setFormData({ ...formData, nodes })
+  }
+
+  const handleSubmit = async () => {
     setLoading(true)
 
     try {
