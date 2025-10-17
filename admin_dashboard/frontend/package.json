@@ -32,7 +32,7 @@
     "react-dropzone": "^14.3.8",
     "react-hook-form": "^7.65.0",
     "react-hot-toast": "^2.6.0",
-    "react-quill": "^3.0.0",
+    "react-quill-new": "^3.3.2",
     "reactflow": "^11.11.4",
     "recharts": "^3.2.1",
     "tailwindcss": "3.4.1",
