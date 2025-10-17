@@ -133,37 +133,92 @@ export default function DashboardPage() {
         <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
           <div className="flex items-center justify-between mb-4">
             <span className="text-3xl">💼</span>
-            <span className="text-sm text-gray-500">Total</span>
+            <span className="text-2xl font-bold text-blue-600">
+              {loading ? '...' : stats.jobs_count}
+            </span>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-1">Jobs</h3>
-          <p className="text-sm text-gray-600">Manage job listings</p>
+          <h3 className="text-xl font-bold text-gray-900 mb-1">Jobs</h3>
+          <p className="text-sm text-gray-600">Total job listings</p>
         </div>
 
         <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
           <div className="flex items-center justify-between mb-4">
             <span className="text-3xl">🎓</span>
-            <span className="text-sm text-gray-500">Total</span>
+            <span className="text-2xl font-bold text-purple-600">
+              {loading ? '...' : stats.internships_count}
+            </span>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-1">Internships</h3>
-          <p className="text-sm text-gray-600">Manage internship listings</p>
+          <h3 className="text-xl font-bold text-gray-900 mb-1">Internships</h3>
+          <p className="text-sm text-gray-600">Total internship listings</p>
         </div>
 
         <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
           <div className="flex items-center justify-between mb-4">
             <span className="text-3xl">📚</span>
-            <span className="text-sm text-gray-500">Total</span>
+            <span className="text-2xl font-bold text-green-600">
+              {loading ? '...' : stats.articles_count}
+            </span>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-1">Articles</h3>
-          <p className="text-sm text-gray-600">Manage learning content</p>
+          <h3 className="text-xl font-bold text-gray-900 mb-1">Articles</h3>
+          <p className="text-sm text-gray-600">Learning content published</p>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-3xl">💻</span>
+            <span className="text-2xl font-bold text-pink-600">
+              {loading ? '...' : stats.dsa_questions_count}
+            </span>
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-1">DSA Questions</h3>
+          <p className="text-sm text-gray-600">Total DSA problems</p>
+        </div>
+      </div>
+
+      {/* Additional Stats Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-3xl">🏆</span>
+            <span className="text-2xl font-bold text-yellow-600">
+              {loading ? '...' : stats.scholarships_count}
+            </span>
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-1">Scholarships</h3>
+          <p className="text-sm text-gray-600">Available scholarships</p>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-3xl">🗺️</span>
+            <span className="text-2xl font-bold text-teal-600">
+              {loading ? '...' : stats.roadmaps_count}
+            </span>
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-1">Roadmaps</h3>
+          <p className="text-sm text-gray-600">Career roadmaps created</p>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-3xl">🏷️</span>
+            <span className="text-2xl font-bold text-indigo-600">
+              {loading ? '...' : stats.dsa_topics_count}
+            </span>
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-1">DSA Topics</h3>
+          <p className="text-sm text-gray-600">DSA topics available</p>
         </div>
 
         <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
           <div className="flex items-center justify-between mb-4">
             <span className="text-3xl">👥</span>
-            <span className="text-sm text-gray-500">Total</span>
+            <span className="text-2xl font-bold text-orange-600">
+              {loading ? '...' : stats.users_count}
+            </span>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-1">Users</h3>
-          <p className="text-sm text-gray-600">Manage user accounts</p>
+          <h3 className="text-xl font-bold text-gray-900 mb-1">Users</h3>
+          <p className="text-sm text-gray-600">Registered app users</p>
         </div>
       </div>
 
