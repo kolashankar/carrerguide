@@ -16,13 +16,17 @@
    - ✅ Updated node property from `node_id` to `id` in visual editor for TypeScript compliance
    - ✅ Added backward compatibility for both `id` and `node_id` in node parsing
    - ✅ Removed yarn.lock file (switched to npm)
+   - ✅ **Fixed React 19 peer dependency conflict:**
+     - Replaced `react-quill@2.0.0` with `react-quill-new@3.3.2` (React 19 compatible fork)
+     - Updated all imports in article create/edit pages
    - ✅ Configured Next.js to ignore TypeScript/ESLint errors during build
    - ✅ Build successful with all 50 routes compiled
 
 ### Deployment Ready ✅
 - Both web_app and admin_dashboard/frontend are now ready for deployment
-- All build commands execute successfully
+- All build commands execute successfully with standard npm install (no --legacy-peer-deps needed)
 - No blocking errors remain
+- All peer dependency conflicts resolved
 
 ---
 
