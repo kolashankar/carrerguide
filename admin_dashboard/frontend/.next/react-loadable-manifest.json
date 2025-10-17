@@ -1,28 +1,26 @@
 {
   "app/dashboard/dsa/questions/create/page.tsx -> @monaco-editor/react": {
-    "id": 94151,
+    "id": 85778,
     "files": [
-      "static/chunks/4151.205aa84b08e5c8d7.js"
+      "static/chunks/5778.a77b7e4bb5c31d8f.js"
     ]
   },
   "app/dashboard/dsa/questions/edit/[id]/page.tsx -> @monaco-editor/react": {
-    "id": 94151,
+    "id": 85778,
     "files": [
-      "static/chunks/4151.205aa84b08e5c8d7.js"
+      "static/chunks/5778.a77b7e4bb5c31d8f.js"
     ]
   },
-  "app/dashboard/learning/articles/create/page.tsx -> react-quill": {
-    "id": 51720,
+  "app/dashboard/learning/articles/create/page.tsx -> react-quill-new": {
+    "id": 51263,
     "files": [
-      "static/chunks/8012d7e2.b29c1113c889e47e.js",
-      "static/chunks/1720.75eafc578ff7d630.js"
+      "static/chunks/1263.881efcfe89fbb4f7.js"
     ]
   },
-  "app/dashboard/learning/articles/edit/[id]/page.tsx -> react-quill": {
-    "id": 51720,
+  "app/dashboard/learning/articles/edit/[id]/page.tsx -> react-quill-new": {
+    "id": 51263,
     "files": [
-      "static/chunks/8012d7e2.b29c1113c889e47e.js",
-      "static/chunks/1720.75eafc578ff7d630.js"
+      "static/chunks/1263.881efcfe89fbb4f7.js"
     ]
   }
 }
