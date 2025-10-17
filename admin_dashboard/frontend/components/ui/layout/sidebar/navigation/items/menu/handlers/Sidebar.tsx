@@ -20,7 +20,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname()
 
   const menuItems = [
-    { name: 'Dashboard', path: '/', icon: '🏠' },
+    { name: 'Dashboard', path: '/dashboard', icon: '🏠' },
     { name: 'Analytics', path: '/dashboard/analytics', icon: '📊' },
     { name: 'Jobs', path: '/dashboard/jobs/list', icon: '💼' },
     { name: 'Internships', path: '/dashboard/internships/list', icon: '🎓' },
