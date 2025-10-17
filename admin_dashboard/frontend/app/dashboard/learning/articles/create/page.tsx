@@ -6,8 +6,8 @@ import dynamic from 'next/dynamic'
 import { articlesApi } from '@/lib/api/client/config/interceptors/auth/token/articlesApi'
 import toast from 'react-hot-toast'
 
-const ReactQuill = dynamic(() => import('react-quill'), { ssr: false })
-import 'react-quill/dist/quill.snow.css'
+const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false })
+import 'react-quill-new/dist/quill.snow.css'
 
 export default function CreateArticle() {
   const router = useRouter()
