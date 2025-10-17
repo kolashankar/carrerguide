@@ -238,6 +238,6 @@ export default function DSAPage() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
