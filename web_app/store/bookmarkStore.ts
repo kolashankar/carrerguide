@@ -36,37 +36,77 @@ export const useBookmarkStore = create<BookmarkState>()(
       internships: [],
       scholarships: [],
       articles: [],
+      dsa: [],
+      roadmaps: [],
+      bookmarks: {
+        jobs: [],
+        internships: [],
+        scholarships: [],
+        articles: [],
+        dsa: [],
+        roadmaps: [],
+      },
 
       toggleJobBookmark: (id: string) => {
-        set((state) => ({
-          jobs: state.jobs.includes(id)
+        set((state) => {
+          const newJobs = state.jobs.includes(id)
             ? state.jobs.filter((jobId) => jobId !== id)
-            : [...state.jobs, id],
-        }));
+            : [...state.jobs, id];
+          return {
+            jobs: newJobs,
+            bookmarks: { ...state.bookmarks, jobs: newJobs }
+          };
+        });
       },
 
       toggleInternshipBookmark: (id: string) => {
-        set((state) => ({
-          internships: state.internships.includes(id)
+        set((state) => {
+          const newInternships = state.internships.includes(id)
             ? state.internships.filter((internshipId) => internshipId !== id)
-            : [...state.internships, id],
-        }));
+            : [...state.internships, id];
+          return {
+            internships: newInternships,
+            bookmarks: { ...state.bookmarks, internships: newInternships }
+          };
+        });
       },
 
       toggleScholarshipBookmark: (id: string) => {
-        set((state) => ({
-          scholarships: state.scholarships.includes(id)
+        set((state) => {
+          const newScholarships = state.scholarships.includes(id)
             ? state.scholarships.filter((scholarshipId) => scholarshipId !== id)
-            : [...state.scholarships, id],
-        }));
+            : [...state.scholarships, id];
+          return {
+            scholarships: newScholarships,
+            bookmarks: { ...state.bookmarks, scholarships: newScholarships }
+          };
+        });
       },
 
       toggleArticleBookmark: (id: string) => {
-        set((state) => ({
-          articles: state.articles.includes(id)
+        set((state) => {
+          const newArticles = state.articles.includes(id)
             ? state.articles.filter((articleId) => articleId !== id)
-            : [...state.articles, id],
-        }));
+            : [...state.articles, id];
+          return {
+            articles: newArticles,
+            bookmarks: { ...state.bookmarks, articles: newArticles }
+          };
+        });
+      },
+
+      removeBookmark: (type: string, id: string) => {
+        set((state) => {
+          const currentList = state[type as keyof typeof state] as string[];
+          if (Array.isArray(currentList)) {
+            const newList = currentList.filter((itemId) => itemId !== id);
+            return {
+              [type]: newList,
+              bookmarks: { ...state.bookmarks, [type]: newList }
+            };
+          }
+          return state;
+        });
       },
 
       isJobBookmarked: (id: string) => get().jobs.includes(id),
