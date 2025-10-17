@@ -96,7 +96,7 @@ export default function RoadmapVisualEditor() {
           .map(edge => edge.target)
         
         return {
-          node_id: node.id,
+          id: node.id,
           title: node.data.label,
           description: node.data.description || '',
           type: node.data.type || 'content',
