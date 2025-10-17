@@ -40,7 +40,7 @@ export default function RoadmapVisualEditor() {
 
       // Convert backend nodes to ReactFlow nodes
       const flowNodes = data.nodes.map((node: any) => ({
-        id: node.node_id,
+        id: node.id || node.node_id,
         type: 'default',
         position: { x: node.position_x, y: node.position_y },
         data: { 
@@ -60,10 +60,11 @@ export default function RoadmapVisualEditor() {
       // Convert connections to edges
       const flowEdges: Edge[] = []
       data.nodes.forEach((node: any) => {
+        const nodeId = node.id || node.node_id;
         node.connections.forEach((targetId: string) => {
           flowEdges.push({
-            id: `${node.node_id}-${targetId}`,
-            source: node.node_id,
+            id: `${nodeId}-${targetId}`,
+            source: nodeId,
             target: targetId,
             animated: true,
           })
