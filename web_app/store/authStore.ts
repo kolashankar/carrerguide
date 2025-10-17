@@ -27,7 +27,7 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
         try {
           const response = await apiClient.login({ email, password });
-          const { token, user } = response.data;
+          const { token, user } = response;
           
           localStorage.setItem('token', token);
           localStorage.setItem('user', JSON.stringify(user));
@@ -48,7 +48,7 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
         try {
           const response = await apiClient.register({ email, password, full_name });
-          const { token, user } = response.data;
+          const { token, user } = response;
           
           localStorage.setItem('token', token);
           localStorage.setItem('user', JSON.stringify(user));
