@@ -1,0 +1,170 @@
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { useAuth } from '../../contexts/AuthContext';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+
+export default function LoginScreen() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
+  const router = useRouter();
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please enter email and password');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      console.log('Attempting login...');
+      await login(email, password);
+      console.log('Login successful, navigating to tabs...');
+      router.replace('/(tabs)');
+    } catch (error: any) {
+      console.error('Login error:', error);
+      Alert.alert('Login Failed', error.message || 'An error occurred during login');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <SafeAreaView className="flex-1 bg-white">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1"
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+          className="flex-1"
+        >
+          {/* Header with Gradient */}
+          <LinearGradient
+            colors={['#2563eb', '#3b82f6', '#4f46e5']}
+            className="px-6 pt-12 pb-16 rounded-b-3xl"
+          >
+            <View className="flex-row justify-end mb-4">
+              <TouchableOpacity
+                onPress={() => router.replace('/(tabs)')}
+                className="bg-white/20 px-4 py-2 rounded-full"
+              >
+                <Text className="text-white text-sm font-semibold">Skip for now</Text>
+              </TouchableOpacity>
+            </View>
+            <View className="items-center mb-6">
+              <View className="bg-white/20 w-20 h-20 rounded-full items-center justify-center mb-4">
+                <Ionicons name="briefcase" size={40} color="#fff" />
+              </View>
+              <Text className="text-white text-4xl font-extrabold mb-2">Welcome Back</Text>
+              <Text className="text-blue-100 text-base text-center">Sign in to continue your career journey</Text>
+            </View>
+          </LinearGradient>
+
+          {/* Form Container */}
+          <View className="flex-1 px-6 -mt-8">
+            <View className="bg-white rounded-3xl shadow-lg p-6 border border-gray-100">
+              {/* Email Input */}
+              <View className="mb-4">
+                <Text className="text-gray-700 mb-2 text-sm font-semibold">Email Address</Text>
+                <View className="bg-gray-50 rounded-xl px-4 py-4 flex-row items-center border border-gray-200">
+                  <Ionicons name="mail-outline" size={22} color="#6b7280" />
+                  <TextInput
+                    className="flex-1 text-gray-900 ml-3 text-base"
+                    placeholder="Enter your email"
+                    placeholderTextColor="#9ca3af"
+                    value={email}
+                    onChangeText={setEmail}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                  />
+                </View>
+              </View>
+
+              {/* Password Input */}
+              <View className="mb-6">
+                <Text className="text-gray-700 mb-2 text-sm font-semibold">Password</Text>
+                <View className="bg-gray-50 rounded-xl px-4 py-4 flex-row items-center border border-gray-200">
+                  <Ionicons name="lock-closed-outline" size={22} color="#6b7280" />
+                  <TextInput
+                    className="flex-1 text-gray-900 ml-3 text-base"
+                    placeholder="Enter your password"
+                    placeholderTextColor="#9ca3af"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                  />
+                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                    <Ionicons
+                      name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                      size={22}
+                      color="#6b7280"
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Login Button */}
+              <TouchableOpacity
+                onPress={handleLogin}
+                disabled={isLoading}
+              >
+                <LinearGradient
+                  colors={['#2563eb', '#4f46e5']}
+                  className="rounded-xl py-4 items-center shadow-md"
+                >
+                  {isLoading ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text className="text-white font-bold text-lg">Sign In</Text>
+                  )}
+                </LinearGradient>
+              </TouchableOpacity>
+
+              {/* Divider */}
+              <View className="flex-row items-center my-6">
+                <View className="flex-1 h-px bg-gray-200" />
+                <Text className="text-gray-500 text-sm mx-4">or</Text>
+                <View className="flex-1 h-px bg-gray-200" />
+              </View>
+
+              {/* Register Link */}
+              <View className="flex-row justify-center items-center">
+                <Text className="text-gray-600 text-base">Don't have an account? </Text>
+                <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
+                  <Text className="text-blue-600 font-bold text-base">Sign Up</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Bottom Info */}
+            <View className="items-center mt-8 mb-4">
+              <Text className="text-gray-500 text-sm text-center">
+                By continuing, you agree to our{' '}
+                <Text className="text-blue-600">Terms of Service</Text>
+                {' '}and{' '}
+                <Text className="text-blue-600">Privacy Policy</Text>
+              </Text>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}

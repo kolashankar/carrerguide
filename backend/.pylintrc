@@ -1,0 +1,33 @@
+[MASTER]
+# Ignore virtual environments and cache directories
+ignore=venv,.venv,__pycache__,node_modules,.pytest_cache,.mypy_cache
+
+# Use multiple processes to speed up Pylint
+jobs=4
+
+[MESSAGES CONTROL]
+# Disable all messages, then enable only errors and fatal
+disable=all
+enable=E,F
+
+[REPORTS]
+# Output format
+output-format=colorized
+
+# Don't display score
+score=no
+
+[FORMAT]
+# Maximum number of characters on a single line
+max-line-length=120
+
+[BASIC]
+# Good variable names
+good-names=i,j,k,ex,Run,_,id,db,app
+
+[DESIGN]
+# Maximum number of arguments for function / method
+max-args=10
+
+# Maximum number of attributes for a class
+max-attributes=15
