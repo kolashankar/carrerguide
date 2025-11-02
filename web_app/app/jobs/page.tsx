@@ -71,8 +71,8 @@ export default function JobsPage() {
           return await apiClient.getJobs(params);
         case 'internships':
           return await apiClient.getInternships(params);
-        case 'scholarships':
-          return await apiClient.getScholarships(params);
+        case 'fresherjobs':
+          return await apiClient.getJobs({ ...params, experience_level: 'Entry Level' });
       }
     },
   });
