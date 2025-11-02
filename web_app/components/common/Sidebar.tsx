@@ -80,7 +80,7 @@ export function Sidebar({ isOpen, onClose, user, logout }: SidebarProps) {
       {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          className="fixed inset-0 bg-black bg-opacity-50 z-[60]"
           onClick={onClose}
           data-testid="sidebar-overlay"
         />
@@ -89,7 +89,7 @@ export function Sidebar({ isOpen, onClose, user, logout }: SidebarProps) {
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-0 left-0 z-50 h-screen w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out
+          fixed top-0 left-0 z-[70] h-screen w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
         data-testid="sidebar"
