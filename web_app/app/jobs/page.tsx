@@ -97,18 +97,18 @@ export default function JobsPage() {
           <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
             {activeTab === 'jobs' && 'Find Your Dream Job'}
             {activeTab === 'internships' && 'Explore Internships'}
-            {activeTab === 'scholarships' && 'Discover Scholarships'}
+            {activeTab === 'fresherjobs' && 'Fresher Jobs'}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             {activeTab === 'jobs' && 'Browse through 50,000+ job opportunities from top companies'}
             {activeTab === 'internships' && 'Gain valuable experience with internships from leading organizations'}
-            {activeTab === 'scholarships' && 'Find scholarships to support your educational journey'}
+            {activeTab === 'fresherjobs' && 'Perfect opportunities for fresh graduates and entry-level candidates'}
           </p>
         </div>
 
         {/* Tabs */}
         <div className="flex space-x-2 mb-8 justify-center">
-          {(['jobs', 'internships', 'scholarships'] as TabType[]).map((tab) => (
+          {(['jobs', 'internships', 'fresherjobs'] as TabType[]).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -118,7 +118,7 @@ export default function JobsPage() {
                   : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
               }`}
             >
-              {tab}
+              {tab === 'fresherjobs' ? 'Fresher Jobs' : tab}
             </button>
           ))}
         </div>
