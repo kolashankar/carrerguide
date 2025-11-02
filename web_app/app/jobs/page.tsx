@@ -52,10 +52,34 @@ export default function JobsPage() {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [activeTab, searchQuery, selectedCategory, sortBy, filters],
     queryFn: async () => {
+      // Map sort option to backend format
+      let sort_by = 'created_at';
+      let sort_order = -1;
+      
+      switch (sortBy) {
+        case 'recent':
+          sort_by = 'created_at';
+          sort_order = -1;
+          break;
+        case 'salary_desc':
+          sort_by = 'salary_max';
+          sort_order = -1;
+          break;
+        case 'salary_asc':
+          sort_by = 'salary_max';
+          sort_order = 1;
+          break;
+        case 'company':
+          sort_by = 'company_name';
+          sort_order = 1;
+          break;
+      }
+
       const params: unknown = {
         search: searchQuery || undefined,
         category: selectedCategory !== 'All' ? selectedCategory : undefined,
-        sort: sortBy,
+        sort_by,
+        sort_order,
         limit: 50,
       };
 
