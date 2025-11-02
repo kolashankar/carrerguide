@@ -45,8 +45,8 @@ export function Sidebar({ isOpen, onClose, user, logout }: SidebarProps) {
       icon: Briefcase,
       children: [
         { name: 'Browse Jobs', href: '/jobs' },
-        { name: 'Freshers Jobs', href: '/jobs?type=fresher' },
         { name: 'Internships', href: '/jobs?type=internship' },
+        { name: 'Fresher Jobs', href: '/jobs?type=fresher' },
       ]
     },
     {
