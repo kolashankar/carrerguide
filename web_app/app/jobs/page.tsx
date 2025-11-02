@@ -16,7 +16,7 @@ import { apiClient } from '@/lib/api';
 import { Job, Internship, Scholarship } from '@/types';
 import { Loader2 } from 'lucide-react';
 
-type TabType = 'jobs' | 'internships' | 'scholarships';
+type TabType = 'jobs' | 'internships' | 'fresherjobs';
 
 const categories = ['Technology', 'Marketing', 'Sales', 'Design', 'Finance', 'Healthcare', 'Education'];
 
