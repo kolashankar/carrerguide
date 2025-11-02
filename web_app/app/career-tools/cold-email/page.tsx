@@ -70,8 +70,11 @@ export default function ColdEmailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b sticky top-0 z-10">
+      {/* Header with Hamburger Menu */}
+      <Header />
+      
+      {/* Page Title Section */}
+      <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center space-x-4">
             <Link href="/career-tools" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
