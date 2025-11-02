@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Sparkles, Loader2, Copy, RefreshCw } from 'lucide-react';
+import { Header } from '@/components/common/Header';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
 
