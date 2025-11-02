@@ -18,7 +18,7 @@ export function Header() {
             {/* Hamburger Menu */}
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-2 text-gray-600 hover:text-blue-600 rounded-md hover:bg-gray-50 transition-colors -ml-2"
+              className="p-2 text-gray-600 hover:text-blue-600 rounded-md hover:bg-gray-50 transition-colors -ml-4"
               data-testid="hamburger-menu-btn"
             >
               <Menu className="w-6 h-6" />
