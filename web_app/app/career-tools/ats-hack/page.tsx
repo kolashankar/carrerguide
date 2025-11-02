@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Target, Loader2, Download, RefreshCw } from 'lucide-react';
 import FileUpload from '@/components/career-tools/FileUpload';
+import { Header } from '@/components/common/Header';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
 
