@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, FileText, Loader2, Download, Save, RefreshCw } from 'lucide-react';
 import FileUpload from '@/components/career-tools/FileUpload';
+import { Header } from '@/components/common/Header';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
 
