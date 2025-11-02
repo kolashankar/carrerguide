@@ -107,7 +107,7 @@ export default function JobsPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex space-x-2 mb-8 justify-center">
+        <div className="flex gap-1 mb-8 justify-center">
           {(['jobs', 'internships', 'fresherjobs'] as TabType[]).map((tab) => (
             <button
               key={tab}
