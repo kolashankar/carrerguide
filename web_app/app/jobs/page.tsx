@@ -131,14 +131,18 @@ export default function JobsPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 mb-8 justify-center">
-          {(['jobs', 'internships', 'fresherjobs'] as TabType[]).map((tab) => (
+        <div className="flex gap-0 mb-8 justify-center">
+          {(['jobs', 'internships', 'fresherjobs'] as TabType[]).map((tab, index) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-6 py-3 text-sm font-semibold capitalize rounded-lg transition-all ${
+              className={`px-6 py-3 text-sm font-semibold capitalize transition-all ${
+                index === 0 ? 'rounded-l-lg' : ''
+              } ${
+                index === 2 ? 'rounded-r-lg' : ''
+              } ${
                 activeTab === tab
-                  ? 'bg-blue-600 text-white shadow-md'
+                  ? 'bg-blue-600 text-white shadow-md z-10'
                   : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
               }`}
             >
