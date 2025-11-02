@@ -173,7 +173,7 @@ export default function JobsPage() {
         {/* Content */}
         <div className="flex gap-6">
           {/* Desktop Filters Sidebar */}
-          <div className="hidden lg:block w-64">
+          <div className="hidden lg:block w-64 flex-shrink-0">
             <JobFilters
               jobTypes={jobTypes}
               experienceLevels={experienceLevels}
@@ -184,6 +184,10 @@ export default function JobsPage() {
 
           {/* Main Content */}
           <div className="flex-1">
+            {/* Sort for Desktop */}
+            <div className="hidden lg:flex justify-end mb-4">
+              <SortDropdown options={sortOptions} value={sortBy} onChange={setSortBy} />
+            </div>
             {isLoading ? (
               <div className="flex items-center justify-center py-20">
                 <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
