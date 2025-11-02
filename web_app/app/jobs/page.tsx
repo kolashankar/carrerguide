@@ -141,21 +141,15 @@ export default function JobsPage() {
           />
         </div>
 
-        {/* Filters and Sort */}
-        <div className="flex items-center justify-between mb-6">
-          <JobFilters
-            jobTypes={jobTypes}
-            experienceLevels={experienceLevels}
-            onApplyFilters={handleApplyFilters}
-            onReset={handleResetFilters}
-          />
+        {/* Sort Dropdown for Mobile */}
+        <div className="flex justify-end mb-6 lg:hidden">
           <SortDropdown options={sortOptions} value={sortBy} onChange={setSortBy} />
         </div>
 
         {/* Content */}
         <div className="flex gap-6">
           {/* Desktop Filters Sidebar */}
-          <div className="hidden lg:block">
+          <div className="hidden lg:block w-64">
             <JobFilters
               jobTypes={jobTypes}
               experienceLevels={experienceLevels}
