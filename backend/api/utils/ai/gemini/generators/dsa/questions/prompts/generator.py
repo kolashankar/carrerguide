@@ -182,3 +182,88 @@ Return ONLY the JSON object."""
         except Exception as e:
             print(f"Error generating DSA sheet: {e}")
             raise
+    
+    async def generate_dsa_topic(self, prompt_data: dict):
+        """Generate a DSA topic with AI"""
+        
+        topic_name = prompt_data.get('name', 'Arrays')
+        
+        prompt = f"""Generate a comprehensive DSA topic/concept description for: {topic_name}
+
+Provide detailed information in the following JSON format:
+{{
+    "name": "{topic_name}",
+    "description": "Comprehensive description (300-500 words) explaining what this topic is, why it's important, when to use it, common use cases, and foundational concepts. Make it educational and engaging.",
+    "icon": "📊",
+    "color": "#3B82F6",
+    "difficulty_distribution": {{
+        "easy": 15,
+        "medium": 25,
+        "hard": 10
+    }},
+    "is_active": true
+}}
+
+Choose an appropriate emoji icon and color hex code that represents the topic well.
+For difficulty_distribution, estimate realistic numbers of problems at each level for this topic.
+
+Return ONLY the JSON object."""
+
+        try:
+            response = self.model.generate_content(prompt)
+            result_text = response.text.strip()
+            
+            # Extract JSON from markdown code blocks if present
+            if '```json' in result_text:
+                result_text = re.search(r'```json\s*(.*?)\s*```', result_text, re.DOTALL).group(1)
+            elif '```' in result_text:
+                result_text = re.search(r'```\s*(.*?)\s*```', result_text, re.DOTALL).group(1)
+            
+            topic_data = json.loads(result_text)
+            return topic_data
+            
+        except Exception as e:
+            print(f"Error generating DSA topic: {e}")
+            raise
+    
+    async def generate_company(self, prompt_data: dict):
+        """Generate a company profile with AI"""
+        
+        company_name = prompt_data.get('name', 'Google')
+        industry = prompt_data.get('industry', 'Technology')
+        
+        prompt = f"""Generate a comprehensive company profile for: {company_name}
+
+Industry: {industry}
+
+Provide detailed information in the following JSON format:
+{{
+    "name": "{company_name}",
+    "logo": "🏢",
+    "industry": "{industry}",
+    "website": "https://www.{company_name.lower().replace(' ', '')}.com",
+    "description": "Comprehensive company description (200-400 words) covering: what the company does, their main products/services, company culture, interview process characteristics, types of DSA problems they typically ask, difficulty level of their interviews, and what candidates should focus on. Make it informative and helpful for job seekers.",
+    "is_active": true
+}}
+
+Use an appropriate emoji for the logo that represents the company or industry.
+Make the description factual and helpful for DSA preparation and interview prep.
+
+Return ONLY the JSON object."""
+
+        try:
+            response = self.model.generate_content(prompt)
+            result_text = response.text.strip()
+            
+            # Extract JSON from markdown code blocks if present
+            if '```json' in result_text:
+                result_text = re.search(r'```json\s*(.*?)\s*```', result_text, re.DOTALL).group(1)
+            elif '```' in result_text:
+                result_text = re.search(r'```\s*(.*?)\s*```', result_text, re.DOTALL).group(1)
+            
+            company_data = json.loads(result_text)
+            return company_data
+            
+        except Exception as e:
+            print(f"Error generating company: {e}")
+            raise
