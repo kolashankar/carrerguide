@@ -47,5 +47,6 @@ export const dsaApi = {
     delete: (id: string) => apiClient.delete(`/admin/dsa/companies/${id}`),
     getStats: () => apiClient.get('/admin/dsa/companies/stats'),
     getTop: () => apiClient.get('/admin/dsa/companies/top'),
+    generateAI: (params: { name: string; industry: string }) => apiClient.post('/admin/dsa/companies/generate-ai', null, { params }),
   },
 }
