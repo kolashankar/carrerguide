@@ -9,6 +9,7 @@ export const dsaApi = {
     update: (id: string, data: any) => apiClient.put(`/admin/dsa/topics/${id}`, data),
     delete: (id: string) => apiClient.delete(`/admin/dsa/topics/${id}`),
     getStats: () => apiClient.get('/admin/dsa/topics/stats'),
+    generateAI: (params: { name: string }) => apiClient.post('/admin/dsa/topics/generate-ai', null, { params }),
   },
   
   // Questions
