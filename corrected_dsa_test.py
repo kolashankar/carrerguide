@@ -6,7 +6,7 @@ Corrected DSA Backend Testing Script
 import requests
 import json
 
-BACKEND_URL = "https://react-navigator-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://admin-dash-19.preview.emergentagent.com/api"
 
 def test_dsa_endpoints():
     print("🚀 Starting DSA Corner Backend Testing")
