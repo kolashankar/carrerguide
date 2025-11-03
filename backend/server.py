@@ -748,6 +748,23 @@ async def create_company(company: CompanyCreate):
     """Create a new company"""
     return await company_handlers.create_company(company.dict())
 
+@api_router.post("/admin/dsa/companies/generate-ai", response_model=dict, tags=["Admin - DSA Companies"])
+async def generate_company_with_ai(
+    name: str = Query(..., description="Company name (e.g., Google, Amazon)"),
+    industry: str = Query(default="Technology", description="Industry/sector")
+):
+    """Generate a company profile using Gemini AI"""
+    if not dsa_gemini_generator:
+        return {"error": "Gemini API not configured"}
+    
+    prompt_data = {
+        "name": name,
+        "industry": industry
+    }
+    
+    generated_company = await dsa_gemini_generator.generate_company(prompt_data)
+    return await company_handlers.create_company(generated_company)
+
 @api_router.get("/admin/dsa/companies", tags=["Admin - DSA Companies"])
 async def get_all_companies(
     skip: int = Query(0, ge=0),
