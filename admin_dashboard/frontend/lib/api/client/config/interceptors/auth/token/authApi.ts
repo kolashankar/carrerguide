@@ -11,13 +11,14 @@ export interface User {
 
 export interface LoginResponse {
   success: boolean
-  access_token: string
-  token_type: string
-  user_type: string
-  user_id: string
-  email: string
-  full_name: string
+  access_token?: string
+  token_type?: string
+  user_type?: string
+  user_id?: string
+  email?: string
+  full_name?: string
   role?: string
+  message?: string  // Error message when success is false
 }
 
 export interface RegisterData {
