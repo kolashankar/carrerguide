@@ -504,6 +504,21 @@ async def create_dsa_topic(topic: DSATopicCreate):
     """Create a new DSA topic"""
     return await dsa_topic_handlers.create_topic(topic.dict())
 
+@api_router.post("/admin/dsa/topics/generate-ai", response_model=dict, tags=["Admin - DSA Topics"])
+async def generate_dsa_topic_with_ai(
+    name: str = Query(..., description="Topic name (e.g., Arrays, Binary Trees)")
+):
+    """Generate a DSA topic using Gemini AI"""
+    if not dsa_gemini_generator:
+        return {"error": "Gemini API not configured"}
+    
+    prompt_data = {
+        "name": name
+    }
+    
+    generated_topic = await dsa_gemini_generator.generate_dsa_topic(prompt_data)
+    return await dsa_topic_handlers.create_topic(generated_topic)
+
 @api_router.get("/admin/dsa/topics", tags=["Admin - DSA Topics"])
 async def get_all_dsa_topics(
     skip: int = Query(0, ge=0),
