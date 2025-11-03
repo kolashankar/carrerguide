@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ModernDashboardLayout from '@/components/ui/layout/sidebar/navigation/items/menu/handlers/ModernDashboardLayout'
-import { dsaTopicsApi } from '@/lib/api/client/config/interceptors/auth/token/dsaTopicsApi'
+import { dsaApi } from '@/lib/api/client/config/interceptors/auth/token/dsaApi'
 import { BookOpen, Sparkles, ArrowLeft } from 'lucide-react'
 
 export default function CreateDSATopicAIPage() {
@@ -18,7 +18,7 @@ export default function CreateDSATopicAIPage() {
     setLoading(true)
 
     try {
-      await dsaTopicsApi.generateWithAI(formData)
+      await dsaApi.topics.generateAI(formData)
       alert('DSA Topic generated and created successfully!')
       router.push('/dashboard/dsa/topics/list')
     } catch (error: any) {
