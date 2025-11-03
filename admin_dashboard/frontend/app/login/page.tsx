@@ -17,21 +17,34 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
 
+    console.log('Submitting login with data:', formData)
+    
     try {
       const response = await authApi.adminLogin(formData)
+      console.log('Login response:', response)
       
       if (!response.success) {
-        throw new Error('Login failed')
+        // Backend returned success: false with a message
+        const errorMessage = response.message || 'Invalid credentials'
+        toast.error(errorMessage)
+        setLoading(false)
+        return
       }
       
       // Store token and user data - handle backend response structure
+      if (!response.access_token || !response.user_id || !response.email || !response.full_name) {
+        toast.error('Invalid response from server')
+        setLoading(false)
+        return
+      }
+      
       const token = response.access_token
       const user = {
         id: response.user_id,
         email: response.email,
         name: response.full_name,
         role: response.role || 'admin',
-        user_type: response.user_type,
+        user_type: response.user_type || 'admin',
       }
       
       localStorage.setItem('token', token)
