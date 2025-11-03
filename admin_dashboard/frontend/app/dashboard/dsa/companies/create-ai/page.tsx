@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ModernDashboardLayout from '@/components/ui/layout/sidebar/navigation/items/menu/handlers/ModernDashboardLayout'
-import { dsaCompaniesApi } from '@/lib/api/client/config/interceptors/auth/token/dsaCompaniesApi'
+import { dsaApi } from '@/lib/api/client/config/interceptors/auth/token/dsaApi'
 import { Building2, Briefcase, Sparkles, ArrowLeft } from 'lucide-react'
 
 export default function CreateDSACompanyAIPage() {
@@ -19,7 +19,7 @@ export default function CreateDSACompanyAIPage() {
     setLoading(true)
 
     try {
-      await dsaCompaniesApi.generateWithAI(formData)
+      await dsaApi.companies.generateAI(formData)
       alert('Company generated and created successfully!')
       router.push('/dashboard/dsa/companies/list')
     } catch (error: any) {
