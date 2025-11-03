@@ -22,8 +22,9 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # MongoDB connection
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017/")
+DB_NAME = os.getenv("DB_NAME", "careerguidedb")
 client = MongoClient(MONGO_URL)
-db = client['careerguide']
+db = client[DB_NAME]
 admin_users_collection = db['admin_users']
 
 # Default admin credentials
