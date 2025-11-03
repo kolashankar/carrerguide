@@ -41,7 +41,21 @@ export default function LoginPage() {
       router.push('/dashboard')
     } catch (error: any) {
       console.error('Error logging in:', error)
-      toast.error(error.response?.data?.detail || error.response?.data?.message || 'Invalid credentials. Please check your email and password.')
+      console.error('Error response:', error.response)
+      console.error('Error data:', error.response?.data)
+      
+      // Handle 422 validation errors
+      if (error.response?.status === 422) {
+        const validationErrors = error.response?.data?.detail
+        if (Array.isArray(validationErrors)) {
+          const errorMessages = validationErrors.map((err: any) => `${err.loc?.join('.')}: ${err.msg}`).join(', ')
+          toast.error(`Validation error: ${errorMessages}`)
+        } else {
+          toast.error('Invalid request format. Please check your input.')
+        }
+      } else {
+        toast.error(error.response?.data?.detail || error.response?.data?.message || 'Invalid credentials. Please check your email and password.')
+      }
     } finally {
       setLoading(false)
     }
